@@ -6,6 +6,7 @@ Shows how to create production-ready plugins that work with Docker Compose servi
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
+
 """
 
 from __future__ import annotations
@@ -24,13 +25,20 @@ _AUTHOR: Final[str] = "FLEXT Team"
 
 
 def check_service_availability(host: str, port: int, timeout: float = 5.0) -> bool:
-    """Check if a network service is available.
+    """Check whether a network service accepts a TCP connection.
 
     connect_ex() reports connection failure via its return code, not an
     exception, so no except-and-mask branch is needed here.
 
+    Args:
+        host: Hostname or address to probe.
+        port: TCP port to probe.
+        timeout: Seconds to wait for the connection.
+
     Returns:
-        The resulting ``bool``.
+        ``True`` when the service accepts the connection, ``False``
+        otherwise.
+
     """
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.settimeout(timeout)
@@ -44,7 +52,9 @@ def create_docker_postgres_plugin() -> tuple[
     """Create a Docker-compatible PostgreSQL plugin using domain library patterns.
 
     Returns:
-        The resulting ``tuple[FlextPluginModels.Plugin.Entity, t.JsonMapping]``.
+        Tuple of the plugin entity and its Docker connection config
+        mapping.
+
     """
     postgres_config: t.JsonMapping = {
         "host": "localhost",
@@ -77,6 +87,7 @@ def create_docker_redis_plugin() -> tuple[
 
     Returns:
         The resulting ``tuple[FlextPluginModels.Plugin.Entity, t.JsonMapping]``.
+
     """
     redis_config: t.JsonMapping = {
         "host": "localhost",
@@ -110,6 +121,7 @@ def create_docker_ldap_plugin() -> tuple[
 
     Returns:
         The resulting ``tuple[FlextPluginModels.Plugin.Entity, t.JsonMapping]``.
+
     """
     ldap_config: t.JsonMapping = {
         "host": "localhost",
@@ -140,6 +152,7 @@ def test_connections() -> bool:
 
     Returns:
         The resulting ``bool``.
+
     """
     services = [
         ("PostgreSQL", "localhost", 5432),
@@ -175,7 +188,9 @@ class ExamplesFlextPluginDockerIntegrationCommand(s[bool]):
         """Run the Docker integration smoke flow and return success/failure.
 
         Returns:
-            The resulting ``p.Result[bool]``.
+            Ok with ``True`` when every example plugin passes the
+            business-rule validation, or Fail with the violated rule.
+
         """
         if self.test_connections:
             test_connections()
@@ -202,16 +217,21 @@ def _run_docker_integration_command(
     from context).
 
     Returns:
-        The resulting ``p.Result[bool]``.
+        Ok with the command outcome, or Fail with its error.
+
     """
     return params.execute()
 
 
 def main(args: t.StrSequence | None = None) -> int:
-    """Main entry point for the Docker integration example.
+    """Run the Docker integration example CLI.
+
+    Args:
+        args: Command-line arguments; defaults to ``sys.argv[1:]``.
 
     Returns:
-        The resulting ``int``.
+        Process exit code.
+
     """
     app = cli.create_app_with_common_params(
         name="flext-plugin-docker-integration",

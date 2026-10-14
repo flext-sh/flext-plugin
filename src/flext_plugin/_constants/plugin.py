@@ -2,6 +2,7 @@
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
+
 """
 
 from __future__ import annotations
@@ -19,6 +20,7 @@ class FlextPluginConstantsPlugin:
 
     All plugin-specific constants are organized here for better namespace
     organization and to enable composition with other domain constants.
+
     """
 
     DEFAULT_PLUGIN_VERSION: Final[str] = "1.0.0"
@@ -30,6 +32,7 @@ class FlextPluginConstantsPlugin:
         DRY Pattern:
             StrEnum is the single source of truth. Use Type.TAP.value
             or Type.TAP directly - no base strings needed.
+
         """
 
         TAP = "tap"
@@ -89,7 +92,7 @@ class FlextPluginConstantsPlugin:
     })
 
     class PluginValidation:
-        """Plugin validation pattern constants."""
+        """Validation pattern constants for plugin metadata."""
 
         PLUGIN_NAME_PATTERN: Final[str] = "^[a-zA-Z][a-zA-Z0-9_-]*$"
         PLUGIN_NAME_RE: ClassVar[t.RegexPattern] = re.compile(PLUGIN_NAME_PATTERN)
@@ -111,6 +114,7 @@ class FlextPluginConstantsPlugin:
         DRY Pattern:
             StrEnum is the single source of truth. Use PluginStatus.UNKNOWN.value
             or PluginStatus.UNKNOWN directly - no base strings needed.
+
         """
 
         UNKNOWN = "unknown"
@@ -130,6 +134,7 @@ class FlextPluginConstantsPlugin:
 
             Returns:
                 The resulting ``frozenset[str]``.
+
             """
             return frozenset({cls.ERROR, cls.UNHEALTHY, cls.DISABLED})
 
@@ -139,6 +144,7 @@ class FlextPluginConstantsPlugin:
 
             Returns:
                 The resulting ``frozenset[str]``.
+
             """
             return frozenset({cls.ACTIVE, cls.HEALTHY, cls.LOADED})
 
@@ -147,6 +153,7 @@ class FlextPluginConstantsPlugin:
 
             Returns:
                 The resulting ``bool``.
+
             """
             return self in self.get_error_statuses()
 
@@ -155,12 +162,13 @@ class FlextPluginConstantsPlugin:
 
             Returns:
                 The resulting ``bool``.
+
             """
             return self in self.get_operational_statuses()
 
     @unique
     class DiscoveryTypeLiteral(StrEnum):
-        """Discovery type literal enumeration."""
+        """Literals describing how a plugin was discovered."""
 
         FILE = "file"
         DIRECTORY = "directory"
@@ -168,7 +176,7 @@ class FlextPluginConstantsPlugin:
 
     @unique
     class DiscoveryMethodLiteral(StrEnum):
-        """Discovery method literal enumeration."""
+        """Literals describing the method a plugin was discovered by."""
 
         FILE_SYSTEM = "file_system"
         ENTRY_POINTS = "entry_points"

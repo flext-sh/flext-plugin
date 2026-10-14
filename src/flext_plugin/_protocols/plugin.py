@@ -2,6 +2,7 @@
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
+
 """
 
 from __future__ import annotations
@@ -14,7 +15,13 @@ if TYPE_CHECKING:
 
 
 class FlextPluginProtocolsPlugin:
-    """Plugin domain-specific protocols namespace."""
+    """Namespace of the plugin-domain protocol contracts.
+
+    Groups the discovery, loading, registry, execution, security,
+    hot-reload, monitoring, configuration, lifecycle, validation, and
+    storage protocols plus the platform lifecycle host contract.
+
+    """
 
     @runtime_checkable
     class Discovery(Protocol):

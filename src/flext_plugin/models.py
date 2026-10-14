@@ -2,6 +2,7 @@
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
+
 """
 
 from __future__ import annotations
@@ -21,12 +22,13 @@ class FlextPluginModels(FlextCliModels):
 
     All models inherit flext-core validation and patterns following
     Railway-Oriented Programming with r[T] error handling.
+
     """
 
     class Plugin(
         FlextPluginModelsBase, FlextPluginConfigModels, FlextPluginModelsPlugin
     ):
-        """Plugin domain namespace."""
+        """Plugin domain models namespace composed via MRO."""
 
 
 m = FlextPluginModels

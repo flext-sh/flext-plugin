@@ -2,6 +2,7 @@
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
+
 """
 
 from __future__ import annotations
@@ -20,6 +21,7 @@ class FlextPluginDiscovery:
 
     Discovers plugins using multiple strategies (file system, entry points).
     Delegates discovery logic to strategy classes, Pydantic handles validation.
+
     """
 
     def __init__(self) -> None:
@@ -38,8 +40,16 @@ class FlextPluginDiscovery:
     ) -> t.SequenceOf[TDiscovery]:
         """Discover Python plugins recursively in a directory.
 
+        Args:
+            path: Directory to scan recursively for ``*.py`` files.
+            discover_file: Callable producing discovery data for one
+                candidate file, or ``None`` to skip it.
+            logger: Logger for discovery failures.
+
         Returns:
-            The resulting ``t.SequenceOf[TDiscovery]``.
+            The discovered plugin data records; empty when the directory
+            cannot be read.
+
         """
         discovered: MutableSequence[TDiscovery] = []
         try:
@@ -70,10 +80,11 @@ class FlextPluginDiscovery:
         """Discover single plugin at path.
 
         Args:
-        plugin_path: Path to the plugin
+            plugin_path: Path to the plugin.
 
         Returns:
-        r containing plugin data
+            Ok with the plugin data, or Fail when the plugin is not
+            found.
 
         """
         try:
@@ -96,10 +107,11 @@ class FlextPluginDiscovery:
         """Discover plugins using all strategies.
 
         Args:
-        paths: List of paths to search for plugins
+            paths: Paths to search for plugins.
 
         Returns:
-        r containing list of discovered plugins
+            Ok with the discovered plugins, or Fail with the discovery
+            error.
 
         """
         try:
@@ -121,10 +133,11 @@ class FlextPluginDiscovery:
         Pydantic automatically validates on model creation.
 
         Args:
-        plugin_data: Plugin data to validate
+            plugin_data: Plugin data to validate.
 
         Returns:
-        r indicating validation success
+            Ok with ``True`` when validation passes, or Fail with the
+            validation error.
 
         """
         try:
@@ -141,8 +154,14 @@ class FlextPluginDiscovery:
     ) -> m.Plugin.DiscoveryData | None:
         """Discover one plugin from filesystem first, then entry points.
 
+        Args:
+            plugin_path: Path string used by the strategy lookup.
+            path_obj: Resolved filesystem path of the plugin.
+
         Returns:
-            The resulting ``m.Plugin.DiscoveryData | None``.
+            The discovery data from the first matching strategy, or
+            ``None`` when no strategy discovers the path.
+
         """
         if path_obj.exists():
             file_discovered = self._first_discovery(
@@ -159,8 +178,12 @@ class FlextPluginDiscovery:
     ) -> MutableMapping[str, m.Plugin.DiscoveryData]:
         """Discover unique plugins across all configured strategies.
 
+        Args:
+            paths: Paths to search for plugins.
+
         Returns:
-            The resulting ``MutableMapping[str, m.Plugin.DiscoveryData]``.
+            Mapping of plugin name to its first discovered data record.
+
         """
         discovered: MutableMapping[str, m.Plugin.DiscoveryData] = {}
         for strategy in self.strategies:
@@ -176,7 +199,17 @@ class FlextPluginDiscovery:
         strategy: p.Plugin.DiscoveryStrategy,
         plugin_path: str,
     ) -> m.Plugin.DiscoveryData | None:
-        """Return the first discovery hit for one strategy."""
+        """Return the first discovery hit for one strategy.
+
+        Args:
+            strategy: Discovery strategy to run.
+            plugin_path: Path to discover.
+
+        Returns:
+            The first discovered data record, or ``None`` when the
+            strategy finds nothing.
+
+        """
         result = strategy.discover([plugin_path])
         if result.success and result.value:
             data: m.Plugin.DiscoveryData = result.value[0]
@@ -199,8 +232,13 @@ class FlextPluginDiscovery:
         ) -> p.Result[Sequence[m.Plugin.DiscoveryData]]:
             """Discover plugins in file system paths.
 
+            Args:
+                paths: Paths to scan for plugin modules.
+
             Returns:
-                The resulting ``p.Result[Sequence[m.Plugin.DiscoveryData]]``.
+                Ok with the discovered plugins, or Fail with the
+                discovery error.
+
             """
             try:
                 discovered = self._discover_paths(paths)
@@ -222,8 +260,12 @@ class FlextPluginDiscovery:
         ) -> t.SequenceOf[m.Plugin.DiscoveryData]:
             """Recursively discover plugins in directory.
 
+            Args:
+                path: Directory to scan recursively.
+
             Returns:
-                The resulting ``t.SequenceOf[m.Plugin.DiscoveryData]``.
+                The discovered plugin data records.
+
             """
             return FlextPluginDiscovery.discover_python_plugins_in_directory(
                 path,
@@ -238,8 +280,13 @@ class FlextPluginDiscovery:
             # Why: DiscoveryData construction failure is a real defect, not a
             # skip condition; it propagates instead of being masked as None.
 
+            Args:
+                path: Candidate file path.
+
             Returns:
-                The resulting ``m.Plugin.DiscoveryData | None``.
+                The discovery data for the file, or ``None`` when the
+                file is not a ``.py`` module.
+
             """
             if path.suffix != ".py":
                 return None
@@ -255,8 +302,13 @@ class FlextPluginDiscovery:
         def _discover_path(self, path_str: str) -> t.SequenceOf[m.Plugin.DiscoveryData]:
             """Discover plugins from one path string.
 
+            Args:
+                path_str: Path string to resolve and scan.
+
             Returns:
-                The resulting ``t.SequenceOf[m.Plugin.DiscoveryData]``.
+                The discovered plugin data records; empty for blank,
+                missing, or unsupported paths.
+
             """
             if not path_str.strip():
                 self.logger.debug("Skipping blank plugin discovery path")
@@ -278,8 +330,12 @@ class FlextPluginDiscovery:
         ) -> t.SequenceOf[m.Plugin.DiscoveryData]:
             """Discover plugins from all path strings.
 
+            Args:
+                paths: Path strings to resolve and scan.
+
             Returns:
-                The resulting ``t.SequenceOf[m.Plugin.DiscoveryData]``.
+                The discovered plugin data records.
+
             """
             discovered: MutableSequence[m.Plugin.DiscoveryData] = []
             for path_str in paths:
@@ -295,8 +351,13 @@ class FlextPluginDiscovery:
         ) -> p.Result[Sequence[m.Plugin.DiscoveryData]]:
             """Discover plugins using entry points (paths ignored).
 
+            Args:
+                paths: Accepted for protocol compatibility; ignored.
+
             Returns:
-                The resulting ``p.Result[Sequence[m.Plugin.DiscoveryData]]``.
+                Ok with the discovered plugins, or Fail with the
+                discovery error.
+
             """
             _ = paths
             try:
@@ -323,8 +384,13 @@ class FlextPluginDiscovery:
             # condition; construction failure propagates instead of being
             # masked as None.
 
+            Args:
+                entry_point: Entry point to convert.
+
             Returns:
-                The resulting ``m.Plugin.DiscoveryData | None``.
+                The discovery data for the entry point, or ``None`` when
+                it has no distribution.
+
             """
             distribution = entry_point.dist
             if distribution is None:
@@ -346,7 +412,9 @@ class FlextPluginDiscovery:
             """Discover plugins from the installed entry point registry.
 
             Returns:
-                The resulting ``t.SequenceOf[m.Plugin.DiscoveryData]``.
+                The discovery data records of all ``flext.plugins`` entry
+                points with a distribution.
+
             """
             discovered: MutableSequence[m.Plugin.DiscoveryData] = []
             for entry_point in importlib.metadata.entry_points().select(

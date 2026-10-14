@@ -6,6 +6,7 @@ FLEXT architectural standards.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
+
 """
 
 from __future__ import annotations
@@ -29,6 +30,7 @@ class FlextPluginImplementations:
         Discovers plugins from real files on disk and returns their
         metadata as DiscoveryData — the payload shape the platform maps
         and registers for real.
+
         """
 
         def __init__(self) -> None:
@@ -38,8 +40,13 @@ class FlextPluginImplementations:
         def discover_plugin(self, plugin_path: str) -> p.Result[m.Plugin.DiscoveryData]:
             """Discover a single plugin from a real file.
 
+            Args:
+                plugin_path: Filesystem path of the plugin file.
+
             Returns:
-                The resulting ``p.Result[m.Plugin.DiscoveryData]``.
+                Ok with the discovery data, or Fail when the path is not
+                a file.
+
             """
             path = Path(plugin_path)
             if not path.is_file():
@@ -64,8 +71,13 @@ class FlextPluginImplementations:
         ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
             """Discover plugins from multiple paths.
 
+            Args:
+                paths: File paths and directories to scan for ``.py``
+                    plugin modules.
+
             Returns:
-                The resulting ``p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]``.
+                Ok with the discovery data of the discovered plugins.
+
             """
             results: list[m.Plugin.DiscoveryData] = []
             for path_str in paths:
@@ -88,8 +100,13 @@ class FlextPluginImplementations:
         ) -> p.Result[bool]:
             """Validate discovered plugin data.
 
+            Args:
+                plugin_data: Plugin data to validate; accepted and
+                    treated as valid.
+
             Returns:
-                The resulting ``p.Result[bool]``.
+                Ok with ``True``.
+
             """
             _ = plugin_data
             return r[bool].ok(value=True)
@@ -100,6 +117,7 @@ class FlextPluginImplementations:
         Loads a plugin from a real .py file on disk and returns its
         metadata as a mapping — the payload shape the platform maps and
         registers for real.
+
         """
 
         def __init__(self) -> None:
@@ -113,16 +131,26 @@ class FlextPluginImplementations:
         def plugin_loaded(self, plugin_name: str) -> bool:
             """Check whether a plugin was loaded through this loader.
 
+            Args:
+                plugin_name: Name of the plugin to check.
+
             Returns:
-                The resulting ``bool``.
+                ``True`` when the plugin was loaded here, ``False``
+                otherwise.
+
             """
             return plugin_name in self._loaded
 
         def load_plugin(self, plugin_path: str) -> p.Result[t.JsonMapping]:
             """Load a real plugin file, failing when it does not exist.
 
+            Args:
+                plugin_path: Filesystem path of the plugin file.
+
             Returns:
-                The resulting ``p.Result[t.JsonMapping]``.
+                Ok with the plugin metadata mapping, or Fail when the
+                path is not a file.
+
             """
             path = Path(plugin_path)
             if not path.is_file():
@@ -139,8 +167,13 @@ class FlextPluginImplementations:
         def unload_plugin(self, plugin_name: str) -> p.Result[bool]:
             """Unload a previously loaded plugin.
 
+            Args:
+                plugin_name: Name of the plugin to unload.
+
             Returns:
-                The resulting ``p.Result[bool]``.
+                Ok with ``True`` whether or not the plugin was loaded
+                here.
+
             """
             if plugin_name in self._loaded:
                 self._loaded.remove(plugin_name)
@@ -151,6 +184,7 @@ class FlextPluginImplementations:
 
         Echoes the execution context back as the result so tests can
         assert the real execution-record bookkeeping of the platform.
+
         """
 
         def __init__(self) -> None:
@@ -164,8 +198,13 @@ class FlextPluginImplementations:
         ) -> p.Result[t.JsonMapping]:
             """Record the execution and echo the context as result.
 
+            Args:
+                plugin_name: Name of the executed plugin.
+                context: Input payload echoed back in the result.
+
             Returns:
-                The resulting ``p.Result[t.JsonMapping]``.
+                Ok with the echo payload.
+
             """
             self._executed.append(plugin_name)
             payload = u.json_mapping_adapter().validate_python({
@@ -178,8 +217,13 @@ class FlextPluginImplementations:
         def get_execution_status(_execution_id: str) -> p.Result[str]:
             """Every execution through this executor completes.
 
+            Args:
+                _execution_id: Identifier of the execution to inspect;
+                    unused because every execution completes.
+
             Returns:
-                The resulting ``p.Result[str]``.
+                Ok with the ``completed`` status.
+
             """
             return r[str].ok("completed")
 
@@ -188,7 +232,8 @@ class FlextPluginImplementations:
             """No execution stays running after execute_plugin returns.
 
             Returns:
-                The resulting ``t.StrSequence``.
+                Empty sequence; no execution stays running.
+
             """
             return []
 
@@ -196,8 +241,13 @@ class FlextPluginImplementations:
         def stop_execution(_execution_id: str) -> p.Result[bool]:
             """Stop is always a no-op success for completed executions.
 
+            Args:
+                _execution_id: Identifier of the execution to stop;
+                    unused because executions complete immediately.
+
             Returns:
-                The resulting ``p.Result[bool]``.
+                Ok with ``True``.
+
             """
             return r[bool].ok(value=True)
 
@@ -211,8 +261,13 @@ class FlextPluginImplementations:
         ) -> p.Result[t.JsonMapping]:
             """Report a real execution failure.
 
+            Args:
+                plugin_name: Name of the plugin; unused, every run fails.
+                context: Input payload; unused, every run fails.
+
             Returns:
-                The resulting ``p.Result[t.JsonMapping]``.
+                Fail with the execution error.
+
             """
             _ = plugin_name
             _ = context
@@ -222,8 +277,13 @@ class FlextPluginImplementations:
         def get_execution_status(_execution_id: str) -> p.Result[str]:
             """Every execution through this executor fails.
 
+            Args:
+                _execution_id: Identifier of the execution to inspect;
+                    unused because every execution fails.
+
             Returns:
-                The resulting ``p.Result[str]``.
+                Ok with the ``failed`` status.
+
             """
             return r[str].ok("failed")
 
@@ -232,7 +292,8 @@ class FlextPluginImplementations:
             """No execution stays running after a failure.
 
             Returns:
-                The resulting ``t.StrSequence``.
+                Empty sequence; no execution stays running.
+
             """
             return []
 
@@ -240,8 +301,13 @@ class FlextPluginImplementations:
         def stop_execution(_execution_id: str) -> p.Result[bool]:
             """Stop is always a no-op success for failed executions.
 
+            Args:
+                _execution_id: Identifier of the execution to stop;
+                    unused because executions fail immediately.
+
             Returns:
-                The resulting ``p.Result[bool]``.
+                Ok with ``True``.
+
             """
             return r[bool].ok(value=True)
 
@@ -252,8 +318,13 @@ class FlextPluginImplementations:
         def discover_plugin(plugin_path: str) -> p.Result[m.Plugin.DiscoveryData]:
             """Report a real discovery failure for one plugin.
 
+            Args:
+                plugin_path: Path of the plugin; unused, discovery always
+                    fails.
+
             Returns:
-                The resulting ``p.Result[m.Plugin.DiscoveryData]``.
+                Fail with the discovery error.
+
             """
             _ = plugin_path
             return r[m.Plugin.DiscoveryData].fail("discovery failed")
@@ -264,8 +335,12 @@ class FlextPluginImplementations:
         ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
             """Report a real discovery failure for the given paths.
 
+            Args:
+                paths: Paths to scan; unused, discovery always fails.
+
             Returns:
-                The resulting ``p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]``.
+                Fail with the discovery error.
+
             """
             _ = paths
             return r[t.SequenceOf[m.Plugin.DiscoveryData]].fail("discovery failed")
@@ -276,8 +351,13 @@ class FlextPluginImplementations:
         ) -> p.Result[bool]:
             """Report a real validation failure.
 
+            Args:
+                plugin_data: Plugin data to validate; unused, validation
+                    always fails.
+
             Returns:
-                The resulting ``p.Result[bool]``.
+                Fail with the validation error.
+
             """
             _ = plugin_data
             return r[bool].fail("discovery failed")

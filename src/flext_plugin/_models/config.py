@@ -6,6 +6,7 @@ the ready objects under ``config.Plugin``.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
+
 """
 
 from __future__ import annotations
@@ -25,7 +26,7 @@ class FlextPluginConfigModels:
         pattern: str = u.Field(description="Regex validating a semantic version.")
 
     class NameValidation(m.BaseModel):
-        """Plugin name validation thresholds."""
+        """Constraints applied when validating plugin names."""
 
         model_config = m.ConfigDict(frozen=True, extra="forbid")
 
@@ -34,7 +35,7 @@ class FlextPluginConfigModels:
         pattern: str = u.Field(description="Regex validating a plugin name.")
 
     class DescriptionValidation(m.BaseModel):
-        """Plugin description validation thresholds."""
+        """Constraints applied when validating plugin descriptions."""
 
         model_config = m.ConfigDict(frozen=True, extra="forbid")
 
@@ -43,14 +44,14 @@ class FlextPluginConfigModels:
         )
 
     class AuthorValidation(m.BaseModel):
-        """Plugin author validation thresholds."""
+        """Constraints applied when validating plugin authors."""
 
         model_config = m.ConfigDict(frozen=True, extra="forbid")
 
         max_length: int = u.Field(ge=1, description="Maximum author string length.")
 
     class DocstringValidation(m.BaseModel):
-        """Plugin docstring extraction rules."""
+        """Rules for extracting plugin documentation strings."""
 
         model_config = m.ConfigDict(frozen=True, extra="forbid")
 
@@ -59,7 +60,7 @@ class FlextPluginConfigModels:
         )
 
     class Validation(m.BaseModel):
-        """Plugin validation rule namespace."""
+        """Namespace grouping the plugin validation rule models."""
 
         model_config = m.ConfigDict(frozen=True, extra="forbid")
 
@@ -89,7 +90,7 @@ class FlextPluginConfigModels:
         default_cache_dir: str = u.Field(description="Default plugin cache directory.")
 
     class Plugin(m.BaseModel):
-        """Root plugin business-rule namespace."""
+        """Root namespace grouping plugin business-rule models."""
 
         model_config = m.ConfigDict(frozen=True, extra="forbid")
 
