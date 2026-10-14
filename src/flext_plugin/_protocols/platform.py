@@ -33,7 +33,9 @@ class FlextPluginProtocolsPlatform:
         def discovery(
             self,
             value: FlextPluginProtocolsPlugin.Discovery | None,
-        ) -> None: ...
+        ) -> None:
+            """Replace the configured discovery implementation."""
+            ...
 
         @property
         def loader(self) -> FlextPluginProtocolsPlugin.Loader | None:
@@ -41,7 +43,9 @@ class FlextPluginProtocolsPlatform:
             ...
 
         @loader.setter
-        def loader(self, value: FlextPluginProtocolsPlugin.Loader | None) -> None: ...
+        def loader(self, value: FlextPluginProtocolsPlugin.Loader | None) -> None:
+            """Replace the configured loader implementation."""
+            ...
 
         @property
         def executor(self) -> FlextPluginProtocolsPlugin.Execution | None:
@@ -52,7 +56,9 @@ class FlextPluginProtocolsPlatform:
         def executor(
             self,
             value: FlextPluginProtocolsPlugin.Execution | None,
-        ) -> None: ...
+        ) -> None:
+            """Replace the configured executor implementation."""
+            ...
 
         def discover_plugins(
             self,

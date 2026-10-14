@@ -168,7 +168,16 @@ class FlextPluginPlatform:
             def discover_and_validate(
                 _checked: t.JsonValue,
             ) -> p.Result[Sequence[m.Plugin.DiscoveryData]]:
+                """Run discovery after the protocol guard passed.
 
+                Args:
+                    _checked: Unused guard placeholder from the railway chain.
+
+                Returns:
+                    Ok with the discovered plugin data, or Fail when the
+                    discovery protocol is missing or discovery fails.
+
+                """
                 if not self.discovery:
                     return r[Sequence[m.Plugin.DiscoveryData]].fail(
                         "Discovery protocol not configured",
@@ -301,7 +310,16 @@ class FlextPluginPlatform:
             """
 
             def load_and_validate(_checked: t.JsonValue) -> p.Result[t.JsonMapping]:
+                """Load the plugin module after the protocol guard passed.
 
+                Args:
+                    _checked: Unused guard placeholder from the railway chain.
+
+                Returns:
+                    Ok with the raw plugin payload mapping, or Fail when the
+                    loader protocol is missing or the load fails.
+
+                """
                 if not self.loader:
                     return r[t.JsonMapping].fail("Loader protocol not configured")
 
@@ -337,11 +355,33 @@ class FlextPluginPlatform:
             """
 
             def validate_plugin_result(_: t.JsonValue) -> p.Result[bool]:
+                """Register the plugin in the registry after validation.
 
+                Args:
+                    _: Unused placeholder from the railway chain.
+
+                Returns:
+                    Ok with ``True`` when registry registration succeeds, or
+                    Fail with the registry error.
+
+                """
                 return self.registry.register(plugin.name, plugin)
 
             def add_to_plugins_result(_registry_result: t.JsonValue) -> bool:
+                """Mirror the registered plugin into the plugins mapping.
 
+                Args:
+                    _registry_result: ``True`` when registry registration
+                        succeeded.
+
+                Returns:
+                    ``True`` when the plugin entity is added to the plugins
+                    mapping.
+
+                Raises:
+                    ValueError: If the registry did not confirm registration.
+
+                """
                 if _registry_result is not True:
                     error_msg = "Plugin registration failed"
 
@@ -375,7 +415,21 @@ class FlextPluginPlatform:
             """
 
             def unregister_from_registry(_registry_result: t.JsonValue) -> bool:
+                """Remove the plugin from the plugins mapping after unregister.
 
+                Args:
+                    _registry_result: ``True`` when registry unregistration
+                        succeeded.
+
+                Returns:
+                    ``True`` when the plugin is removed from the plugins
+                    mapping.
+
+                Raises:
+                    ValueError: If the registry did not confirm
+                        unregistration.
+
+                """
                 if _registry_result is not True:
                     error_msg = "Plugin unregistration failed"
 

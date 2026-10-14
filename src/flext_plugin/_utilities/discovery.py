@@ -220,7 +220,12 @@ class FlextPluginDiscovery:
         """Shared base for plugin discovery strategies."""
 
         def __init__(self, logger: p.Logger) -> None:
-            """Initialize strategy with logger."""
+            """Initialize strategy with logger.
+
+            Args:
+                logger: Logger used for discovery traceability.
+
+            """
             self.logger = logger
 
     class FileSystemStrategy(_DiscoveryStrategyBase):
