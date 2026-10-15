@@ -1,20 +1,22 @@
 """FLEXT Plugin Settings - Plugin system settings management.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
+
 """
 
 from __future__ import annotations
 
-from flext_core import FlextSettings
-from flext_plugin import m
+from flext_core import FlextSettings, m
 
 
 class FlextPluginSettings(FlextSettings):
-    """Plugin system runtime settings."""
+    """Plugin system runtime settings.
+
+    Extends the fleet settings kernel with the registered ``plugin``
+    namespace so services resolve typed plugin configuration.
+
+    """
 
     # Why: pydantic_settings is owned by flext-core; route SettingsConfigDict
     # through the m facade instead of importing the third-party package

@@ -1,8 +1,5 @@
 """Behavioral unit tests for FlextPluginModels.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -10,10 +7,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
 from flext_plugin import FlextPluginPlatform
-from tests import c, m
+from tests import c, m, tm
 
 
 class TestsFlextPluginModelsUnit:

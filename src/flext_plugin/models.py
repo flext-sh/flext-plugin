@@ -1,16 +1,16 @@
 """FLEXT Plugin Models - public facade composing from _models.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
+
 """
 
 from __future__ import annotations
 
 from flext_cli import FlextCliModels
 
+from flext_plugin._models.base import FlextPluginModelsBase
+from flext_plugin._models.config import FlextPluginConfigModels
 from flext_plugin._models.plugin import FlextPluginModelsPlugin
 
 
@@ -22,10 +22,13 @@ class FlextPluginModels(FlextCliModels):
 
     All models inherit flext-core validation and patterns following
     Railway-Oriented Programming with r[T] error handling.
+
     """
 
-    class Plugin(FlextPluginModelsPlugin):
-        """Plugin domain namespace."""
+    class Plugin(
+        FlextPluginModelsBase, FlextPluginConfigModels, FlextPluginModelsPlugin
+    ):
+        """Plugin domain models namespace composed via MRO."""
 
 
 m = FlextPluginModels

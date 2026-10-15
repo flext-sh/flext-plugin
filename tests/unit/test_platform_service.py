@@ -4,9 +4,6 @@ Exercises the public contract of ``FlextPluginPlatform.PluginPlatformService``
 and its nested ``PluginExecution`` entity: lifecycle, registry operations,
 discovery/loading/execution delegation, and status reporting.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -17,11 +14,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
-from flext_tests import tm
 
-from flext_plugin import c
-from flext_plugin.utilities import FlextPluginDiscovery, FlextPluginPlatform
-from tests import u
+from flext_plugin import FlextPluginDiscovery, FlextPluginPlatform
+from tests import c, tm, u
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -161,6 +156,7 @@ def _make_plugin(
 
     Returns:
         The resulting ``FlextPluginPlatform.Plugin``.
+
     """
     plugin: FlextPluginPlatform.Plugin = FlextPluginPlatform.Plugin(
         name=name,

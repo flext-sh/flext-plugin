@@ -423,7 +423,7 @@ class FlextPluginSettings(m.BaseModel):
     name: str = u.Field(min_length=1, max_length=100)
     version: str = u.Field(pattern=r"^\d+\.\d+\.\d+$")
     dependencies: t.StringList = u.Field(default_factory=list)
-    settings: dict[str, t.JsonValue] = u.Field(default_factory=dict)
+    settings: t.JsonDict = u.Field(default_factory=dict)
 
     model_config = m.ConfigDict(frozen=True)  # Immutable data model
 ```

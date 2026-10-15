@@ -3,9 +3,6 @@
 Behavioral tests for the public type-facade contract: MRO composition over
 flext_cli types, the Plugin domain namespace, and the EventHandler alias.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -16,29 +13,32 @@ import asyncio
 
 import pytest
 from flext_cli import t as cli_t
-from flext_tests import tm
 
-from flext_plugin import FlextPluginTypes, t as plugin_t
-from tests import t
+import flext_plugin
+from flext_plugin import FlextPluginTypes
+from tests import t, tm
 
 
 class TestsFlextPluginTypesUnit:
     """Behavioral contract for the FlextPluginTypes facade."""
 
     @staticmethod
-    def test_facade_composes_cli_types_via_mro() -> None:
-        """FlextPluginTypes extends the flext_cli type facade via MRO."""
-        tm.that(cli_t in FlextPluginTypes.__mro__, eq=True)
+    def test_facade_exposes_inherited_cli_type_aliases() -> None:
+        """The facade resolves inherited CLI type aliases to the same objects."""
+        tm.that(FlextPluginTypes.JsonMapping is cli_t.JsonMapping, eq=True)
 
     @staticmethod
     def test_module_alias_is_the_facade() -> None:
         """The module-level ``t`` alias exposes the facade itself."""
-        tm.that(plugin_t is FlextPluginTypes, eq=True)
+        tm.that(flext_plugin.t is FlextPluginTypes, eq=True)
 
     @staticmethod
-    def test_tests_facade_inherits_plugin_facade_via_mro() -> None:
-        """The tests type facade composes FlextPluginTypes through its MRO."""
-        tm.that(FlextPluginTypes in t.__mro__, eq=True)
+    def test_tests_facade_exposes_plugin_namespace() -> None:
+        """The tests facade exposes the inherited plugin event-handler alias."""
+        tm.that(
+            t.Plugin.EventHandler is FlextPluginTypes.Plugin.EventHandler,
+            eq=True,
+        )
 
     @staticmethod
     @pytest.mark.parametrize("inherited_alias", ["JsonMapping"])

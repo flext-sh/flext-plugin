@@ -5,9 +5,6 @@ Exercises the observable contract of ``FlextPluginDiscovery`` (the
 ``discover_plugins``, the discovery-strategy contract, and the recursive
 directory-walk promised by ``discover_python_plugins_in_directory``.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -17,10 +14,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
-from flext_tests import tm
 
-from flext_plugin import p, t, u
-from flext_plugin.utilities import FlextPluginDiscovery
+from flext_plugin import FlextPluginDiscovery
+from tests import p, t, tm, u
 
 if TYPE_CHECKING:
     from pathlib import Path
