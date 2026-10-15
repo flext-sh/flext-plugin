@@ -13,8 +13,8 @@ from __future__ import annotations
 from typing import ClassVar, Self
 
 from flext_cli import FlextCliConfig, u
-
 from flext_core import FlextSettings, t
+
 from flext_plugin._models.config import FlextPluginConfigModels
 
 

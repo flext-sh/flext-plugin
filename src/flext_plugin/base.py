@@ -13,6 +13,7 @@ from __future__ import annotations
 from abc import ABC
 
 from flext_core import FlextService
+
 from flext_plugin import FlextPluginSettings, m, t
 
 
