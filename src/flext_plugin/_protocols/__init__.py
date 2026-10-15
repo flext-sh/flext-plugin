@@ -10,17 +10,17 @@ from __future__ import annotations
 from types import MappingProxyType
 from typing import TYPE_CHECKING
 
-from flext_core import install_lazy_exports
+from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
     from flext_plugin._protocols.base import FlextPluginProtocolsBase
-    from flext_plugin._protocols.platform import FlextPluginProtocolsPlatformService
+    from flext_plugin._protocols.platform import FlextPluginProtocolsPlatform
     from flext_plugin._protocols.plugin import FlextPluginProtocolsPlugin
 
 
 __all__: tuple[str, ...] = (
     "FlextPluginProtocolsBase",
-    "FlextPluginProtocolsPlatformService",
+    "FlextPluginProtocolsPlatform",
     "FlextPluginProtocolsPlugin",
 )
 
@@ -29,7 +29,7 @@ install_lazy_exports(
     globals(),
     MappingProxyType({
         "FlextPluginProtocolsBase": ".base",
-        "FlextPluginProtocolsPlatformService": ".platform",
+        "FlextPluginProtocolsPlatform": ".platform",
         "FlextPluginProtocolsPlugin": ".plugin",
     }),
     public_exports=__all__,

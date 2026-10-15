@@ -18,7 +18,8 @@ from __future__ import annotations
 
 import os
 
-from flext_plugin import FlextPluginApi, t
+from examples import t
+from flext_plugin import FlextPluginApi
 
 
 def create_database_plugin_config() -> t.JsonMapping:
@@ -26,6 +27,7 @@ def create_database_plugin_config() -> t.JsonMapping:
 
     Returns:
         The resulting ``t.JsonMapping``.
+
     """
     return {
         "database": {
@@ -56,6 +58,7 @@ def create_ldap_plugin_config() -> t.JsonMapping:
 
     Returns:
         The resulting ``t.JsonMapping``.
+
     """
     return {
         "ldap": {

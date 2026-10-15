@@ -5,24 +5,32 @@ preserving flext-plugin service runtime behavior.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
+
 """
 
 from __future__ import annotations
 
 from abc import ABC
 
-from flext_core import s
+from flext_core import FlextService
+
 from flext_plugin import FlextPluginSettings, m, t
 
 
 class FlextPluginServiceBase[
     TDomainResult: t.JsonPayload | t.SequenceOf[t.JsonPayload] = t.JsonPayload,
-](s[TDomainResult], ABC):
+](FlextService[TDomainResult], ABC):
     """Base class for flext-plugin services with typed plugin settings access."""
 
     @classmethod
     def runtime_bootstrap_options(cls) -> m.RuntimeBootstrapOptions:
-        """Return runtime bootstrap options for plugin services."""
+        """Return runtime bootstrap options for plugin services.
+
+        Returns:
+            Bootstrap options binding plugin services to the registered
+            ``FlextPluginSettings`` namespace.
+
+        """
         return m.RuntimeBootstrapOptions(settings_type=FlextPluginSettings)
 
 

@@ -3,9 +3,6 @@
 Provides TestsFlextPluginUtilities, combining TestsFlextUtilities with
 FlextPluginUtilities for test-specific utility definitions.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -16,7 +13,8 @@ from pathlib import Path
 
 from flext_tests import FlextTestsUtilities
 
-from flext_plugin import FlextPluginUtilities, m, p, r, t
+from flext_plugin import FlextPluginUtilities
+from tests import m, p, r, t
 
 
 class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
@@ -55,6 +53,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
 
                     Returns:
                         The resulting ``bool``.
+
                     """
                     return plugin_name in self._loaded
 
@@ -63,6 +62,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
 
                     Returns:
                         The resulting ``p.Result[t.JsonMapping]``.
+
                     """
                     path = Path(plugin_path)
                     if not path.is_file():
@@ -83,6 +83,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
 
                     Returns:
                         The resulting ``p.Result[bool]``.
+
                     """
                     if plugin_name in self._loaded:
                         self._loaded.remove(plugin_name)
@@ -108,12 +109,13 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
 
                     Returns:
                         The resulting ``p.Result[t.JsonMapping]``.
+
                     """
                     self._executed.append(plugin_name)
                     # NOTE (multi-agent): pyrefly fix — heterogeneous literals go
                     # through the canonical json_mapping_adapter (same pattern as
                     # plugin_platform.py) so the r[t.JsonMapping] return type holds.
-                    payload = t.json_mapping_adapter().validate_python({
+                    payload = u.json_mapping_adapter().validate_python({
                         "plugin": plugin_name,
                         "echo": context,
                     })
@@ -125,6 +127,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
 
                     Returns:
                         The resulting ``p.Result[str]``.
+
                     """
                     _ = execution_id
                     return r[str].ok("completed")
@@ -135,6 +138,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
 
                     Returns:
                         The resulting ``t.StrSequence``.
+
                     """
                     running: t.StrSequence = []
                     return running
@@ -145,6 +149,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
 
                     Returns:
                         The resulting ``p.Result[bool]``.
+
                     """
                     _ = execution_id
                     return r[bool].ok(value=True)
@@ -161,6 +166,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
 
                     Returns:
                         The resulting ``p.Result[t.JsonMapping]``.
+
                     """
                     _ = plugin_name
                     _ = context
@@ -172,6 +178,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
 
                     Returns:
                         The resulting ``p.Result[str]``.
+
                     """
                     _ = execution_id
                     return r[str].ok("failed")
@@ -182,6 +189,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
 
                     Returns:
                         The resulting ``t.StrSequence``.
+
                     """
                     running: t.StrSequence = []
                     return running
@@ -192,6 +200,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
 
                     Returns:
                         The resulting ``p.Result[bool]``.
+
                     """
                     _ = execution_id
                     return r[bool].ok(value=True)
@@ -207,6 +216,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
 
                     Returns:
                         The resulting ``p.Result[m.Plugin.DiscoveryData]``.
+
                     """
                     _ = plugin_path
                     return r[m.Plugin.DiscoveryData].fail("discovery failed")
@@ -220,6 +230,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
                     Returns:
                         The resulting
                             ``p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]``.
+
                     """
                     _ = paths
                     return r[t.SequenceOf[m.Plugin.DiscoveryData]].fail(
@@ -234,6 +245,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
 
                     Returns:
                         The resulting ``p.Result[bool]``.
+
                     """
                     _ = plugin_data
                     return r[bool].fail("discovery failed")

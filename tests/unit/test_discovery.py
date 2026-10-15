@@ -4,9 +4,6 @@ Exercises the observable contract of ``FlextPluginDiscovery`` (return values,
 ``r[T]`` outcomes, and public model state) without touching private
 attributes, internal collaborators, or line-coverage pokes.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -18,11 +15,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
-from flext_tests import tm
 
-from flext_plugin import u
-from flext_plugin.utilities import FlextPluginDiscovery
-from tests import c
+from flext_plugin import FlextPluginDiscovery
+from tests import c, tm, u
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -38,6 +33,7 @@ class TestsFlextPluginDiscovery:
 
         Returns:
             The resulting ``FlextPluginDiscovery``.
+
         """
         return FlextPluginDiscovery()
 
@@ -48,6 +44,7 @@ class TestsFlextPluginDiscovery:
 
         Yields:
             Each ``Path``.
+
         """
         with tempfile.TemporaryDirectory() as tmp_dir:
             root = Path(tmp_dir)

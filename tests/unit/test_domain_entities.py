@@ -6,9 +6,6 @@ idempotence), execution/error metric accumulation via public state, business
 rule validation, and immutable value-object construction. No private attribute
 access, no internal-collaborator spying, no line-coverage pokes.
 
-Copyright (c) 2025 FLEXT Team. All rights reserved.
-SPDX-License-Identifier: MIT
-
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
 """
@@ -16,10 +13,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 import pytest
-from flext_tests import tm
 
 from flext_plugin import FlextPluginPlatform
-from tests import c, m
+from tests import c, m, tm
 
 
 class TestsFlextPluginDomainEntities:
@@ -42,6 +38,7 @@ class TestsFlextPluginDomainEntities:
 
         Returns:
             The resulting ``m.Plugin.Entity``.
+
         """
         return m.Plugin.Entity(
             name=name,
