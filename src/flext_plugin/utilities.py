@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """FLEXT Plugin Utilities - Domain-specific utilities for plugin management.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
@@ -13,10 +14,12 @@ from typing import ClassVar
 from flext_cli import FlextCliUtilities
 
 from flext_plugin import c, m, p, r, t
-from flext_plugin._utilities.base import FlextPluginUtilitiesBase
-from flext_plugin._utilities.discovery import FlextPluginDiscovery
-from flext_plugin._utilities.implementations import FlextPluginImplementations
-from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
+from flext_plugin._utilities import (
+    FlextPluginDiscovery,
+    FlextPluginImplementations,
+    FlextPluginPlatform,
+    FlextPluginUtilitiesBase,
+)
 
 
 class FlextPluginUtilities(FlextCliUtilities):

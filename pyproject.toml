@@ -65,6 +65,7 @@ Repository = "https://github.com/flext-sh/flext"
 
 [dependency-groups]
 dev = [
+  "mkdocstrings-python>=2.0.9",
   "actionlint-py>=1.7.12.24",
   "bandit>=1.9.4",
   "deptry",
@@ -81,7 +82,6 @@ dev = [
   "mkdocs-redirects>=1.2.3",
   "mkdocs-section-index>=0.3.12",
   "mkdocstrings>=1.0.6",
-  "mkdocstrings-python>=2.0.8",
   "msgpack-types",
   "mypy>=2.3.1",
   "platformdirs>=4.12.0",
@@ -153,7 +153,6 @@ omit = [
 
 [tool.deptry]
 known_first_party = ["flext_plugin"]
-optional_dependencies_dev_groups = ["dev"]
 
 [tool.flext.docs]
 package_name = "flext_plugin"
@@ -162,7 +161,7 @@ package_name = "flext_plugin"
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
-include = ["/src/flext_plugin/**"]
+only-include = ["src/flext_plugin"]
 
 [tool.hatch.build.targets.wheel.sources]
 "src/flext_plugin" = "flext_plugin"
@@ -172,7 +171,7 @@ include = ["/src/flext_plugin/**"]
 "config/plugin.yaml" = "flext_plugin/config/plugin.yaml"
 
 [tool.hatch.build.targets.sdist]
-include = ["/src/flext_plugin/**"]
+only-include = ["src/flext_plugin"]
 
 [tool.hatch.build.targets.sdist.force-include]
 "pyproject.toml" = "pyproject.toml"
