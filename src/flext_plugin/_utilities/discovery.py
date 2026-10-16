@@ -2,6 +2,7 @@
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
+
 """
 
 from __future__ import annotations
@@ -20,6 +21,7 @@ class FlextPluginDiscovery:
 
     Discovers plugins using multiple strategies (file system, entry points).
     Delegates discovery logic to strategy classes, Pydantic handles validation.
+
     """
 
     def __init__(self) -> None:
@@ -38,8 +40,16 @@ class FlextPluginDiscovery:
     ) -> t.SequenceOf[TDiscovery]:
         """Discover Python plugins recursively in a directory.
 
+        Args:
+            path: Directory to scan recursively for ``*.py`` files.
+            discover_file: Callable producing discovery data for one
+                candidate file, or ``None`` to skip it.
+            logger: Logger for discovery failures.
+
         Returns:
-            The resulting ``t.SequenceOf[TDiscovery]``.
+            The discovered plugin data records; empty when the directory
+            cannot be read.
+
         """
         discovered: MutableSequence[TDiscovery] = []
         try:
@@ -70,10 +80,11 @@ class FlextPluginDiscovery:
         """Discover single plugin at path.
 
         Args:
-        plugin_path: Path to the plugin
+            plugin_path: Path to the plugin.
 
         Returns:
-        r containing plugin data
+            Ok with the plugin data, or Fail when the plugin is not
+            found.
 
         """
         try:
@@ -82,11 +93,11 @@ class FlextPluginDiscovery:
             if discovered is not None:
                 return r[m.Plugin.DiscoveryData].ok(value=discovered)
             return r[m.Plugin.DiscoveryData].fail(f"Plugin not found at: {plugin_path}")
-        except c.EXC_BROAD_IO_TYPE as e:
+        except c.EXC_BROAD_IO_TYPE as error:
             self.logger.exception("Failed to discover plugin at %s", plugin_path)
             return r[m.Plugin.DiscoveryData].fail(
-                f"Discovery error: {e!s}",
-                exception=e,
+                f"Discovery error: {error!s}",
+                exception=error,
             )
 
     def discover_plugins(
@@ -96,10 +107,11 @@ class FlextPluginDiscovery:
         """Discover plugins using all strategies.
 
         Args:
-        paths: List of paths to search for plugins
+            paths: Paths to search for plugins.
 
         Returns:
-        r containing list of discovered plugins
+            Ok with the discovered plugins, or Fail with the discovery
+            error.
 
         """
         try:
@@ -108,11 +120,11 @@ class FlextPluginDiscovery:
             return r[Sequence[m.Plugin.DiscoveryData]].ok(
                 value=list(discovered.values()),
             )
-        except c.EXC_BROAD_IO_TYPE as e:
+        except c.EXC_BROAD_IO_TYPE as error:
             self.logger.exception("Plugin discovery failed")
             return r[Sequence[m.Plugin.DiscoveryData]].fail(
-                f"Discovery error: {e!s}",
-                exception=e,
+                f"Discovery error: {error!s}",
+                exception=error,
             )
 
     def validate_plugin(self, plugin_data: m.Plugin.DiscoveryData) -> p.Result[bool]:
@@ -121,18 +133,19 @@ class FlextPluginDiscovery:
         Pydantic automatically validates on model creation.
 
         Args:
-        plugin_data: Plugin data to validate
+            plugin_data: Plugin data to validate.
 
         Returns:
-        r indicating validation success
+            Ok with ``True`` when validation passes, or Fail with the
+            validation error.
 
         """
         try:
             self.logger.debug("Plugin validation passed: %s", plugin_data.name)
             return r[bool].ok(value=True)
-        except c.EXC_BROAD_IO_TYPE as e:
+        except c.EXC_BROAD_IO_TYPE as error:
             self.logger.exception("Plugin validation failed")
-            return r[bool].fail(f"Validation error: {e!s}", exception=e)
+            return r[bool].fail(f"Validation error: {error!s}", exception=error)
 
     def _discover_existing_or_entry_point(
         self,
@@ -141,8 +154,14 @@ class FlextPluginDiscovery:
     ) -> m.Plugin.DiscoveryData | None:
         """Discover one plugin from filesystem first, then entry points.
 
+        Args:
+            plugin_path: Path string used by the strategy lookup.
+            path_obj: Resolved filesystem path of the plugin.
+
         Returns:
-            The resulting ``m.Plugin.DiscoveryData | None``.
+            The discovery data from the first matching strategy, or
+            ``None`` when no strategy discovers the path.
+
         """
         if path_obj.exists():
             file_discovered = self._first_discovery(
@@ -159,8 +178,12 @@ class FlextPluginDiscovery:
     ) -> MutableMapping[str, m.Plugin.DiscoveryData]:
         """Discover unique plugins across all configured strategies.
 
+        Args:
+            paths: Paths to search for plugins.
+
         Returns:
-            The resulting ``MutableMapping[str, m.Plugin.DiscoveryData]``.
+            Mapping of plugin name to its first discovered data record.
+
         """
         discovered: MutableMapping[str, m.Plugin.DiscoveryData] = {}
         for strategy in self.strategies:
@@ -176,19 +199,37 @@ class FlextPluginDiscovery:
         strategy: p.Plugin.DiscoveryStrategy,
         plugin_path: str,
     ) -> m.Plugin.DiscoveryData | None:
-        """Return the first discovery hit for one strategy."""
+        """Return the first discovery hit for one strategy.
+
+        Args:
+            strategy: Discovery strategy to run.
+            plugin_path: Path to discover.
+
+        Returns:
+            The first discovered data record, or ``None`` when the
+            strategy finds nothing.
+
+        """
         result = strategy.discover([plugin_path])
         if result.success and result.value:
             data: m.Plugin.DiscoveryData = result.value[0]
             return data
         return None
 
-    class FileSystemStrategy:
-        """File system-based plugin discovery strategy."""
+    class _DiscoveryStrategyBase:
+        """Shared base for plugin discovery strategies."""
 
         def __init__(self, logger: p.Logger) -> None:
-            """Initialize strategy with logger."""
+            """Initialize strategy with logger.
+
+            Args:
+                logger: Logger used for discovery traceability.
+
+            """
             self.logger = logger
+
+    class FileSystemStrategy(_DiscoveryStrategyBase):
+        """File system-based plugin discovery strategy."""
 
         def discover(
             self,
@@ -196,8 +237,13 @@ class FlextPluginDiscovery:
         ) -> p.Result[Sequence[m.Plugin.DiscoveryData]]:
             """Discover plugins in file system paths.
 
+            Args:
+                paths: Paths to scan for plugin modules.
+
             Returns:
-                The resulting ``p.Result[Sequence[m.Plugin.DiscoveryData]]``.
+                Ok with the discovered plugins, or Fail with the
+                discovery error.
+
             """
             try:
                 discovered = self._discover_paths(paths)
@@ -206,11 +252,11 @@ class FlextPluginDiscovery:
                     len(discovered),
                 )
                 return r[Sequence[m.Plugin.DiscoveryData]].ok(value=discovered)
-            except c.EXC_BROAD_IO_TYPE as e:
+            except c.EXC_BROAD_IO_TYPE as error:
                 self.logger.exception("File system discovery failed")
                 return r[Sequence[m.Plugin.DiscoveryData]].fail(
-                    f"File discovery error: {e!s}",
-                    exception=e,
+                    f"File discovery error: {error!s}",
+                    exception=error,
                 )
 
         def _discover_directory(
@@ -219,8 +265,12 @@ class FlextPluginDiscovery:
         ) -> t.SequenceOf[m.Plugin.DiscoveryData]:
             """Recursively discover plugins in directory.
 
+            Args:
+                path: Directory to scan recursively.
+
             Returns:
-                The resulting ``t.SequenceOf[m.Plugin.DiscoveryData]``.
+                The discovered plugin data records.
+
             """
             return FlextPluginDiscovery.discover_python_plugins_in_directory(
                 path,
@@ -235,8 +285,13 @@ class FlextPluginDiscovery:
             # Why: DiscoveryData construction failure is a real defect, not a
             # skip condition; it propagates instead of being masked as None.
 
+            Args:
+                path: Candidate file path.
+
             Returns:
-                The resulting ``m.Plugin.DiscoveryData | None``.
+                The discovery data for the file, or ``None`` when the
+                file is not a ``.py`` module.
+
             """
             if path.suffix != ".py":
                 return None
@@ -252,8 +307,13 @@ class FlextPluginDiscovery:
         def _discover_path(self, path_str: str) -> t.SequenceOf[m.Plugin.DiscoveryData]:
             """Discover plugins from one path string.
 
+            Args:
+                path_str: Path string to resolve and scan.
+
             Returns:
-                The resulting ``t.SequenceOf[m.Plugin.DiscoveryData]``.
+                The discovered plugin data records; empty for blank,
+                missing, or unsupported paths.
+
             """
             if not path_str.strip():
                 self.logger.debug("Skipping blank plugin discovery path")
@@ -275,20 +335,20 @@ class FlextPluginDiscovery:
         ) -> t.SequenceOf[m.Plugin.DiscoveryData]:
             """Discover plugins from all path strings.
 
+            Args:
+                paths: Path strings to resolve and scan.
+
             Returns:
-                The resulting ``t.SequenceOf[m.Plugin.DiscoveryData]``.
+                The discovered plugin data records.
+
             """
             discovered: MutableSequence[m.Plugin.DiscoveryData] = []
             for path_str in paths:
                 discovered.extend(self._discover_path(path_str))
             return discovered
 
-    class EntryPointStrategy:
+    class EntryPointStrategy(_DiscoveryStrategyBase):
         """Entry point-based plugin discovery strategy."""
-
-        def __init__(self, logger: p.Logger) -> None:
-            """Initialize strategy with logger."""
-            self.logger = logger
 
         def discover(
             self,
@@ -296,8 +356,13 @@ class FlextPluginDiscovery:
         ) -> p.Result[Sequence[m.Plugin.DiscoveryData]]:
             """Discover plugins using entry points (paths ignored).
 
+            Args:
+                paths: Accepted for protocol compatibility; ignored.
+
             Returns:
-                The resulting ``p.Result[Sequence[m.Plugin.DiscoveryData]]``.
+                Ok with the discovered plugins, or Fail with the
+                discovery error.
+
             """
             _ = paths
             try:
@@ -307,11 +372,11 @@ class FlextPluginDiscovery:
                     len(discovered),
                 )
                 return r[Sequence[m.Plugin.DiscoveryData]].ok(value=discovered)
-            except c.EXC_BROAD_IO_TYPE as e:
+            except c.EXC_BROAD_IO_TYPE as error:
                 self.logger.exception("Entry point discovery failed")
                 return r[Sequence[m.Plugin.DiscoveryData]].fail(
-                    f"Entry point discovery error: {e!s}",
-                    exception=e,
+                    f"Entry point discovery error: {error!s}",
+                    exception=error,
                 )
 
         @staticmethod
@@ -324,18 +389,25 @@ class FlextPluginDiscovery:
             # condition; construction failure propagates instead of being
             # masked as None.
 
+            Args:
+                entry_point: Entry point to convert.
+
             Returns:
-                The resulting ``m.Plugin.DiscoveryData | None``.
+                The discovery data for the entry point, or ``None`` when
+                it has no distribution.
+
             """
+            distribution = entry_point.dist
+            if distribution is None:
+                return None
+            version = (
+                getattr(distribution, "version", c.Plugin.DEFAULT_PLUGIN_VERSION)
+                or c.Plugin.DEFAULT_PLUGIN_VERSION
+            )
             return m.Plugin.DiscoveryData(
                 name=entry_point.name,
-                version=getattr(
-                    entry_point.dist,
-                    "version",
-                    c.Plugin.DEFAULT_PLUGIN_VERSION,
-                )
-                or c.Plugin.DEFAULT_PLUGIN_VERSION,
-                path=Path(getattr(entry_point.dist, "_path", "")),
+                version=version,
+                path=Path(str(distribution.locate_file(""))),
                 discovery_type=c.Plugin.DiscoveryTypeLiteral.ENTRY_POINT,
                 discovery_method=c.Plugin.DiscoveryMethodLiteral.ENTRY_POINTS,
                 metadata={"entry_point": f"{entry_point.module}:{entry_point.attr}"},
@@ -345,7 +417,9 @@ class FlextPluginDiscovery:
             """Discover plugins from the installed entry point registry.
 
             Returns:
-                The resulting ``t.SequenceOf[m.Plugin.DiscoveryData]``.
+                The discovery data records of all ``flext.plugins`` entry
+                points with a distribution.
+
             """
             discovered: MutableSequence[m.Plugin.DiscoveryData] = []
             for entry_point in importlib.metadata.entry_points().select(

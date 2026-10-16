@@ -214,7 +214,7 @@ class FlextPluginDiscovery:
 
     async def discover_plugins(
         self, paths: t.StringList
-    ) -> p.Result[list[dict[str, t.JsonValue]]]:
+    ) -> p.Result[list[t.JsonDict]]:
         """Discover plugins from file system."""
         try:
             discovered_plugins = []
@@ -271,7 +271,7 @@ class FlextPluginDiscovery:
         # Additional validation logic...
         return True
 
-    def _parse_plugin_file(self, file_path: Path) -> dict[str, t.JsonValue] | None:
+    def _parse_plugin_file(self, file_path: Path) -> t.JsonDict | None:
         """Parse plugin configuration from file."""
         try:
             if file_path.suffix.lower() == ".py":
@@ -307,7 +307,7 @@ class FlextPluginProtocols:
 
         async def discover_plugins(
             self, paths: t.StringList
-        ) -> p.Result[list[dict[str, t.JsonValue]]]:
+        ) -> p.Result[list[t.JsonDict]]:
             """Discover plugins from specified paths."""
             ...
 
@@ -324,7 +324,7 @@ class FlextPluginProtocols:
         """typing.Protocol for plugin execution mechanisms."""
 
         async def execute_plugin(
-            self, plugin: FlextPluginModels.Plugin, context: dict[str, t.JsonValue]
+            self, plugin: FlextPluginModels.Plugin, context: t.JsonDict
         ) -> p.Result[t.JsonValue]:
             """Execute plugin with given context."""
             ...
@@ -364,7 +364,7 @@ class FilePluginDiscovery(FlextPluginProtocols.PluginDiscovery):
 
     async def discover_plugins(
         self, paths: t.StringList
-    ) -> p.Result[list[dict[str, t.JsonValue]]]:
+    ) -> p.Result[list[t.JsonDict]]:
         """File-based plugin discovery implementation."""
         # Implementation details...
         return r.ok([])
@@ -988,7 +988,7 @@ class FlextPluginHealth:
     def __init__(self, platform: FlextPluginPlatform):
         self.platform = platform
 
-    async def check_overall_health(self) -> p.Result[dict[str, t.JsonValue]]:
+    async def check_overall_health(self) -> p.Result[t.JsonDict]:
         """Comprehensive health check."""
         try:
             health_status = {
@@ -1023,7 +1023,7 @@ class FlextPluginHealth:
         except Exception as e:
             return r.fail(f"Health check failed: {e!s}")
 
-    async def _check_platform_health(self) -> dict[str, t.JsonValue]:
+    async def _check_platform_health(self) -> t.JsonDict:
         """Check platform operational health."""
         try:
             # Test basic platform operations
@@ -1037,7 +1037,7 @@ class FlextPluginHealth:
         except Exception as e:
             return {"status": "unhealthy", "error": str(e)}
 
-    async def _check_plugin_health(self) -> dict[str, t.JsonValue]:
+    async def _check_plugin_health(self) -> t.JsonDict:
         """Check plugin system health."""
         try:
             plugins = self.platform.list_plugins()
@@ -1052,7 +1052,7 @@ class FlextPluginHealth:
         except Exception as e:
             return {"status": "unhealthy", "error": str(e)}
 
-    async def _check_registry_health(self) -> dict[str, t.JsonValue]:
+    async def _check_registry_health(self) -> t.JsonDict:
         """Check plugin registry health."""
         try:
             # Test registry operations
@@ -1087,7 +1087,7 @@ class FlextPluginCache:
     """Multi-level caching for plugin system performance."""
 
     def __init__(self, max_memory_items: int = 1000, ttl_seconds: int = 3600):
-        self.memory_cache: dict[str, dict[str, t.JsonValue]] = {}
+        self.memory_cache: dict[str, t.JsonDict] = {}
         self.max_memory_items = max_memory_items
         self.ttl_seconds = ttl_seconds
         self._lock = asyncio.Lock()
@@ -1117,7 +1117,7 @@ class FlextPluginCache:
                 "ttl": timedelta(seconds=self.ttl_seconds),
             }
 
-    def _is_expired(self, entry: dict[str, t.JsonValue]) -> bool:
+    def _is_expired(self, entry: t.JsonDict) -> bool:
         """Check if cache entry is expired."""
         return datetime.now(UTC) > entry["timestamp"] + entry["ttl"]
 
@@ -1151,7 +1151,7 @@ class FlextPluginExecutor:
         self.executor = ThreadPoolExecutor(max_workers=thread_pool_size)
 
     async def execute_plugins_concurrent(
-        self, plugins: list[FlextPluginModels.Plugin], context: dict[str, t.JsonValue]
+        self, plugins: list[FlextPluginModels.Plugin], context: t.JsonDict
     ) -> p.Result[list[FlextPluginModels.Execution]]:
         """Execute multiple plugins concurrently with resource limits."""
 
@@ -1182,7 +1182,7 @@ class FlextPluginExecutor:
         return r.ok(executions)
 
     async def _execute_plugin_safe(
-        self, plugin: FlextPluginModels.Plugin, context: dict[str, t.JsonValue]
+        self, plugin: FlextPluginModels.Plugin, context: t.JsonDict
     ) -> p.Result[FlextPluginModels.Execution]:
         """Execute single plugin with error isolation."""
         try:
@@ -1210,7 +1210,7 @@ class FlextPluginExecutor:
             return r.ok(execution)  # Return failed execution, not error
 
     def _execute_plugin_sync(
-        self, plugin: FlextPluginModels.Plugin, context: dict[str, t.JsonValue]
+        self, plugin: FlextPluginModels.Plugin, context: t.JsonDict
     ):
         """Synchronous plugin execution (runs in thread pool)."""
         # Actual plugin execution logic

@@ -1,0 +1,36 @@
+Infra:
+  codegen:
+    vscode:
+      additional_settings:
+        python-envs.workspaceSearchPaths:
+        - ./.venv
+        - ./*/.venv
+        terminal.integrated.env.linux:
+          PATH: ${workspaceFolder}/.venv/bin:${env:PATH}
+          VIRTUAL_ENV: ${workspaceFolder}/.venv
+        ruff.interpreter:
+        - ${workspaceFolder}/.venv/bin/python
+        ruff.path:
+        - ${workspaceFolder}/.venv/bin/ruff
+    repository:
+      project:
+        package_name: flext_plugin
+        class_stem: FlextPlugin
+        namespace: Plugin
+        constant_name: flext-plugin
+        namespace_attribute: plugin
+        alias: plugin
+        environment_prefix: FLEXT_PLUGIN_
+        description: FLEXT Plugin - Plugin System for FLEXT Platform
+        license: MIT
+        author_name: FLEXT Team
+        author_email: team@flext.sh
+        upstream: flext_cli
+        namespace_scan_dirs: []
+        packaged_data_paths:
+        - config/plugin.yaml
+        homepage: https://github.com/flext-sh/flext
+        documentation: https://github.com/flext-sh/flext/blob/main/README.md
+        repository_root_rel: .
+        year: 2026
+      namespace_scan_dirs: []

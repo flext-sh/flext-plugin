@@ -1,4 +1,4 @@
-"""Utility functions for flextplugin.
+"""Example utilities for flext-plugin.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -10,7 +10,9 @@ from flext_plugin import FlextPluginUtilities
 
 
 class ExamplesFlextPluginUtilities(FlextPluginUtilities):
-    """Utility functions for flextplugin."""
+    """Examples utilities facade extending flext-plugin utilities."""
 
 
-__all__: list[str] = ["ExamplesFlextPluginUtilities"]
+u = ExamplesFlextPluginUtilities
+
+__all__: list[str] = ["ExamplesFlextPluginUtilities", "u"]
