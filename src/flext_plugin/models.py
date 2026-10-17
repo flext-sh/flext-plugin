@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """FLEXT Plugin Models - public facade composing from _models.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
@@ -9,9 +10,11 @@ from __future__ import annotations
 
 from flext_cli import FlextCliModels
 
-from flext_plugin._models.base import FlextPluginModelsBase
-from flext_plugin._models.config import FlextPluginConfigModels
-from flext_plugin._models.plugin import FlextPluginModelsPlugin
+from flext_plugin._models import (
+    FlextPluginConfigModels,
+    FlextPluginModelsBase,
+    FlextPluginModelsPlugin,
+)
 
 
 class FlextPluginModels(FlextCliModels):
