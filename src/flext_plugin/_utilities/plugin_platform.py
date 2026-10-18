@@ -29,7 +29,7 @@ class FlextPluginPlatform:
                 return r[bool].fail(
                     f"Invalid semantic version: {plugin.plugin_version}"
                 )
-            return r[bool].ok(value=True)=True)
+            return r[bool].ok(value=True)
 
     class PluginPlatformService(s[p.Plugin.Snapshot], m.Plugin.PortOptions):
         """Use cases sharing one required registry, with no mirrored plugin store."""
