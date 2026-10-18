@@ -21,7 +21,7 @@ class FlextPluginServiceBase[TDomainResult = p.Base](s[TDomainResult], ABC):
     """Base class for flext-plugin services with typed plugin settings access."""
 
     @classmethod
-    def runtime_bootstrap_options(cls) -> m.RuntimeBootstrapOptions:
+    def runtime_bootstrap_options(cls) -> p.RuntimeBootstrapOptions:
         """Return runtime bootstrap options for plugin services.
 
         Returns:

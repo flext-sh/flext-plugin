@@ -10,8 +10,14 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from flext_plugin import FlextPluginApi, FlextPluginDiscovery, FlextPluginPlatform
-from tests import c, m, tm, u
+from flext_plugin import (
+    FlextPluginApi,
+    FlextPluginDiscovery,
+    FlextPluginPlatform,
+    FlextPluginSettings,
+    plugin,
+)
+from tests import c, m, p, tm, u
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -19,6 +25,25 @@ if TYPE_CHECKING:
 
 class TestsFlextPluginApi:
     """One explicitly composed graph per independent API instance."""
+
+    @staticmethod
+    def test_runtime_bootstrap_and_settings_reuse_core_contracts() -> None:
+        """The service base selects its settings owner without copying its API."""
+        supplied = FlextPluginSettings()
+        api = FlextPluginApi(runtime_settings=supplied)
+        options: p.RuntimeBootstrapOptions = api.runtime_bootstrap_options()
+        runtime_settings: p.Settings = api.settings
+        assert isinstance(options, p.RuntimeBootstrapOptions)
+        assert options.settings_type is FlextPluginSettings
+        assert isinstance(runtime_settings, p.Settings)
+        tm.that(runtime_settings.model_dump(), eq=supplied.model_dump())
+
+    @staticmethod
+    def test_public_instance_exposes_the_structural_lifecycle_contract() -> None:
+        """The composed public instance needs no concrete facade annotation."""
+        public_api: p.Plugin.PlatformService = plugin
+        assert isinstance(public_api, p.Plugin.PlatformService)
+        tm.ok(public_api.execute())
 
     @staticmethod
     def test_independent_apis_are_isolated() -> None:
@@ -92,11 +117,18 @@ class TestsFlextPluginApi:
                 FlextPluginPlatform.PluginPlatformService, {"registry": "invalid"}
             )
         )
+
+    @staticmethod
+    @pytest.mark.parametrize(
+        "field_name", ["registry", "discovery", "loader", "executor"]
+    )
+    def test_service_port_assignment_is_validated(field_name: str) -> None:
+        """Every public collaborator assignment validates before replacing its port."""
         api = FlextPluginApi()
-        original = api.registry
+        original = getattr(api, field_name)
         with pytest.raises(c.ValidationError):
-            api.registry = "invalid"
-        assert api.registry is original
+            setattr(api, field_name, "invalid")
+        assert getattr(api, field_name) is original
 
     @staticmethod
     def test_ports_are_not_transport_payloads() -> None:

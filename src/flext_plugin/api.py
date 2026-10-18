@@ -32,7 +32,7 @@ class FlextPluginApi(FlextPluginPlatform.PluginPlatformService):
         )
 
 
-plugin: FlextPluginApi = FlextPluginApi()
+plugin: p.Plugin.PlatformService = FlextPluginApi()
 """Explicitly composed public plugin instance."""
 
 __all__: list[str] = ["FlextPluginApi", "plugin"]

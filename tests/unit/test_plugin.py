@@ -31,14 +31,12 @@ class TestsFlextPluginPlugin:
     @pytest.mark.parametrize("enabled", [True, False])
     def test_status_is_derived_from_supplied_enabled_state(*, enabled: bool) -> None:
         """Both entity and API projections observe the same stored payload."""
-        payload = FlextPluginPlatform.Plugin(name="status-plugin", is_enabled=enabled)
+        payload = m.Plugin.Entity(name="status-plugin", is_enabled=enabled)
         api = FlextPluginApi()
         tm.ok(api.register_plugin(payload))
         expected = str(
             c.Plugin.PluginStatus.ACTIVE if enabled else c.Plugin.PluginStatus.INACTIVE
         )
-        tm.that(payload.status, eq=expected)
-        tm.that(payload.active(), eq=enabled)
         tm.that(api.fetch_plugin_status(payload.name).value, eq=expected)
         tm.that(api.resolve_plugin_active(payload.name).value, eq=enabled)
         assert api.fetch_plugin(payload.name).value is payload

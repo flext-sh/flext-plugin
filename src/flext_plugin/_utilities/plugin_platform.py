@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import override
 
-from flext_plugin import FlextPluginSettings, c, m, p, r, s, t, u
+from flext_plugin import c, m, p, r, s, t, u
 
 
 class FlextPluginPlatform:
@@ -29,29 +29,8 @@ class FlextPluginPlatform:
                 )
             return r[bool].ok(True)
 
-    class Plugin(m.Plugin.Entity):
-        """Plugin entity with lifecycle projections."""
-
-        @property
-        def status(self) -> str:
-            """Derive status from the owned enabled flag."""
-            return str(
-                c.Plugin.PluginStatus.ACTIVE
-                if self.is_enabled
-                else c.Plugin.PluginStatus.INACTIVE
-            )
-
-        def active(self) -> bool:
-            """Report whether the plugin is enabled."""
-            return self.is_enabled
-
     class PluginPlatformService(s[p.Plugin.Snapshot], m.Plugin.PortOptions):
         """Use cases sharing one required registry, with no mirrored plugin store."""
-
-        @classmethod
-        def _get_service_config_type(cls) -> type[FlextPluginSettings]:
-            """Select the plugin settings owner."""
-            return FlextPluginSettings
 
         def register_plugin(self, plugin: p.Plugin.Instance) -> p.Result[bool]:
             """Register the original payload; conflicts remain registry failures."""
@@ -99,7 +78,7 @@ class FlextPluginPlatform:
             names = self.registry.list_plugins(c.Plugin.REGISTRY_CATEGORY)
             if names.failure:
                 return r[t.SequenceOf[p.Plugin.Instance]].from_failure(names)
-            plugins: list[p.Plugin.Instance] = []
+            plugins: t.MutableSequenceOf[p.Plugin.Instance] = []
             for name in names.value:
                 plugin = self.fetch_plugin(name)
                 if plugin.failure:
@@ -118,10 +97,10 @@ class FlextPluginPlatform:
             discovered = self.discovery.discover_plugins(paths)
             if discovered.failure:
                 return r[t.SequenceOf[p.Plugin.Instance]].from_failure(discovered)
-            plugins: list[p.Plugin.Instance] = []
+            plugins: t.MutableSequenceOf[p.Plugin.Instance] = []
             for data in discovered.value:
                 candidate = u.validate_value(
-                    FlextPluginPlatform.Plugin,
+                    m.Plugin.Entity,
                     {
                         "name": data.name,
                         "plugin_version": data.version,
@@ -145,7 +124,7 @@ class FlextPluginPlatform:
             if loaded.failure:
                 return r[p.Plugin.Instance].from_failure(loaded)
             candidate = u.validate_value(
-                FlextPluginPlatform.Plugin,
+                m.Plugin.Entity,
                 {
                     "name": loaded.value["name"],
                     "plugin_version": loaded.value.get(
