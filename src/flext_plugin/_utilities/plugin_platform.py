@@ -260,7 +260,7 @@ class FlextPluginPlatform:
                 A result indicating the success of stopping hot-reload.
 
             """
-            return r[bool].ok(value=True)=True)
+            return r[bool].ok(value=True)
 
 
 __all__: list[str] = ["FlextPluginPlatform"]
