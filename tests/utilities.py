@@ -14,7 +14,7 @@ from pathlib import Path
 from flext_tests import FlextTestsUtilities
 
 from flext_plugin import FlextPluginUtilities
-from tests import m, p, r, t
+from tests import c, m, p, r, t
 
 
 class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
@@ -26,8 +26,8 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
         class Tests:
             """Internal tests declarations.
 
-            Real protocol-conforming collaborators injected into the platform
-            service seams (``_discovery`` / ``_loader`` / ``_executor``) so tests
+            Real protocol-conforming collaborators injected through the API
+            constructor (discovery, loader, executor) so tests
             exercise the real delegation and payload-mapping code paths — no
             patching or test doubles anywhere (workspace no-mock rule).
             """
@@ -72,7 +72,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
                     self._loaded.append(path.stem)
                     return r[t.JsonMapping].ok({
                         "name": path.stem,
-                        "version": "1.0.0",
+                        "version": c.Plugin.DEFAULT_PLUGIN_VERSION,
                         "path": str(path),
                         "load_type": "file",
                         "loaded_at": "",

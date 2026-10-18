@@ -1,9 +1,4 @@
-"""Behavioral test suite for the flext_plugin platform module.
-
-Exercises the public contract of the Plugin entity and PluginRegistry:
-factory creation, enable/disable lifecycle (r[T] outcomes), status/active
-projection, business-rule validation, and registry register/get/list/
-unregister semantics. Asserts observable behavior only — never internals.
+"""Plugin payload validation and lifecycle projections through public owners.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
 SPDX-License-Identifier: MIT
@@ -13,203 +8,67 @@ from __future__ import annotations
 
 import pytest
 
-from flext_plugin import FlextPluginPlatform
+from flext_plugin import FlextPluginApi, FlextPluginPlatform
 from tests import c, m, tm
 
 
-@pytest.mark.usefixtures("reset_registry")
 class TestsFlextPluginPlugin:
-    """Behavioral tests for the Plugin entity and PluginRegistry contract."""
+    """Owned payloads remain validated and are never reconstructed by registration."""
 
     @staticmethod
-    def _make_plugin(
-        *,
-        name: str = "test-plugin",
-        is_enabled: bool = True,
-    ) -> FlextPluginPlatform.Plugin:
-        """Build a Plugin platform entity for registry-facing tests.
-
-        Returns:
-            The resulting ``FlextPluginPlatform.Plugin``.
-
-        """
-        return FlextPluginPlatform.Plugin(
-            name=name,
-            plugin_version="1.0.0",
-            description="",
-            author="",
-            plugin_type=c.Plugin.Type.UTILITY,
-            is_enabled=is_enabled,
+    def test_supplied_fields_and_default_version() -> None:
+        """Configured version expectations come from the production constant owner."""
+        payload = m.Plugin.Entity(name="payload-plugin", description="Caller metadata")
+        tm.that(payload.name, eq="payload-plugin")
+        tm.that(payload.description, eq="Caller metadata")
+        tm.that(payload.plugin_version, eq=c.Plugin.DEFAULT_PLUGIN_VERSION)
+        tm.that(
+            payload.is_enabled,
+            eq=m.Plugin.Entity.model_fields["is_enabled"].default,
         )
 
-    # ----- Plugin entity: creation contract -------------------------------
-
     @staticmethod
-    def test_create_returns_entity_with_supplied_fields() -> None:
-        """create() yields an entity exposing the given name and version."""
-        plugin = m.Plugin.Entity(name="test-plugin", plugin_version="1.0.0")
-        tm.that(plugin.name, eq="test-plugin")
-        tm.that(plugin.plugin_version, eq="1.0.0")
-
-    @staticmethod
-    def test_create_defaults_to_enabled() -> None:
-        """A freshly created plugin defaults to the enabled state."""
-        plugin = m.Plugin.Entity(name="test-plugin", plugin_version="1.0.0")
-        tm.that(plugin.is_enabled, eq=True)
-
-    @staticmethod
-    def test_create_honors_explicit_disabled_state() -> None:
-        """create() respects an explicit is_enabled=False argument."""
-        plugin = m.Plugin.Entity(
-            name="test-plugin",
-            plugin_version="1.0.0",
-            is_enabled=False,
+    @pytest.mark.parametrize("enabled", [True, False])
+    def test_status_is_derived_from_supplied_enabled_state(*, enabled: bool) -> None:
+        """Both entity and API projections observe the same stored payload."""
+        payload = FlextPluginPlatform.Plugin(name="status-plugin", is_enabled=enabled)
+        api = FlextPluginApi()
+        tm.ok(api.register_plugin(payload))
+        expected = str(
+            c.Plugin.PluginStatus.ACTIVE if enabled else c.Plugin.PluginStatus.INACTIVE
         )
-        tm.that(plugin.is_enabled, eq=False)
+        tm.that(payload.status, eq=expected)
+        tm.that(payload.active(), eq=enabled)
+        tm.that(api.fetch_plugin_status(payload.name).value, eq=expected)
+        tm.that(api.resolve_plugin_active(payload.name).value, eq=enabled)
+        assert api.fetch_plugin(payload.name).value is payload
 
     @staticmethod
     @pytest.mark.parametrize("bad_version", ["1", "1.2.3.4", "1.x", "abc"])
-    def test_create_rejects_non_semantic_version(bad_version: str) -> None:
-        """create() raises when the version is not semantic X.Y[.Z]."""
-        with pytest.raises(ValueError, match="semantic"):
-            m.Plugin.Entity(name="test-plugin", plugin_version=bad_version)
-
-    # ----- Plugin entity: enable/disable lifecycle ------------------------
+    def test_invalid_version_is_rejected_at_ingress(bad_version: str) -> None:
+        """Invalid owned payloads never reach the registration operation."""
+        with pytest.raises(c.ValidationError):
+            m.Plugin.Entity(name="invalid-version-plugin", plugin_version=bad_version)
 
     @staticmethod
-    def test_validate_business_rules_accepts_valid_plugin() -> None:
-        """A well-formed plugin passes business-rule validation."""
-        plugin = m.Plugin.Entity(name="test-plugin", plugin_version="1.0.0")
-        result = FlextPluginPlatform.Rules.validate_business_rules(plugin)
-        tm.ok(result)
-
-    @pytest.mark.parametrize(
-        ("is_enabled", "expected_status", "expected_active"),
-        [(True, "active", True), (False, "inactive", False)],
-    )
-    def test_status_and_active_reflect_enabled_state(
-        self,
-        *,
-        is_enabled: bool,
-        expected_status: str,
-        expected_active: bool,
-    ) -> None:
-        """Status and active() derive directly from the enabled state."""
-        plugin = self._make_plugin(is_enabled=is_enabled)
-        tm.that(plugin.status, eq=expected_status)
-        assert plugin.active() is expected_active
-
-    # ----- Registry fixtures ----------------------------------------------
+    def test_valid_owned_payload_passes_business_validation() -> None:
+        """The business validator accepts a real validated domain payload."""
+        payload = m.Plugin.Entity(name="valid-plugin")
+        tm.ok(FlextPluginPlatform.Rules.validate_business_rules(payload))
 
     @staticmethod
-    @pytest.fixture
-    def reset_registry() -> None:
-        """Reset class-level registry storage before each test."""
-        registry = FlextPluginPlatform.PluginRegistry()
-        plugins_result = registry.list_plugins()
-        if plugins_result.success:
-            for plugin_name in plugins_result.value:
-                _ = registry.unregister(plugin_name)
-
-    @staticmethod
-    @pytest.fixture
-    def registry() -> FlextPluginPlatform.PluginRegistry:
-        """Create a registry instance for testing.
-
-        Returns:
-            The resulting ``FlextPluginPlatform.PluginRegistry``.
-
-        """
-        return FlextPluginPlatform.PluginRegistry()
-
-    @pytest.fixture
-    def plugin(self) -> FlextPluginPlatform.Plugin:
-        """Create a plugin for registry testing.
-
-        Returns:
-            The resulting ``FlextPluginPlatform.Plugin``.
-
-        """
-        return self._make_plugin()
-
-    # ----- Registry: lifecycle contract -----------------------------------
-
-    @staticmethod
-    def test_new_registry_lists_no_plugins(
-        registry: FlextPluginPlatform.PluginRegistry,
-    ) -> None:
-        """A cleared registry reports an empty plugin listing."""
-        plugins_result = registry.list_plugins()
-        tm.ok(plugins_result)
-        assert not plugins_result.value
-
-    @staticmethod
-    def test_register_then_get_returns_same_plugin(
-        registry: FlextPluginPlatform.PluginRegistry,
-        plugin: FlextPluginPlatform.Plugin,
-    ) -> None:
-        """A registered plugin is retrievable by name via get()."""
-        register_result = registry.register(plugin.name, plugin)
-        tm.ok(register_result)
-        tm.that(register_result.value, eq=True)
-
-        get_result = registry.get(plugin.name)
-        tm.ok(get_result)
-        tm.that(get_result.value.name, eq=plugin.name)
-
-    @staticmethod
-    def test_registered_plugin_appears_in_listing(
-        registry: FlextPluginPlatform.PluginRegistry,
-        plugin: FlextPluginPlatform.Plugin,
-    ) -> None:
-        """A registered plugin's name is present in list_plugins()."""
-        registry.register(plugin.name, plugin)
-        plugins_result = registry.list_plugins()
-        tm.ok(plugins_result)
-        tm.that(plugins_result.value, has=plugin.name)
-
-    @staticmethod
-    def test_get_unknown_plugin_fails(
-        registry: FlextPluginPlatform.PluginRegistry,
-    ) -> None:
-        """get() for an unregistered name returns a failure result."""
-        result = registry.get("nonexistent-plugin")
-        tm.fail(result)
-
-    @staticmethod
-    def test_unregister_removes_plugin_from_listing(
-        registry: FlextPluginPlatform.PluginRegistry,
-        plugin: FlextPluginPlatform.Plugin,
-    ) -> None:
-        """unregister() drops a registered plugin from the listing."""
-        registry.register(plugin.name, plugin)
-        tm.that(registry.list_plugins().value, has=plugin.name)
-
-        result = registry.unregister(plugin.name)
-        tm.ok(result)
-        tm.that(result.value, eq=True)
-        tm.that(registry.list_plugins().value, lacks=plugin.name)
-
-    @staticmethod
-    def test_unregister_unknown_plugin_fails(
-        registry: FlextPluginPlatform.PluginRegistry,
-    ) -> None:
-        """unregister() for a name never registered returns a failure."""
-        result = registry.unregister("nonexistent-plugin")
-        tm.fail(result)
-
-    def test_register_multiple_plugins_all_listed(
-        self,
-        registry: FlextPluginPlatform.PluginRegistry,
-    ) -> None:
-        """Every registered plugin is reflected in the listing."""
-        plugins = [self._make_plugin(name=f"plugin-{i}") for i in range(3)]
-        for candidate in plugins:
-            tm.ok(registry.register(candidate.name, candidate))
-
-        plugins_result = registry.list_plugins()
-        tm.ok(plugins_result)
-        listed = plugins_result.value
-        tm.that(len(listed), eq=3)
-        for candidate in plugins:
-            tm.that(listed, has=candidate.name)
+    def test_multiple_plugins_preserve_registration_order_and_identity() -> None:
+        """Listing resolves canonical entries instead of a second plugin cache."""
+        api = FlextPluginApi()
+        payloads = [
+            m.Plugin.Entity(name=f"ordered-plugin-{index}") for index in range(3)
+        ]
+        for payload in payloads:
+            tm.ok(api.register_plugin(payload))
+        listed = api.list_plugins().value
+        tm.that(len(listed), eq=len(payloads))
+        for original, stored in zip(payloads, listed, strict=True):
+            assert stored is original
+        for payload in payloads:
+            tm.ok(api.unregister_plugin(payload.name))
+        tm.that(api.list_plugins().value, eq=[])

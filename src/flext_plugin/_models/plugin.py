@@ -13,7 +13,7 @@ from typing import Annotated
 
 from flext_cli import m as cli_m, u as cli_u
 
-from flext_plugin import c, t
+from flext_plugin import c, p, t
 
 
 class FlextPluginModelsPlugin:
@@ -24,6 +24,27 @@ class FlextPluginModelsPlugin:
     All plugin-specific Pydantic models are organized here for better
     namespace organization and to enable composition with other domain models.
     """
+
+    class PortOptions(cli_m.ArbitraryTypesModel):
+        """Explicit collaborators of a plugin platform instance."""
+
+        registry: t.Port[p.Registry] = cli_u.Field(
+            exclude=True, description="Canonical instance-scoped plugin registry"
+        )
+        discovery: t.Port[p.Plugin.Discovery | None] = cli_u.Field(
+            default=None, exclude=True, description="Optional plugin discovery adapter"
+        )
+        loader: t.Port[p.Plugin.Loader | None] = cli_u.Field(
+            default=None, exclude=True, description="Optional plugin loading adapter"
+        )
+        executor: t.Port[p.Plugin.Execution | None] = cli_u.Field(
+            default=None, exclude=True, description="Optional plugin execution adapter"
+        )
+        executions: t.MutableMappingKV[str, t.Port[p.Plugin.Run]] = cli_u.Field(
+            default_factory=dict,
+            exclude=True,
+            description="Execution records owned by this platform instance",
+        )
 
     class Entity(cli_m.Entity):
         """Plugin entity - core domain entity with identity and lifecycle.

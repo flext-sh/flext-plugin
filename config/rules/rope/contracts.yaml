@@ -1,0 +1,23 @@
+rules:
+  - id: plugin-api-explicit-instance
+    phase: contract-normalization
+    pattern: '${api}.fetch_global()'
+    goal: '${api}()'
+    arguments:
+      api: name=flext_plugin.api.FlextPluginApi
+  - id: plugin-platform-composition-root
+    phase: contract-normalization
+    pattern: '${factory}()'
+    goal: 'FlextPluginApi()'
+    arguments:
+      factory: name=flext_plugin._utilities.plugin_platform.FlextPluginPlatform.PluginPlatformService
+    imports:
+      FlextPluginApi: from flext_plugin import FlextPluginApi
+    bindings:
+      FlextPluginApi: flext_plugin.api.FlextPluginApi
+  - id: plugin-api-mro-receiver
+    phase: contract-normalization
+    pattern: '${api}.platform'
+    goal: '${api}'
+    arguments:
+      api: type=flext_plugin.api.FlextPluginApi
