@@ -95,7 +95,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             self._is_initialized = True
             logger.info(f"Plugin {self.name} initialized successfully")
 
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)=True)
 
         except Exception as e:
             error_msg: str = f"Failed to initialize plugin {self.name}: {e}"
@@ -177,7 +177,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             self._is_initialized = False
 
             logger.info(f"Plugin {self.name} cleaned up successfully")
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)=True)
 
         except Exception as e:
             error_msg: str = f"Failed to cleanup plugin {self.name}: {e}"
@@ -197,7 +197,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             if not isinstance(timeout, int) or timeout <= 0:
                 return r[bool].fail("timeout_seconds must be a positive integer")
 
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)=True)
 
         except Exception as e:
             return r[bool].fail(f"Configuration validation failed: {e}")
@@ -211,7 +211,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             if "payload" not in data:
                 return r[bool].fail("Input data must contain 'payload' key")
 
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)=True)
 
         except Exception as e:
             return r[bool].fail(f"Input validation failed: {e}")

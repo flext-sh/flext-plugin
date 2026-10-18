@@ -252,7 +252,7 @@ class ExamplePlugin(FlextPlugin):
         try:
             # Setup plugin resources
             self._setup_resources()
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)=True)
         except Exception as e:
             return r[bool].fail(f"Initialization failed: {e}")
 
@@ -274,7 +274,7 @@ class ExamplePlugin(FlextPlugin):
         """Cleanup plugin resources."""
         try:
             self._cleanup_resources()
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)=True)
         except Exception as e:
             return r[bool].fail(f"Cleanup failed: {e}")
 
@@ -430,7 +430,7 @@ def cleanup(self) -> p.Result[bool]:
             for file_path in self._temp_files:
                 os.unlink(file_path)
 
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)=True)
     except Exception as e:
         return r[bool].fail(f"Cleanup failed: {e}")
 ```

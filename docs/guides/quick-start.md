@@ -200,7 +200,7 @@ class GreetingPlugin(FlextPlugin):
         """Initialize plugin resources."""
         print(f"Initializing {self.name}...")
         # Setup any resources here
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)=True)
 
     def execute(self, data: dict) -> p.Result[dict]:
         """Generate greeting based on input data."""
@@ -240,7 +240,7 @@ class GreetingPlugin(FlextPlugin):
     def cleanup(self) -> p.Result[bool]:
         """Cleanup plugin resources."""
         print(f"Cleaning up {self.name}...")
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)=True)
 
 
 # Usage example

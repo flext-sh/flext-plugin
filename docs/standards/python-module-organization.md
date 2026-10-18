@@ -146,7 +146,7 @@ class CustomPlugin(FlextPlugin):
         # Business logic and domain events
         self.status = PluginStatus.ACTIVE
         self.add_domain_event("PluginActivated", {"plugin_id": self.id})
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)=True)
 ```
 
 ### **Application Layer** (`src/flext_plugin/application/`)
@@ -536,7 +536,7 @@ class PluginLifecycleManager:
             plugin.status = PluginStatus.INACTIVE
             self._emit_plugin_event("PluginInitialized", plugin)
 
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)=True)
 
         except Exception as e:
             self._cleanup_plugin_resources(plugin)
@@ -733,7 +733,7 @@ class FlextPlugin(FlextModels.Entity):
         if not self._validate_dependencies():
             return r[bool].fail("Plugin dependencies not satisfied")
 
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)=True)
 
     def activate(self) -> p.Result[bool]:
         """Activate plugin with business validation and event generation."""
@@ -754,7 +754,7 @@ class FlextPlugin(FlextModels.Entity):
             "plugin_type": self.plugin_type.value,
         })
 
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)=True)
 
     def record_execution(self, success: bool, execution_time: float) -> None:
         """Record plugin execution with metrics."""
@@ -1291,7 +1291,7 @@ def safe_plugin_operation(plugin: FlextPlugin) -> p.Result[bool]:
             )
             return result
 
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)=True)
 
     except PluginError as e:
         # Handle plugin-specific errors

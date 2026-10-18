@@ -29,7 +29,7 @@ class FlextPluginPlatform:
                 return r[bool].fail(
                     f"Invalid semantic version: {plugin.plugin_version}"
                 )
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)=True)
 
     class PluginPlatformService(s[p.Plugin.Snapshot], m.Plugin.PortOptions):
         """Use cases sharing one required registry, with no mirrored plugin store."""
@@ -240,14 +240,27 @@ class FlextPluginPlatform:
 
         @staticmethod
         def start_hot_reload(paths: t.StrSequence) -> p.Result[bool]:
-            """Preserve the existing hot-reload lifecycle contract."""
+            """Preserve the existing hot-reload lifecycle contract.
+
+            Args:
+                paths: A sequence of file system paths to monitor for hot-reload changes.
+
+            Returns:
+                A result indicating the success of starting hot-reload.
+
+            """
             _ = paths
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)
 
         @staticmethod
         def stop_hot_reload() -> p.Result[bool]:
-            """Preserve the existing hot-reload lifecycle contract."""
-            return r[bool].ok(True)
+            """Preserve the existing hot-reload lifecycle contract.
+
+            Returns:
+                A result indicating the success of stopping hot-reload.
+
+            """
+            return r[bool].ok(value=True)=True)
 
 
 __all__: list[str] = ["FlextPluginPlatform"]
