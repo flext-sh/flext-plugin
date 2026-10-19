@@ -21,7 +21,12 @@ class FlextPluginPlatform:
 
         @staticmethod
         def validate_business_rules(plugin: p.Plugin.Instance) -> p.Result[bool]:
-            """Validate the plugin's public name and version."""
+            """Validate the plugin's public name and version.
+
+            Returns:
+                Success when both identifiers are valid, otherwise the failure.
+
+            """
             if not plugin.name or not plugin.name.strip():
                 return r[bool].fail("Plugin name cannot be empty")
             parts = plugin.plugin_version.split(".")
@@ -35,7 +40,12 @@ class FlextPluginPlatform:
         """Use cases sharing one required registry, with no mirrored plugin store."""
 
         def register_plugin(self, plugin: p.Plugin.Instance) -> p.Result[bool]:
-            """Register the original payload; conflicts remain registry failures."""
+            """Register the original payload; conflicts remain registry failures.
+
+            Returns:
+                The validation failure or canonical registration result.
+
+            """
             validation = FlextPluginPlatform.Rules.validate_business_rules(plugin)
             if validation.failure:
                 return validation
@@ -44,13 +54,23 @@ class FlextPluginPlatform:
             )
 
         def unregister_plugin(self, plugin_name: str) -> p.Result[bool]:
-            """Remove the actual canonical entry before allowing reuse of its name."""
+            """Remove the actual canonical entry before allowing reuse of its name.
+
+            Returns:
+                The canonical registry removal result.
+
+            """
             return self.registry.unregister_plugin(
                 c.Plugin.REGISTRY_CATEGORY, plugin_name
             )
 
         def fetch_plugin(self, plugin_name: str) -> p.Result[p.Plugin.Instance]:
-            """Fetch the original plugin without serialization or reconstruction."""
+            """Fetch the original plugin without serialization or reconstruction.
+
+            Returns:
+                The registered instance or a lookup or contract failure.
+
+            """
             result = self.registry.fetch_plugin(c.Plugin.REGISTRY_CATEGORY, plugin_name)
             if result.failure:
                 return r[p.Plugin.Instance].from_failure(result)
@@ -62,7 +82,12 @@ class FlextPluginPlatform:
             return r[p.Plugin.Instance].ok(plugin)
 
         def fetch_plugin_status(self, plugin_name: str) -> p.Result[str]:
-            """Project status from the registered instance's enabled flag."""
+            """Project status from the registered instance's enabled flag.
+
+            Returns:
+                The derived status or the original lookup failure.
+
+            """
             return self.fetch_plugin(plugin_name).map(
                 lambda plugin: str(
                     c.Plugin.PluginStatus.ACTIVE
@@ -72,11 +97,21 @@ class FlextPluginPlatform:
             )
 
         def resolve_plugin_active(self, plugin_name: str) -> p.Result[bool]:
-            """Resolve enabled state without hiding lookup failures."""
+            """Resolve enabled state without hiding lookup failures.
+
+            Returns:
+                The enabled flag or the original lookup failure.
+
+            """
             return self.fetch_plugin(plugin_name).map(lambda plugin: plugin.is_enabled)
 
         def list_plugins(self) -> p.Result[t.SequenceOf[p.Plugin.Instance]]:
-            """Resolve the canonical names, failing on invalid stored payloads."""
+            """Resolve the canonical names, failing on invalid stored payloads.
+
+            Returns:
+                Registered instances or the first registry or payload failure.
+
+            """
             names = self.registry.list_plugins(c.Plugin.REGISTRY_CATEGORY)
             if names.failure:
                 return r[t.SequenceOf[p.Plugin.Instance]].from_failure(names)
@@ -91,7 +126,12 @@ class FlextPluginPlatform:
         def discover_plugins(
             self, paths: t.StrSequence
         ) -> p.Result[t.SequenceOf[p.Plugin.Instance]]:
-            """Discover and validate all payloads before publishing any entries."""
+            """Discover and validate all payloads before publishing any entries.
+
+            Returns:
+                Discovered instances or the first discovery or registration failure.
+
+            """
             if self.discovery is None:
                 return r[t.SequenceOf[p.Plugin.Instance]].fail(
                     "Discovery protocol not configured"
@@ -119,7 +159,12 @@ class FlextPluginPlatform:
             return r[t.SequenceOf[p.Plugin.Instance]].ok(plugins)
 
         def load_plugin(self, plugin_path: str) -> p.Result[p.Plugin.Instance]:
-            """Validate loader ingress once, then register the owned plugin."""
+            """Validate loader ingress once, then register the owned plugin.
+
+            Returns:
+                The registered instance or a loading or registration failure.
+
+            """
             if self.loader is None:
                 return r[p.Plugin.Instance].fail("Loader protocol not configured")
             loaded = self.loader.load_plugin(plugin_path)
@@ -148,7 +193,12 @@ class FlextPluginPlatform:
             context: t.JsonMapping,
             execution_id: str | None = None,
         ) -> p.Result[p.Plugin.Run]:
-            """Run a registered plugin once and retain the original failure cause."""
+            """Run a registered plugin once and retain the original failure cause.
+
+            Returns:
+                The tracked execution or the original lookup or execution failure.
+
+            """
             plugin = self.fetch_plugin(plugin_name)
             if plugin.failure:
                 return r[p.Plugin.Run].from_failure(plugin)
@@ -173,7 +223,7 @@ class FlextPluginPlatform:
                 {
                     "plugin_id": plugin_name,
                     "execution_id": execution.execution_id,
-                    "input_data": context,
+                    "input_data": dict(context),
                 },
             )
             execution.is_running = False
@@ -199,7 +249,12 @@ class FlextPluginPlatform:
             return [run for run in self.executions.values() if run.is_running]
 
         def cleanup_executions(self) -> int:
-            """Remove only finished execution records."""
+            """Remove only finished execution records.
+
+            Returns:
+                The number of completed execution records removed.
+
+            """
             completed = [
                 eid for eid, run in self.executions.items() if run.is_completed
             ]
@@ -220,7 +275,12 @@ class FlextPluginPlatform:
 
         @override
         def execute(self) -> p.Result[p.Plugin.Snapshot]:
-            """Produce a transport snapshot without changing stored identities."""
+            """Produce a transport snapshot without changing stored identities.
+
+            Returns:
+                A registry snapshot or the original plugin listing failure.
+
+            """
             plugins = self.list_plugins()
             if plugins.failure:
                 return r[p.Plugin.Snapshot].from_failure(plugins)
@@ -243,7 +303,7 @@ class FlextPluginPlatform:
             """Preserve the existing hot-reload lifecycle contract.
 
             Args:
-                paths: A sequence of file system paths to monitor for hot-reload changes.
+                paths: File system paths to monitor for hot-reload changes.
 
             Returns:
                 A result indicating the success of starting hot-reload.

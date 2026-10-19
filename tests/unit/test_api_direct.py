@@ -163,7 +163,7 @@ class TestsFlextPluginApi:
 
     @staticmethod
     def test_discovery_failure_does_not_create_entries(tmp_path: Path) -> None:
-        """An adapter failure is propagated rather than converted to an empty success."""
+        """Propagate adapter failure rather than returning an empty success."""
         api = FlextPluginApi(discovery=u.Plugin.Tests.FailingDiscovery())
         tm.fail(api.discover_plugins([str(tmp_path / "missing")]))
         tm.that(api.list_plugins().value, eq=[])
