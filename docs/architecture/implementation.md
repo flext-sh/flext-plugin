@@ -462,7 +462,7 @@ class TestPluginEntity:
             name="", plugin_version="1.0.0", settings={}
         )
         result = plugin.validate_business_rules()
-        assert result.failure
+        tm.fail(result)
         assert "name cannot be empty" in result.error
 
     def test_plugin_activation_workflow(self):
@@ -473,7 +473,7 @@ class TestPluginEntity:
 
         # Should fail validation initially
         result = plugin.validate_business_rules()
-        assert result.failure
+        tm.fail(result)
 
         # Fix configuration and activate
         plugin.settings = {"type": "extension", "author": "test"}
@@ -639,7 +639,7 @@ def create_plugin():
         )
 
         # Execution might fail for test plugin, but should return proper result
-        assert execution_result.success or execution_result.failure
+        tm.fail(execution_result.success or execution_result)
         # (Actual execution depends on plugin implementation)
 
         # 5. Verify execution history

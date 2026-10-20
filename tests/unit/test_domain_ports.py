@@ -75,7 +75,7 @@ class TestsFlextPluginDomainPorts:
         """An unresolvable path yields a failure result, never a raised error."""
         result = discovery.discover_plugin(missing_path)
 
-        tm.that(result.success, eq=False)
+        tm.fail(result.success)
         tm.that(result.error, is_=str)
         assert result.error
 
@@ -86,7 +86,7 @@ class TestsFlextPluginDomainPorts:
         """Unwrapping a failed discovery raises rather than fabricating data."""
         result = discovery.discover_plugin("no/such/plugin_qwerty.py")
 
-        tm.that(result.success, eq=False)
+        tm.fail(result.success)
         with pytest.raises(RuntimeError):
             result.unwrap()
 
@@ -101,7 +101,7 @@ class TestsFlextPluginDomainPorts:
         """No search paths still succeeds and yields an empty sequence."""
         result = discovery.discover_plugins([])
 
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
         tm.that(list(result.unwrap()), eq=[])
 
     def test_discover_plugins_directory_returns_success_sequence(
@@ -114,7 +114,7 @@ class TestsFlextPluginDomainPorts:
 
         result = discovery.discover_plugins([str(tmp_path)])
 
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
         discovered = list(result.unwrap())
         # Names, when present, are unique (facade dedupes by plugin name).
         names = [item.name for item in discovered]
@@ -241,7 +241,7 @@ class TestsFlextPluginDomainPorts:
 
         result = strategy.discover([])
 
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
         tm.that(list(result.unwrap()), eq=[])
 
     @staticmethod
@@ -253,7 +253,7 @@ class TestsFlextPluginDomainPorts:
 
         result = strategy.discover(["   "])
 
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
         tm.that(list(result.unwrap()), eq=[])
 
     @staticmethod
@@ -265,7 +265,7 @@ class TestsFlextPluginDomainPorts:
 
         result = strategy.discover([])
 
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
         tm.that(list(result.unwrap()), eq=list(result.unwrap()))
 
     @staticmethod

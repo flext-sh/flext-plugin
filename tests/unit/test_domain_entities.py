@@ -65,7 +65,7 @@ class TestsFlextPluginDomainEntities:
         """A freshly created plugin is enabled and carries no metrics yet."""
         plugin = self._make_plugin()
 
-        tm.that(plugin.is_enabled, eq=True)
+        tm.ok(plugin.is_enabled)
         tm.that(dict(plugin.metadata), eq={})
 
     @staticmethod
@@ -106,7 +106,7 @@ class TestsFlextPluginDomainEntities:
         result = FlextPluginPlatform.Rules.validate_business_rules(plugin)
 
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())
 
     # ------------------------------------------------------------------ #
     # PluginMetadata value object

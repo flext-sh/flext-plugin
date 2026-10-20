@@ -110,8 +110,8 @@ class TestsFlextPluginCoreTypes:
         member: c.Plugin.PluginStatus,
     ) -> None:
         """Error-class statuses classify as error and never operational."""
-        tm.that(member.is_error_state(), eq=True)
-        tm.that(member.is_operational(), eq=False)
+        tm.ok(member.is_error_state())
+        tm.fail(member.is_operational())
         tm.that(c.Plugin.PluginStatus.get_error_statuses(), has=member)
 
     @staticmethod
@@ -123,8 +123,8 @@ class TestsFlextPluginCoreTypes:
         member: c.Plugin.PluginStatus,
     ) -> None:
         """Operational statuses classify as operational and never error."""
-        tm.that(member.is_operational(), eq=True)
-        tm.that(member.is_error_state(), eq=False)
+        tm.ok(member.is_operational())
+        tm.fail(member.is_error_state())
         tm.that(c.Plugin.PluginStatus.get_operational_statuses(), has=member)
 
     @staticmethod

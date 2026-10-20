@@ -66,7 +66,7 @@ class TestsFlextPluginConfig:
         """``fetch_global`` returns the same instance on repeated calls."""
         first = FlextPluginSettings.fetch_global()
         second = FlextPluginSettings.fetch_global()
-        tm.that(first is second, eq=True)
+        tm.ok(first is second)
 
     @staticmethod
     def test_reset_for_testing_replaces_singleton() -> None:
@@ -74,7 +74,7 @@ class TestsFlextPluginConfig:
         original = FlextPluginSettings.fetch_global()
         FlextPluginSettings.reset_for_testing()
         replacement = FlextPluginSettings.fetch_global()
-        tm.that(replacement is original, eq=False)
+        tm.fail(replacement is original)
 
     @staticmethod
     def test_env_prefix_is_isolated_from_root() -> None:
@@ -94,14 +94,14 @@ class TestsFlextPluginConfig:
     @pytest.mark.parametrize("universal_field", _UNIVERSAL_FIELDS)
     def test_universal_fields_are_inherited(universal_field: str) -> None:
         """Every universal operational flag is inherited from the SSOT root."""
-        tm.that(universal_field in FlextPluginSettings.model_fields, eq=True)
+        tm.ok(universal_field in FlextPluginSettings.model_fields)
 
     @staticmethod
     def test_clone_returns_independent_snapshot() -> None:
         """``clone`` yields a distinct instance with equal public state."""
         global_settings = FlextPluginSettings.fetch_global()
         snapshot = global_settings.clone()
-        tm.that(snapshot is global_settings, eq=False)
+        tm.fail(snapshot is global_settings)
         tm.that(snapshot.model_dump(), eq=global_settings.model_dump())
 
     @staticmethod
@@ -109,23 +109,23 @@ class TestsFlextPluginConfig:
         """``clone(**overrides)`` merges overrides without touching the source."""
         global_settings = FlextPluginSettings.fetch_global()
         overridden = global_settings.clone(debug=True)
-        tm.that(overridden.debug, eq=True)
-        tm.that(overridden is global_settings, eq=False)
-        tm.that(global_settings.debug, eq=False)
+        tm.ok(overridden.debug)
+        tm.fail(overridden is global_settings)
+        tm.fail(global_settings.debug)
 
     @staticmethod
     def test_clone_does_not_replace_global_singleton() -> None:
         """Cloning must not mutate or swap the shared global instance."""
         global_settings = FlextPluginSettings.fetch_global()
         global_settings.clone()
-        tm.that(FlextPluginSettings.fetch_global() is global_settings, eq=True)
+        tm.ok(FlextPluginSettings.fetch_global() is global_settings)
 
     @staticmethod
     def test_update_global_installs_returned_instance() -> None:
         """``update_global`` returns the instance that becomes the new global."""
         updated = FlextPluginSettings.update_global(debug=True)
-        tm.that(updated.debug, eq=True)
-        tm.that(FlextPluginSettings.fetch_global() is updated, eq=True)
+        tm.ok(updated.debug)
+        tm.ok(FlextPluginSettings.fetch_global() is updated)
 
     @staticmethod
     def test_update_global_rejects_unknown_field() -> None:
@@ -138,13 +138,13 @@ class TestsFlextPluginConfig:
         """``fetch_global(overrides=...)`` yields an isolated instance for DI."""
         global_settings = FlextPluginSettings.fetch_global()
         injected = FlextPluginSettings.fetch_global(overrides={"debug": True})
-        tm.that(injected is global_settings, eq=False)
-        tm.that(injected.debug, eq=True)
+        tm.fail(injected is global_settings)
+        tm.ok(injected.debug)
 
     @staticmethod
     def test_fetch_global_overrides_does_not_mutate_singleton() -> None:
         """Override-isolated retrieval must not touch the shared singleton."""
         global_settings = FlextPluginSettings.fetch_global()
         FlextPluginSettings.fetch_global(overrides={"debug": True})
-        tm.that(FlextPluginSettings.fetch_global() is global_settings, eq=True)
-        tm.that(global_settings.debug, eq=False)
+        tm.ok(FlextPluginSettings.fetch_global() is global_settings)
+        tm.fail(global_settings.debug)

@@ -184,7 +184,7 @@ class TestsFlextPluginDiscovery:
         result = discovery.validate_plugin(plugin_data=discovered)
 
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())
 
     # ------------------------------------------------------------------ #
     # discover_python_plugins_in_directory                                #

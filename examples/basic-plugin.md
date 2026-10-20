@@ -493,7 +493,7 @@ class TestBasicDataProcessorPlugin:
         )
 
         result = invalid_plugin.initialize()
-        assert result.failure
+        tm.fail(result)
         assert "batch_size must be a positive integer" in result.error
 
     # Execution Tests
@@ -535,7 +535,7 @@ class TestBasicDataProcessorPlugin:
         test_data = {"payload": {"test": "data"}}
         result = plugin.execute(test_data)
 
-        assert result.failure
+        tm.fail(result)
         assert "Plugin not initialized" in result.error
 
     def test_execution_when_inactive(self, plugin):
@@ -546,7 +546,7 @@ class TestBasicDataProcessorPlugin:
         test_data = {"payload": {"test": "data"}}
         result = plugin.execute(test_data)
 
-        assert result.failure
+        tm.fail(result)
         assert "Plugin not active" in result.error
 
     def test_execution_invalid_input(self, plugin):
@@ -558,7 +558,7 @@ class TestBasicDataProcessorPlugin:
         invalid_data = {"invalid": "data"}
         result = plugin.execute(invalid_data)
 
-        assert result.failure
+        tm.fail(result)
         assert "Input data must contain 'payload' key" in result.error
 
     # Statistics Tests
@@ -680,7 +680,7 @@ class TestBasicDataProcessorPlugin:
         ):
             result = plugin.execute({"payload": {"test": "data"}})
 
-            assert result.failure
+            tm.fail(result)
             assert "Processing error" in result.error
 
             # Check error statistics

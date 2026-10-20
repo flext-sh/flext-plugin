@@ -102,4 +102,4 @@ class TestsFlextPluginConstantsUnit:
     @staticmethod
     def test_file_constants_removed_from_contract() -> None:
         """The legacy file-extension constant namespace is no longer exposed."""
-        tm.that(hasattr(c.Plugin, "Files"), eq=False)
+        tm.fail(hasattr(c.Plugin, "Files"))
