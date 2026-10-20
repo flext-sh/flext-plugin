@@ -106,7 +106,7 @@ class FlextPluginModelsPlugin:
             validate_default=True,
         )
 
-        @cli_u.field_validator("plugin_version", mode="before")
+        @cli_m.field_validator("plugin_version", mode="before")
         @classmethod
         def validate_semantic_version(cls, value: str) -> str:
             """Validate semantic version format (X.Y.Z).
@@ -225,7 +225,7 @@ class FlextPluginModelsPlugin:
             validate_default=True,
         )
 
-        @cli_u.field_validator("version", mode="before")
+        @cli_m.field_validator("version", mode="before")
         @classmethod
         def validate_version(cls, value: str) -> str:
             """Validate semantic version format.
