@@ -827,7 +827,7 @@ class FlextPluginSettings(m.BaseModel):
     enable_tracing: bool = u.Field(default=True)
     metrics_interval: int = u.Field(default=60, ge=10, le=3600)
 
-    @u.field_validator("plugin_paths")
+    @m.field_validator("plugin_paths")
     @classmethod
     def validate_plugin_paths(cls, paths: t.StringList) -> t.StringList:
         """Validate plugin paths exist or are valid."""
