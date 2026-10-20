@@ -582,7 +582,7 @@ class TestBasicDataProcessorPlugin:
         updated_stats = plugin.get_statistics()
         tm.that(updated_stats["total_processed"], eq=1)
         tm.that(updated_stats["total_errors"], eq=0)
-        assert updated_stats["last_execution"] is not None
+        tm.not_none(updated_stats["last_execution"])
 
     def test_statistics_reset(self, plugin):
         """Test statistics reset functionality."""

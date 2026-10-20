@@ -48,10 +48,10 @@ class TestsFlextPluginPlatformService:
         tm.that(execution.is_running, eq=False)
         tm.that(execution.is_completed, eq=True)
         tm.that(execution.success, eq=True)
-        assert execution.started_at is not None
-        assert execution.completed_at is not None
+        tm.not_none(execution.started_at)
+        tm.not_none(execution.completed_at)
         assert execution.error_message is None
-        assert execution.result is not None
+        tm.not_none(execution.result)
         tm.that(execution.result["plugin"], eq=payload.name)
         tm.that(execution.result["echo"], eq=execution.input_data)
         assert api.fetch_execution(execution.execution_id) is execution
@@ -84,14 +84,14 @@ class TestsFlextPluginPlatformService:
         result = api.execute_plugin(payload.name, {}, execution_id="failed-run")
         tm.fail(result)
         execution = api.fetch_execution("failed-run")
-        assert execution is not None
+        tm.not_none(execution)
         tm.that(execution.is_completed, eq=True)
         tm.that(execution.is_running, eq=False)
         tm.that(execution.success, eq=False)
         tm.that(execution.error_message, eq=result.error)
         assert execution.result is None
-        assert execution.started_at is not None
-        assert execution.completed_at is not None
+        tm.not_none(execution.started_at)
+        tm.not_none(execution.completed_at)
         tm.that(api.list_running_executions(), eq=[])
         tm.that(api.cleanup_executions(), eq=1)
 
