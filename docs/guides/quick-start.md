@@ -362,14 +362,14 @@ class TestGreetingPlugin:
 
     def test_plugin_creation(self, plugin):
         """Test plugin creation."""
-        assert plugin.name == "greeting-generator"
-        assert plugin.plugin_version == "0.9.9"
+        tm.that(plugin.name, eq="greeting-generator")
+        tm.that(plugin.plugin_version, eq="0.9.9")
         assert plugin.is_valid()
 
     def test_plugin_initialization(self, plugin):
         """Test plugin initialization."""
         result = plugin.initialize()
-        assert result.success
+        tm.ok(result.success)
 
     def test_greeting_generation(self, plugin):
         """Test greeting generation."""
@@ -378,12 +378,12 @@ class TestGreetingPlugin:
 
         # Test English greeting
         result = plugin.execute({"name": "Test", "language": "english"})
-        assert result.success
+        tm.ok(result.success)
         assert result.value["greeting"] == "Hello, Test!"
 
         # Test Spanish greeting
         result = plugin.execute({"name": "Test", "language": "spanish"})
-        assert result.success
+        tm.ok(result.success)
         assert result.value["greeting"] == "¡Hola, Test!"
 
     def test_platform_integration(self, platform, plugin):

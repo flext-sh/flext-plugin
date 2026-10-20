@@ -142,7 +142,7 @@ def test_plugin_activation(platform):
     platform.register_plugin(plugin)
 
     result = platform.activate_plugin("test-plugin")
-    assert result.success
+    tm.ok(result.success)
 ```
 
 ## Example Projects Structure
@@ -318,14 +318,14 @@ class TestExamplePlugin:
 
     def test_plugin_creation(self, plugin):
         """Test plugin creation."""
-        assert plugin.name == "example-plugin"
-        assert plugin.plugin_version == "0.12.0-dev"
+        tm.that(plugin.name, eq="example-plugin")
+        tm.that(plugin.plugin_version, eq="0.12.0-dev")
         assert plugin.is_valid()
 
     def test_plugin_initialization(self, plugin):
         """Test plugin initialization."""
         result = plugin.initialize()
-        assert result.success
+        tm.ok(result.success)
 
     def test_plugin_execution(self, plugin):
         """Test plugin execution."""
@@ -337,7 +337,7 @@ class TestExamplePlugin:
         test_data = {"input": "test_value"}
         result = plugin.execute(test_data)
 
-        assert result.success
+        tm.ok(result.success)
         assert "processed" in result.value
 
     def test_plugin_lifecycle(self, platform, plugin):

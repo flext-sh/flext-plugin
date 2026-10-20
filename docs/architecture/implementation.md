@@ -444,9 +444,9 @@ class TestPluginEntity:
             name="test-plugin", plugin_version="1.0.0", settings={"type": "extension"}
         )
 
-        assert plugin.name == "test-plugin"
-        assert plugin.plugin_version == "1.0.0"
-        assert plugin.status == PluginStatus.INACTIVE
+        tm.that(plugin.name, eq="test-plugin")
+        tm.that(plugin.plugin_version, eq="1.0.0")
+        tm.that(plugin.status, eq=PluginStatus.INACTIVE)
 
     def test_plugin_validation_business_rules(self):
         """Test plugin business rule validation."""
@@ -455,7 +455,7 @@ class TestPluginEntity:
             name="valid-plugin", plugin_version="1.0.0", settings={}
         )
         result = plugin.validate_business_rules()
-        assert result.success
+        tm.ok(result.success)
 
         # Invalid plugin (empty name)
         plugin = FlextPluginModels.Plugin.create(
@@ -478,11 +478,11 @@ class TestPluginEntity:
         # Fix configuration and activate
         plugin.settings = {"type": "extension", "author": "test"}
         result = plugin.validate_business_rules()
-        assert result.success
+        tm.ok(result.success)
 
         activation_result = plugin.activate()
         assert activation_result.success
-        assert plugin.status == PluginStatus.ACTIVE
+        tm.that(plugin.status, eq=PluginStatus.ACTIVE)
 ```
 
 #### **Application Service Testing**
@@ -531,11 +531,11 @@ class TestPluginServices:
         result = await plugin_service.discover_plugins(["/plugins"], mock_discovery)
 
         # Verify results
-        assert result.success
+        tm.ok(result.success)
         plugins = result.unwrap()
-        assert len(plugins) == 1
-        assert plugins[0].name == "test-plugin"
-        assert plugins[0].plugin_version == "1.0.0"
+        tm.that(len(plugins), eq=1)
+        tm.that(plugins[0].name, eq="test-plugin")
+        tm.that(plugins[0].plugin_version, eq="1.0.0")
 
     @pytest.mark.asyncio
     async def test_discover_plugins_validation_failure(self, plugin_service):
@@ -552,9 +552,9 @@ class TestPluginServices:
         result = await plugin_service.discover_plugins(["/plugins"], mock_discovery)
 
         # Should succeed but with empty list (invalid plugin filtered out)
-        assert result.success
+        tm.ok(result.success)
         plugins = result.unwrap()
-        assert len(plugins) == 0
+        tm.that(len(plugins), eq=0)
 ```
 
 ### Integration Testing Patterns
@@ -614,10 +614,10 @@ def create_plugin():
         assert discovery_result.success
 
         plugins = discovery_result.unwrap()
-        assert len(plugins) == 1
+        tm.that(len(plugins), eq=1)
 
         plugin = plugins[0]
-        assert plugin.name == "test-plugin"
+        tm.that(plugin.name, eq="test-plugin")
 
         # 2. Load plugin
         load_result = await platform.load_plugin(
@@ -626,7 +626,7 @@ def create_plugin():
         assert load_result.success
 
         loaded_plugin = load_result.unwrap()
-        assert loaded_plugin.name == "test-plugin"
+        tm.that(loaded_plugin.name, eq="test-plugin")
 
         # 3. Register plugin
         register_result = await platform.register_plugin(loaded_plugin)
