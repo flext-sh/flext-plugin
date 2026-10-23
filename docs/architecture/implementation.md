@@ -633,7 +633,7 @@ def create_plugin():
         assert register_result.success
 
         # 4. Execute plugin
-        context = {"input": "test data", "operation": "test"}
+        context = {"input": "test data", c.ContextScope.OPERATION: "test"}
         execution_result = await platform.execute_plugin(
             "test-plugin", context, execution_id="test-execution-123"
         )

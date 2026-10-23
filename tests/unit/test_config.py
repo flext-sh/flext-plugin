@@ -13,16 +13,11 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import pytest
 from flext_core import FlextSettings
 
 from flext_plugin import FlextPluginConfig, FlextPluginSettings, config
-from tests import tm, u
-
-if TYPE_CHECKING:
-    from tests import t
+from tests import t, tm, u
 
 # NOTE (multi-agent): no-mock/SSOT rewrite — the old _ROOT_FIELDS list asserted the
 # absence of 7 fields (app_name, enable_caching, cache_ttl, max_workers,

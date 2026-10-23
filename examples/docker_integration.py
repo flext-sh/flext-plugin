@@ -60,7 +60,7 @@ def create_docker_postgres_plugin() -> tuple[
         "host": "localhost",
         "port": 5432,
         "database": "flext_db",
-        "user": "flext",
+        c.ContextScope.USER: "flext",
         "password": os.environ.get("FLEXT_DEMO_POSTGRES_PASSWORD", "<demo>"),
         "ssl_mode": "prefer",
         "connection_timeout": 10,
