@@ -19,7 +19,7 @@ import pytest
 from flext_core import FlextSettings
 
 from flext_plugin import FlextPluginConfig, FlextPluginSettings, config
-from tests import tm
+from tests import tm, u
 
 if TYPE_CHECKING:
     from tests import t
@@ -69,12 +69,20 @@ class TestsFlextPluginConfig:
         tm.ok(first is second)
 
     @staticmethod
-    def test_reset_for_testing_replaces_singleton() -> None:
-        """``reset_for_testing`` forces a fresh singleton on next fetch."""
+    def test_reset_for_testing_reloads_the_imported_singleton() -> None:
+        """Reset reloads environment values without invalidating imported handles."""
         original = FlextPluginSettings.fetch_global()
+        debug = original.debug
+        prefix = tm.not_none(FlextPluginSettings.model_config.get("env_prefix"))
+        with u.Tests.env_vars_context(
+            env_vars={f"{prefix}DEBUG": str(not debug).lower()},
+        ):
+            FlextPluginSettings.reset_for_testing()
+            replacement = FlextPluginSettings.fetch_global()
+            tm.ok(replacement is original)
+            tm.that(original.debug, eq=not debug)
         FlextPluginSettings.reset_for_testing()
-        replacement = FlextPluginSettings.fetch_global()
-        tm.fail(replacement is original)
+        tm.that(original.debug, eq=debug)
 
     @staticmethod
     def test_env_prefix_is_isolated_from_root() -> None:
