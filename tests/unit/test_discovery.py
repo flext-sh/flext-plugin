@@ -90,7 +90,7 @@ class TestsFlextPluginDiscovery:
 
         tm.ok(result)
         names = {data.name for data in result.unwrap()}
-        assert {"alpha_plugin", "beta_plugin"} <= names
+        tm.that({"alpha_plugin", "beta_plugin"} <= names, truth=True)
 
     @staticmethod
     def test_discover_plugins_ignores_private_and_non_python_files(

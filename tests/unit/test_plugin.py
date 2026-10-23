@@ -39,7 +39,7 @@ class TestsFlextPluginPlugin:
         )
         tm.that(api.fetch_plugin_status(payload.name).value, eq=expected)
         tm.that(api.resolve_plugin_active(payload.name).value, eq=enabled)
-        assert api.fetch_plugin(payload.name).value is payload
+        tm.that(api.fetch_plugin(payload.name).value is payload, truth=True)
 
     @staticmethod
     @pytest.mark.parametrize("bad_version", ["1", "1.2.3.4", "1.x", "abc"])
@@ -66,7 +66,7 @@ class TestsFlextPluginPlugin:
         listed = api.list_plugins().value
         tm.that(len(listed), eq=len(payloads))
         for original, stored in zip(payloads, listed, strict=True):
-            assert stored is original
+            tm.that(stored is original, truth=True)
         for payload in payloads:
             tm.ok(api.unregister_plugin(payload.name))
         tm.that(api.list_plugins().value, eq=[])

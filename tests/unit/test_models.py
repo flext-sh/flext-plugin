@@ -110,7 +110,7 @@ class TestsFlextPluginModelsUnit:
         )
         tm.that(plugin.name, eq="test-plugin")
         tm.that(plugin.plugin_version, eq="1.2.3")
-        assert plugin.plugin_type is c.Plugin.Type.UTILITY
+        tm.that(plugin.plugin_type is c.Plugin.Type.UTILITY, truth=True)
         tm.ok(plugin.is_enabled)
 
     @staticmethod
@@ -120,7 +120,7 @@ class TestsFlextPluginModelsUnit:
         tm.that(plugin.plugin_version, eq=c.Plugin.DEFAULT_PLUGIN_VERSION)
         tm.that(plugin.description, eq="")
         tm.that(plugin.author, eq="")
-        assert plugin.plugin_type is c.Plugin.Type.UTILITY
+        tm.that(plugin.plugin_type is c.Plugin.Type.UTILITY, truth=True)
         tm.ok(plugin.is_enabled)
         tm.that(dict(plugin.metadata), eq={})
 
@@ -169,7 +169,7 @@ class TestsFlextPluginModelsUnit:
         )
         tm.that(plugin.name, eq="factory-plugin")
         tm.that(plugin.plugin_version, eq="2.0.0")
-        assert plugin.plugin_type is c.Plugin.Type.SERVICE
+        tm.that(plugin.plugin_type is c.Plugin.Type.SERVICE, truth=True)
 
     # ---- PluginMetadata value object ------------------------------------
 

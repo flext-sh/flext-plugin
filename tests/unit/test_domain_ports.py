@@ -77,7 +77,7 @@ class TestsFlextPluginDomainPorts:
 
         tm.fail(result.success)
         tm.that(result.error, is_=str)
-        assert result.error
+        tm.that(result.error, truth=True)
 
     @staticmethod
     def test_discover_plugin_failure_unwrap_raises(
@@ -128,7 +128,7 @@ class TestsFlextPluginDomainPorts:
         first = discovery.discover_plugins([])
         second = discovery.discover_plugins([])
 
-        assert first.success is second.success is True
+        tm.that(first.success is second.success is True, truth=True)
         tm.that(list(first.unwrap()), eq=list(second.unwrap()))
 
     # ------------------------------------------------------------------ #
@@ -177,7 +177,7 @@ class TestsFlextPluginDomainPorts:
             logger,
         )
 
-        assert (filename in discovered) is expected_present
+        tm.that((filename in discovered) is expected_present, truth=True)
 
     @staticmethod
     def test_directory_walk_skips_dunder_directories(
@@ -279,5 +279,5 @@ class TestsFlextPluginDomainPorts:
         ignored = strategy.discover(with_paths)
         empty = strategy.discover([])
 
-        assert ignored.success is empty.success is True
+        tm.that(ignored.success is empty.success is True, truth=True)
         tm.that(list(ignored.unwrap()), eq=list(empty.unwrap()))

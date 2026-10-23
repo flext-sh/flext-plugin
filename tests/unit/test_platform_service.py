@@ -23,9 +23,9 @@ class TestsFlextPluginPlatformService:
         """Execution state and generated identifiers belong to the existing model."""
         first = m.Plugin.Execution(plugin_name="execution-plugin", input_data={"x": 1})
         second = m.Plugin.Execution(plugin_name=first.plugin_name, input_data={})
-        assert first.execution_id
-        assert second.execution_id
-        assert first.execution_id != second.execution_id
+        tm.that(first.execution_id, truth=True)
+        tm.that(second.execution_id, truth=True)
+        tm.that(first.execution_id != second.execution_id, truth=True)
         tm.that(first.input_data, eq={"x": 1})
         for field_name in ("is_running", "is_completed", "success"):
             tm.that(
@@ -50,14 +50,14 @@ class TestsFlextPluginPlatformService:
         tm.ok(execution.success)
         tm.not_none(execution.started_at)
         tm.not_none(execution.completed_at)
-        assert execution.error_message is None
+        tm.that(execution.error_message is None, truth=True)
         tm.not_none(execution.result)
         tm.that(execution.result["plugin"], eq=payload.name)
         tm.that(execution.result["echo"], eq=execution.input_data)
-        assert api.fetch_execution(execution.execution_id) is execution
-        assert api.list_executions()[0] is execution
+        tm.that(api.fetch_execution(execution.execution_id) is execution, truth=True)
+        tm.that(api.list_executions()[0] is execution, truth=True)
         tm.that(api.list_running_executions(), eq=[])
-        assert api.fetch_execution("absent-execution") is None
+        tm.that(api.fetch_execution("absent-execution") is None, truth=True)
         tm.that(api.cleanup_executions(), eq=1)
         tm.that(api.list_executions(), eq=[])
         tm.that(api.cleanup_executions(), eq=0)
@@ -70,8 +70,8 @@ class TestsFlextPluginPlatformService:
         tm.ok(api.register_plugin(payload))
         first = tm.ok(api.execute_plugin(payload.name, {}))
         second = tm.ok(api.execute_plugin(payload.name, {}))
-        assert first.execution_id
-        assert first.execution_id != second.execution_id
+        tm.that(first.execution_id, truth=True)
+        tm.that(first.execution_id != second.execution_id, truth=True)
         tm.that(len(api.list_executions()), eq=2)
         tm.that(api.cleanup_executions(), eq=2)
 
@@ -89,7 +89,7 @@ class TestsFlextPluginPlatformService:
         tm.fail(execution.is_running)
         tm.fail(execution.success)
         tm.that(execution.error_message, eq=result.error)
-        assert execution.result is None
+        tm.that(execution.result is None, truth=True)
         tm.not_none(execution.started_at)
         tm.not_none(execution.completed_at)
         tm.that(api.list_running_executions(), eq=[])
@@ -134,8 +134,8 @@ class TestsFlextPluginPlatformService:
             snapshot.plugins[inactive.name]
         )
         tm.that(serialized_inactive["metadata"], eq=inactive.metadata)
-        assert api.fetch_plugin(active.name).value is active
-        assert api.fetch_plugin(inactive.name).value is inactive
+        tm.that(api.fetch_plugin(active.name).value is active, truth=True)
+        tm.that(api.fetch_plugin(inactive.name).value is inactive, truth=True)
 
     @staticmethod
     def test_missing_discovery_and_loader_are_failed_prerequisites(

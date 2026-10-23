@@ -33,16 +33,16 @@ class TestsFlextPluginApi:
         api = FlextPluginApi(runtime_settings=supplied)
         options: p.RuntimeBootstrapOptions = api.runtime_bootstrap_options()
         runtime_settings: p.Settings = api.settings
-        assert isinstance(options, p.RuntimeBootstrapOptions)
-        assert options.settings_type is FlextPluginSettings
-        assert isinstance(runtime_settings, p.Settings)
+        tm.that(isinstance(options, p.RuntimeBootstrapOptions), truth=True)
+        tm.that(options.settings_type is FlextPluginSettings, truth=True)
+        tm.that(isinstance(runtime_settings, p.Settings), truth=True)
         tm.that(runtime_settings.model_dump(), eq=supplied.model_dump())
 
     @staticmethod
     def test_public_instance_exposes_the_structural_lifecycle_contract() -> None:
         """The composed public instance needs no concrete facade annotation."""
         public_api: p.Plugin.PlatformService = plugin
-        assert isinstance(public_api, p.Plugin.PlatformService)
+        tm.that(isinstance(public_api, p.Plugin.PlatformService), truth=True)
         tm.ok(public_api.execute())
 
     @staticmethod
@@ -52,7 +52,7 @@ class TestsFlextPluginApi:
         second = FlextPluginApi()
         payload = m.Plugin.Entity(name="isolated-plugin")
         tm.ok(first.register_plugin(payload))
-        assert first.fetch_plugin(payload.name).value is payload
+        tm.that(first.fetch_plugin(payload.name).value is payload, truth=True)
         tm.fail(second.fetch_plugin(payload.name))
         tm.that(second.list_plugins().value, eq=[])
 
@@ -63,8 +63,8 @@ class TestsFlextPluginApi:
         second = FlextPluginApi(registry=first.registry)
         payload = m.Plugin.Entity(name="shared-plugin", metadata={"origin": "caller"})
         tm.ok(first.register_plugin(payload))
-        assert second.fetch_plugin(payload.name).value is payload
-        assert second.list_plugins().value[0] is payload
+        tm.that(second.fetch_plugin(payload.name).value is payload, truth=True)
+        tm.that(second.list_plugins().value[0] is payload, truth=True)
         tm.ok(second.unregister_plugin(payload.name))
         tm.fail(first.fetch_plugin(payload.name))
 
@@ -77,13 +77,13 @@ class TestsFlextPluginApi:
         tm.ok(api.register_plugin(original))
         tm.ok(api.register_plugin(original))
         tm.fail(api.register_plugin(conflict))
-        assert api.fetch_plugin(original.name).value is original
+        tm.that(api.fetch_plugin(original.name).value is original, truth=True)
         tm.that(len(api.list_plugins().value), eq=1)
         tm.ok(api.unregister_plugin(original.name))
         tm.fail(api.fetch_plugin(original.name))
         tm.that(api.list_plugins().value, eq=[])
         tm.ok(api.register_plugin(conflict))
-        assert api.fetch_plugin(conflict.name).value is conflict
+        tm.that(api.fetch_plugin(conflict.name).value is conflict, truth=True)
 
     @staticmethod
     def test_unknown_plugin_operations_fail() -> None:
@@ -128,7 +128,7 @@ class TestsFlextPluginApi:
         original = getattr(api, field_name)
         with pytest.raises(c.ValidationError):
             setattr(api, field_name, "invalid")
-        assert getattr(api, field_name) is original
+        tm.that(getattr(api, field_name) is original, truth=True)
 
     @staticmethod
     def test_ports_are_not_transport_payloads() -> None:
@@ -142,8 +142,8 @@ class TestsFlextPluginApi:
         schema = u.json_mapping_adapter().validate_python(api.model_json_schema())
         properties = u.json_mapping_adapter().validate_python(schema["properties"])
         for name in ("registry", "discovery", "loader", "executor"):
-            assert name not in dumped
-            assert name not in properties
+            tm.that(name not in dumped, truth=True)
+            tm.that(name not in properties, truth=True)
 
     @staticmethod
     def test_real_discovery_registers_owned_payload(tmp_path: Path) -> None:
@@ -157,7 +157,7 @@ class TestsFlextPluginApi:
         )
         tm.that(payload.name, eq=plugin_file.stem)
         tm.that(payload.plugin_version, eq=c.Plugin.DEFAULT_PLUGIN_VERSION)
-        assert api.fetch_plugin(payload.name).value is payload
+        tm.that(api.fetch_plugin(payload.name).value is payload, truth=True)
         tm.ok(api.unregister_plugin(payload.name))
         tm.fail(api.fetch_plugin(payload.name))
 
@@ -179,8 +179,8 @@ class TestsFlextPluginApi:
         tm.that(payload.name, eq=plugin_file.stem)
         tm.that(payload.plugin_version, eq=c.Plugin.DEFAULT_PLUGIN_VERSION)
         tm.that(payload.metadata["path"], eq=str(plugin_file))
-        assert loader.plugin_loaded(payload.name)
-        assert api.fetch_plugin(payload.name).value is payload
+        tm.that(loader.plugin_loaded(payload.name), truth=True)
+        tm.that(api.fetch_plugin(payload.name).value is payload, truth=True)
 
     @staticmethod
     def test_loader_failure_does_not_create_entries(tmp_path: Path) -> None:
@@ -198,5 +198,5 @@ class TestsFlextPluginApi:
         original = m.Plugin.Entity(name=plugin_file.stem, metadata={"origin": "caller"})
         tm.ok(api.register_plugin(original))
         tm.fail(api.load_plugin(str(plugin_file)))
-        assert api.fetch_plugin(original.name).value is original
+        tm.that(api.fetch_plugin(original.name).value is original, truth=True)
         tm.that(api.fetch_plugin(original.name).value.metadata, eq=original.metadata)

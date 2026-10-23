@@ -26,7 +26,7 @@ class TestsFlextPluginConstantsUnit:
         )
         for category in categories:
             tm.that(category, is_=frozenset)
-            assert len(category) > 0
+            tm.that(len(category) > 0, truth=True)
 
     @staticmethod
     @pytest.mark.parametrize(
@@ -95,9 +95,9 @@ class TestsFlextPluginConstantsUnit:
         right: frozenset[c.Plugin.Type],
     ) -> None:
         """No plugin type belongs to more than one category."""
-        assert left.isdisjoint(right)
-        assert left.issubset(c.Plugin.ALL_PLUGIN_TYPES)
-        assert right.issubset(c.Plugin.ALL_PLUGIN_TYPES)
+        tm.that(left.isdisjoint(right), truth=True)
+        tm.that(left.issubset(c.Plugin.ALL_PLUGIN_TYPES), truth=True)
+        tm.that(right.issubset(c.Plugin.ALL_PLUGIN_TYPES), truth=True)
 
     @staticmethod
     def test_file_constants_removed_from_contract() -> None:
