@@ -29,7 +29,7 @@ class FlextPluginModels(FlextCliModels):
     """
 
     class Plugin(
-        FlextPluginModelsBase, FlextPluginConfigModels, FlextPluginModelsPlugin
+        FlextPluginModelsBase, FlextPluginModelsPlugin, FlextPluginConfigModels
     ):
         """Plugin domain models namespace composed via MRO."""
 

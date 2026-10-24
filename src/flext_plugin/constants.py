@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """FLEXT Plugin Constants - public facade re-exporting from _constants.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.
