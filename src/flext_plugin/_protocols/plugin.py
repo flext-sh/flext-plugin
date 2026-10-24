@@ -9,8 +9,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
+from flext_cli import p, t
+
 if TYPE_CHECKING:
-    from flext_plugin import m, p, t
+    from flext_plugin import m
 
 
 class FlextPluginProtocolsPlugin:
