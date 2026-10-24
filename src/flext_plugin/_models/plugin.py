@@ -31,13 +31,13 @@ class FlextPluginModelsPlugin:
         registry: t.Port[p.Registry] = u.Field(
             exclude=True, description="Canonical instance-scoped plugin registry"
         )
-        discovery: t.Port[p.Plugin.Discovery | None] = u.Field(
+        discovery: t.Port[p.Plugin.Discovery] | None = u.Field(
             default=None, exclude=True, description="Optional plugin discovery adapter"
         )
-        loader: t.Port[p.Plugin.Loader | None] = u.Field(
+        loader: t.Port[p.Plugin.Loader] | None = u.Field(
             default=None, exclude=True, description="Optional plugin loading adapter"
         )
-        executor: t.Port[p.Plugin.Execution | None] = u.Field(
+        executor: t.Port[p.Plugin.Execution] | None = u.Field(
             default=None, exclude=True, description="Optional plugin execution adapter"
         )
         executions: t.MutableMappingKV[str, t.Port[p.Plugin.Run]] = u.Field(
