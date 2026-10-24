@@ -220,11 +220,7 @@ class FlextPluginPlatform:
             self.executions[execution.execution_id] = execution
             result = self.executor.execute_plugin(
                 plugin_name,
-                {
-                    "plugin_id": plugin_name,
-                    "execution_id": execution.execution_id,
-                    "input_data": dict(context),
-                },
+                execution.input_data,
             )
             execution.is_running = False
             execution.is_completed = True

@@ -53,8 +53,7 @@ class TestsFlextPluginPlatformService:
         assert execution.error_message is None
         assert execution.result is not None
         tm.that(execution.result["plugin"], eq=payload.name)
-        echo = u.json_mapping_adapter().validate_python(execution.result["echo"])
-        tm.that(echo["input_data"], eq=execution.input_data)
+        tm.that(execution.result["echo"], eq=execution.input_data)
         assert api.fetch_execution(execution.execution_id) is execution
         assert api.list_executions()[0] is execution
         tm.that(api.list_running_executions(), eq=[])
