@@ -12,7 +12,7 @@ from __future__ import annotations
 import asyncio
 
 import pytest
-from flext_cli import t as cli_t
+from flext_cli import t
 
 import flext_plugin
 from flext_plugin import FlextPluginTypes
@@ -25,7 +25,7 @@ class TestsFlextPluginTypesUnit:
     @staticmethod
     def test_facade_exposes_inherited_cli_type_aliases() -> None:
         """The facade resolves inherited CLI type aliases to the same objects."""
-        tm.ok(FlextPluginTypes.JsonMapping is cli_t.JsonMapping)
+        tm.ok(FlextPluginTypes.JsonMapping is t.JsonMapping)
 
     @staticmethod
     def test_module_alias_is_the_facade() -> None:
@@ -74,7 +74,7 @@ class TestsFlextPluginTypesUnit:
     def test_event_handler_is_usable_as_annotation() -> None:
         """The alias is a valid, concrete annotation for handler callables."""
 
-        async def handler(payload: cli_t.JsonMapping) -> cli_t.JsonMapping:
+        async def handler(payload: t.JsonMapping) -> t.JsonMapping:
             await asyncio.sleep(0)
             return payload
 

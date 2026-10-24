@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
-from flext_cli import p as cli_p
+from flext_cli import p
 
 if TYPE_CHECKING:
     from flext_plugin import m, p, t

@@ -628,7 +628,7 @@ class TestBasicDataProcessorPlugin:
         assert activate_result.success
 
         # Execute plugin
-        test_data = {"payload": {"message": "hello world", "count": 5}}
+        test_data = {"payload": {"message": "hello world", c.Aggregation.COUNT: 5}}
 
         execute_result = platform.execute_plugin(plugin.name, test_data)
         assert execute_result.success
@@ -709,7 +709,7 @@ class TestPluginPerformance:
             "payload": {
                 "large_text": "x" * 1000,  # 1KB string
                 "numbers": list(range(100)),
-                "nested": {"deep": {"data": "value"}},
+                "nested": {c.MergeStrategy.DEEP: {"data": "value"}},
             }
         }
 
@@ -754,7 +754,7 @@ if __name__ == "__main__":
     "transformations": {
       "strings": "uppercase",
       "numbers": "double",
-      "lists": "count",
+      c.Action.LISTs": c.Aggregation.COUNT,
       "objects": "preserve"
     },
     "validation": {

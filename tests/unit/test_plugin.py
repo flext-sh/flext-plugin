@@ -42,7 +42,9 @@ class TestsFlextPluginPlugin:
         tm.that(api.fetch_plugin(payload.name).value is payload, truth=True)
 
     @staticmethod
-    @pytest.mark.parametrize("bad_version", ["1", "1.2.3.4", "1.x", "abc"])
+    @pytest.mark.parametrize(
+        "bad_version", [c.ParserBooleanToken.ONE, "1.2.3.4", "1.x", "abc"]
+    )
     def test_invalid_version_is_rejected_at_ingress(bad_version: str) -> None:
         """Invalid owned payloads never reach the registration operation."""
         with pytest.raises(c.ValidationError):

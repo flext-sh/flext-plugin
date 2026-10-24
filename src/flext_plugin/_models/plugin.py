@@ -11,7 +11,7 @@ from pathlib import Path
 from types import MappingProxyType
 from typing import Annotated
 
-from flext_cli import m as cli_m, u as cli_u
+from flext_cli import m as cli_m
 
 from flext_plugin import c, p, t
 
@@ -28,19 +28,19 @@ class FlextPluginModelsPlugin:
     class PortOptions(cli_m.ArbitraryTypesModel):
         """Explicit collaborators of a plugin platform instance."""
 
-        registry: t.Port[p.Registry] = cli_u.Field(
+        registry: t.Port[p.Registry] = u.Field(
             exclude=True, description="Canonical instance-scoped plugin registry"
         )
-        discovery: t.Port[p.Plugin.Discovery | None] = cli_u.Field(
+        discovery: t.Port[p.Plugin.Discovery | None] = u.Field(
             default=None, exclude=True, description="Optional plugin discovery adapter"
         )
-        loader: t.Port[p.Plugin.Loader | None] = cli_u.Field(
+        loader: t.Port[p.Plugin.Loader | None] = u.Field(
             default=None, exclude=True, description="Optional plugin loading adapter"
         )
-        executor: t.Port[p.Plugin.Execution | None] = cli_u.Field(
+        executor: t.Port[p.Plugin.Execution | None] = u.Field(
             default=None, exclude=True, description="Optional plugin execution adapter"
         )
-        executions: t.MutableMappingKV[str, t.Port[p.Plugin.Run]] = cli_u.Field(
+        executions: t.MutableMappingKV[str, t.Port[p.Plugin.Run]] = u.Field(
             default_factory=dict,
             exclude=True,
             description="Execution records owned by this platform instance",
@@ -65,7 +65,7 @@ class FlextPluginModelsPlugin:
 
         name: Annotated[
             str,
-            cli_u.Field(
+            u.Field(
                 ...,
                 min_length=3,
                 max_length=100,
@@ -75,33 +75,31 @@ class FlextPluginModelsPlugin:
         ]
         plugin_version: Annotated[
             str,
-            cli_u.Field(
+            u.Field(
                 pattern=r"^\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$",
                 description="Plugin semantic version (X.Y.Z)",
             ),
         ] = c.Plugin.DEFAULT_PLUGIN_VERSION
         description: Annotated[
             str,
-            cli_u.Field(
+            u.Field(
                 max_length=1000,
                 description="Plugin functionality description",
             ),
         ] = ""
         author: Annotated[
             str,
-            cli_u.Field(max_length=200, description="Plugin author/maintainer"),
+            u.Field(max_length=200, description="Plugin author/maintainer"),
         ] = ""
         plugin_type: Annotated[
             c.Plugin.Type,
-            cli_u.Field(description="Plugin type classification"),
+            u.Field(description="Plugin type classification"),
         ] = c.Plugin.Type.UTILITY
-        is_enabled: Annotated[bool, cli_u.Field(description="Plugin enabled state")] = (
-            True
-        )
+        is_enabled: Annotated[bool, u.Field(description="Plugin enabled state")] = True
         metadata: Annotated[
             t.JsonMapping,
-            cli_u.Field(description="Extensible plugin metadata"),
-        ] = cli_u.Field(
+            u.Field(description="Extensible plugin metadata"),
+        ] = u.Field(
             default_factory=lambda: MappingProxyType[str, t.JsonValue]({}),
             validate_default=True,
         )
@@ -147,33 +145,33 @@ class FlextPluginModelsPlugin:
 
         """
 
-        plugin_name: Annotated[str, cli_u.Field(description="Executed plugin name")]
+        plugin_name: Annotated[str, u.Field(description="Executed plugin name")]
         execution_id: Annotated[
             str,
-            cli_u.Field(description="Unique execution identifier"),
-        ] = cli_u.Field(default_factory=cli_u.generate_id)
+            u.Field(description="Unique execution identifier"),
+        ] = u.Field(default_factory=cli_u.generate_id)
         input_data: Annotated[
             t.JsonMapping,
-            cli_u.Field(description="Executor input payload"),
+            u.Field(description="Executor input payload"),
         ]
-        is_running: Annotated[bool, cli_u.Field(description="Run in progress")] = False
-        is_completed: Annotated[bool, cli_u.Field(description="Run finished")] = False
-        success: Annotated[bool, cli_u.Field(description="Run succeeded")] = False
+        is_running: Annotated[bool, u.Field(description="Run in progress")] = False
+        is_completed: Annotated[bool, u.Field(description="Run finished")] = False
+        success: Annotated[bool, u.Field(description="Run succeeded")] = False
         error_message: Annotated[
             str | None,
-            cli_u.Field(description="Failure reason"),
+            u.Field(description="Failure reason"),
         ] = None
         result: Annotated[
             t.JsonMapping | None,
-            cli_u.Field(description="Executor output"),
+            u.Field(description="Executor output"),
         ] = None
         started_at: Annotated[
             str | None,
-            cli_u.Field(description="Start ISO timestamp"),
+            u.Field(description="Start ISO timestamp"),
         ] = None
         completed_at: Annotated[
             str | None,
-            cli_u.Field(description="Completion ISO timestamp"),
+            u.Field(description="Completion ISO timestamp"),
         ] = None
 
     class DiscoveryData(cli_m.Value):
@@ -194,7 +192,7 @@ class FlextPluginModelsPlugin:
 
         name: Annotated[
             str,
-            cli_u.Field(
+            u.Field(
                 min_length=3,
                 max_length=100,
                 pattern="^[a-zA-Z][a-zA-Z0-9_-]*$",
@@ -203,24 +201,24 @@ class FlextPluginModelsPlugin:
         ]
         version: Annotated[
             str,
-            cli_u.Field(
+            u.Field(
                 pattern=r"^\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$",
                 description="Plugin semantic version (X.Y.Z)",
             ),
         ]
-        path: Annotated[Path, cli_u.Field(description="File system path to plugin")]
+        path: Annotated[Path, u.Field(description="File system path to plugin")]
         discovery_type: Annotated[
             str,
-            cli_u.Field(description="Type of discovered plugin"),
+            u.Field(description="Type of discovered plugin"),
         ]
         discovery_method: Annotated[
             str,
-            cli_u.Field(description="Discovery method used"),
+            u.Field(description="Discovery method used"),
         ]
         metadata: Annotated[
             t.JsonMapping,
-            cli_u.Field(description="Extensible discovery metadata"),
-        ] = cli_u.Field(
+            u.Field(description="Extensible discovery metadata"),
+        ] = u.Field(
             default_factory=lambda: MappingProxyType[str, t.JsonValue]({}),
             validate_default=True,
         )
@@ -267,22 +265,20 @@ class FlextPluginModelsPlugin:
 
         """
 
-        name: Annotated[str, cli_u.Field(description="Plugin unique identifier")]
-        version: Annotated[str, cli_u.Field(description="Plugin semantic version")]
-        description: Annotated[str, cli_u.Field(description="Plugin description")] = ""
-        author: Annotated[str, cli_u.Field(description="Plugin author")] = "Unknown"
-        plugin_type: Annotated[str, cli_u.Field(description="Type of plugin")] = (
-            "extension"
-        )
-        entry_point: Annotated[str, cli_u.Field(description="Entry point for plugin")]
+        name: Annotated[str, u.Field(description="Plugin unique identifier")]
+        version: Annotated[str, u.Field(description="Plugin semantic version")]
+        description: Annotated[str, u.Field(description="Plugin description")] = ""
+        author: Annotated[str, u.Field(description="Plugin author")] = "Unknown"
+        plugin_type: Annotated[str, u.Field(description="Type of plugin")] = "extension"
+        entry_point: Annotated[str, u.Field(description="Entry point for plugin")]
         dependencies: Annotated[
             t.VariadicTuple[str],
-            cli_u.Field(description="List of plugin dependencies"),
-        ] = cli_u.Field(default_factory=tuple)
+            u.Field(description="List of plugin dependencies"),
+        ] = u.Field(default_factory=tuple)
         metadata: Annotated[
             t.JsonMapping,
-            cli_u.Field(description="Additional metadata"),
-        ] = cli_u.Field(
+            u.Field(description="Additional metadata"),
+        ] = u.Field(
             default_factory=lambda: MappingProxyType[str, t.JsonValue]({}),
             validate_default=True,
         )
@@ -301,22 +297,22 @@ class FlextPluginModelsPlugin:
 
         """
 
-        version: Annotated[str, cli_u.Field(description="Registry schema version")]
+        version: Annotated[str, u.Field(description="Registry schema version")]
         plugins: Annotated[
             t.JsonMapping,
-            cli_u.Field(description="Dictionary of registered plugins"),
-        ] = cli_u.Field(
+            u.Field(description="Dictionary of registered plugins"),
+        ] = u.Field(
             default_factory=lambda: MappingProxyType[str, t.JsonValue]({}),
             validate_default=True,
         )
         last_updated: Annotated[
             datetime,
-            cli_u.Field(description="Last update timestamp"),
-        ] = cli_u.Field(default_factory=datetime.now)
+            u.Field(description="Last update timestamp"),
+        ] = u.Field(default_factory=datetime.now)
         created_at: Annotated[
             datetime,
-            cli_u.Field(description="Registry creation timestamp"),
-        ] = cli_u.Field(default_factory=datetime.now)
+            u.Field(description="Registry creation timestamp"),
+        ] = u.Field(default_factory=datetime.now)
 
 
 __all__: list[str] = ["FlextPluginModelsPlugin"]

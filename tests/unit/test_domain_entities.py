@@ -86,7 +86,9 @@ class TestsFlextPluginDomainEntities:
             m.Plugin.Entity(name=bad_name)
 
     @staticmethod
-    @pytest.mark.parametrize("bad_version", ["1", "1.2.3.4", "x.y.z", "abc"])
+    @pytest.mark.parametrize(
+        "bad_version", [c.ParserBooleanToken.ONE, "1.2.3.4", "x.y.z", "abc"]
+    )
     def test_create_rejects_non_semantic_versions(bad_version: str) -> None:
         """Versions outside the X.Y.Z shape are rejected at construction."""
         with pytest.raises(ValueError, match=r"semantic|version|pattern|string"):

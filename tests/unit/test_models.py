@@ -133,7 +133,7 @@ class TestsFlextPluginModelsUnit:
     @staticmethod
     @pytest.mark.parametrize(
         "bad_version",
-        ["invalid-version", "1", "1.0.0.0", "a.b.c", "x.y"],
+        ["invalid-version", c.ParserBooleanToken.ONE, "1.0.0.0", "a.b.c", "x.y"],
     )
     def test_entity_rejects_non_semantic_version(bad_version: str) -> None:
         """Versions outside the X.Y[.Z] numeric form are refused."""
