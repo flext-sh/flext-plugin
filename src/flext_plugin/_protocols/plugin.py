@@ -9,8 +9,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
-from flext_cli import p
-
 if TYPE_CHECKING:
     from flext_plugin import m, p, t
 
@@ -25,7 +23,7 @@ class FlextPluginProtocolsPlugin:
     """
 
     @runtime_checkable
-    class Instance(cli_p.Model, Protocol):
+    class Instance(p.Model, Protocol):
         """Owned plugin payload capabilities consumed by lifecycle services."""
 
         @property

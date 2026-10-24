@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import override
 
-from flext_core import u
+from flext_cli import u
 
 from flext_plugin import c, m, p, r, s, t
 

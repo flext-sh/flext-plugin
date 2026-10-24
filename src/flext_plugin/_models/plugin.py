@@ -11,9 +11,9 @@ from pathlib import Path
 from types import MappingProxyType
 from typing import Annotated
 
-from flext_cli import m as cli_m
+from flext_cli import m
 
-from flext_plugin import c, p, t
+from flext_plugin import c, p, t, u
 
 
 class FlextPluginModelsPlugin:
@@ -25,7 +25,7 @@ class FlextPluginModelsPlugin:
     namespace organization and to enable composition with other domain models.
     """
 
-    class PortOptions(cli_m.ArbitraryTypesModel):
+    class PortOptions(m.ArbitraryTypesModel):
         """Explicit collaborators of a plugin platform instance."""
 
         registry: t.Port[p.Registry] = u.Field(
@@ -46,7 +46,7 @@ class FlextPluginModelsPlugin:
             description="Execution records owned by this platform instance",
         )
 
-    class Entity(cli_m.Entity):
+    class Entity(m.Entity):
         """Plugin entity - core domain entity with identity and lifecycle.
 
         Represents a plugin with identity, lifecycle management, and mutable state.
@@ -104,7 +104,7 @@ class FlextPluginModelsPlugin:
             validate_default=True,
         )
 
-        @cli_m.field_validator("plugin_version", mode="before")
+        @m.field_validator("plugin_version", mode="before")
         @classmethod
         def validate_semantic_version(cls, value: str) -> str:
             """Validate semantic version format (X.Y.Z).
@@ -128,7 +128,7 @@ class FlextPluginModelsPlugin:
                 raise ValueError(error_msg)
             return value
 
-    class Execution(cli_m.ManagedModel):
+    class Execution(m.ManagedModel):
         """Plugin execution state - one tracked run of a registered plugin.
 
         Attributes:
@@ -149,7 +149,7 @@ class FlextPluginModelsPlugin:
         execution_id: Annotated[
             str,
             u.Field(description="Unique execution identifier"),
-        ] = u.Field(default_factory=cli_u.generate_id)
+        ] = u.Field(default_factory=u.generate_id)
         input_data: Annotated[
             t.JsonMapping,
             u.Field(description="Executor input payload"),
@@ -174,7 +174,7 @@ class FlextPluginModelsPlugin:
             u.Field(description="Completion ISO timestamp"),
         ] = None
 
-    class DiscoveryData(cli_m.Value):
+    class DiscoveryData(m.Value):
         """Plugin discovery data - immutable discovery result.
 
         Represents discovered plugin information from various discovery methods
@@ -223,7 +223,7 @@ class FlextPluginModelsPlugin:
             validate_default=True,
         )
 
-        @cli_m.field_validator("version", mode="before")
+        @m.field_validator("version", mode="before")
         @classmethod
         def validate_version(cls, value: str) -> str:
             """Validate semantic version format.
@@ -247,7 +247,7 @@ class FlextPluginModelsPlugin:
                 raise ValueError(error_msg)
             return value
 
-    class Metadata(cli_m.Value):
+    class Metadata(m.Value):
         """Plugin metadata - immutable metadata value object.
 
         Represents complete metadata about a plugin including discovery
@@ -283,7 +283,7 @@ class FlextPluginModelsPlugin:
             validate_default=True,
         )
 
-    class Registry(cli_m.Value):
+    class Registry(m.Value):
         """Plugin registry - central plugin registry storage.
 
         Represents plugin registry with version tracking and plugin entries.

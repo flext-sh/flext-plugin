@@ -18,7 +18,7 @@ from typing import Annotated, Final, override
 
 from flext_cli import cli
 
-from examples import c, p, r, s, t
+from examples import c, m, p, r, s, t, u
 from flext_plugin import FlextPluginApi, FlextPluginModels, FlextPluginPlatform
 
 _AUTHOR: Final[str] = "FLEXT Team"

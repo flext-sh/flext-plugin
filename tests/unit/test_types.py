@@ -12,7 +12,6 @@ from __future__ import annotations
 import asyncio
 
 import pytest
-from flext_cli import t
 
 import flext_plugin
 from flext_plugin import FlextPluginTypes
@@ -46,8 +45,7 @@ class TestsFlextPluginTypesUnit:
         """flext_cli type aliases remain reachable through the facade."""
         tm.ok(hasattr(FlextPluginTypes, inherited_alias))
         tm.that(
-            getattr(FlextPluginTypes, inherited_alias)
-            is getattr(cli_t, inherited_alias),
+            getattr(FlextPluginTypes, inherited_alias) is getattr(t, inherited_alias),
             eq=True,
         )
 
