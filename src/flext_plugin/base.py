@@ -12,18 +12,16 @@ from __future__ import annotations
 
 from abc import ABC
 
-from flext_core import FlextService
+from flext_core import s
 
-from flext_plugin import FlextPluginSettings, m, t
+from flext_plugin import FlextPluginSettings, m, p, t
 
 
-class FlextPluginServiceBase[
-    TDomainResult: t.JsonPayload | t.SequenceOf[t.JsonPayload] = t.JsonPayload,
-](FlextService[TDomainResult], ABC):
+class FlextPluginServiceBase[TDomainResult = p.Base](s[TDomainResult], ABC):
     """Base class for flext-plugin services with typed plugin settings access."""
 
     @classmethod
-    def runtime_bootstrap_options(cls) -> m.RuntimeBootstrapOptions:
+    def runtime_bootstrap_options(cls) -> p.RuntimeBootstrapOptions:
         """Return runtime bootstrap options for plugin services.
 
         Returns:

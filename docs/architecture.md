@@ -197,7 +197,7 @@ from __future__ import annotations
 def load_plugin(self, plugin: FlextPluginModels.Entity) -> p.Result[bool]:
     try:
         # Plugin loading logic
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)=True)
     except Exception as e:
         return r[bool].fail(f"Loading failed: {e}")
 ```

@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from flext_plugin._utilities.base import FlextPluginUtilitiesBase
     from flext_plugin._utilities.discovery import FlextPluginDiscovery
     from flext_plugin._utilities.implementations import FlextPluginImplementations
+    from flext_plugin._utilities.metadata import FlextPluginUtilitiesMetadata
     from flext_plugin._utilities.plugin_platform import FlextPluginPlatform
 
 
@@ -24,6 +25,7 @@ __all__: tuple[str, ...] = (
     "FlextPluginImplementations",
     "FlextPluginPlatform",
     "FlextPluginUtilitiesBase",
+    "FlextPluginUtilitiesMetadata",
 )
 
 install_lazy_exports(
@@ -34,6 +36,7 @@ install_lazy_exports(
         "FlextPluginImplementations": ".implementations",
         "FlextPluginPlatform": ".plugin_platform",
         "FlextPluginUtilitiesBase": ".base",
+        "FlextPluginUtilitiesMetadata": ".metadata",
     }),
     public_exports=__all__,
 )

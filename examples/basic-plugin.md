@@ -95,7 +95,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             self._is_initialized = True
             logger.info(f"Plugin {self.name} initialized successfully")
 
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)=True)
 
         except Exception as e:
             error_msg: str = f"Failed to initialize plugin {self.name}: {e}"
@@ -177,7 +177,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             self._is_initialized = False
 
             logger.info(f"Plugin {self.name} cleaned up successfully")
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)=True)
 
         except Exception as e:
             error_msg: str = f"Failed to cleanup plugin {self.name}: {e}"
@@ -197,7 +197,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             if not isinstance(timeout, int) or timeout <= 0:
                 return r[bool].fail("timeout_seconds must be a positive integer")
 
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)=True)
 
         except Exception as e:
             return r[bool].fail(f"Configuration validation failed: {e}")
@@ -211,7 +211,7 @@ class BasicDataProcessorPlugin(FlextPlugin):
             if "payload" not in data:
                 return r[bool].fail("Input data must contain 'payload' key")
 
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)=True)
 
         except Exception as e:
             return r[bool].fail(f"Input validation failed: {e}")
@@ -465,22 +465,22 @@ class TestBasicDataProcessorPlugin:
 
     def test_plugin_creation(self, plugin):
         """Test plugin creation and basic properties."""
-        assert plugin.name == "basic-data-processor"
-        assert plugin.plugin_version == "0.9.9"
-        assert plugin.status == PluginStatus.INACTIVE
+        tm.that(plugin.name, eq="basic-data-processor")
+        tm.that(plugin.plugin_version, eq="0.9.9")
+        tm.that(plugin.status, eq=PluginStatus.INACTIVE)
         assert plugin.is_valid()
 
     def test_plugin_configuration(self, plugin):
         """Test plugin configuration handling."""
-        assert plugin._get_config_value("batch_size") == 10
-        assert plugin._get_config_value("timeout_seconds") == 5
+        tm.that(plugin._get_config_value("batch_size"), eq=10)
+        tm.that(plugin._get_config_value("timeout_seconds"), eq=5)
         assert plugin._get_config_value("enable_logging") is False
-        assert plugin._get_config_value("nonexistent", "default") == "default"
+        tm.that(plugin._get_config_value("nonexistent", "default"), eq="default")
 
     def test_plugin_initialization(self, plugin):
         """Test plugin initialization."""
         result = plugin.initialize()
-        assert result.success
+        tm.ok(result.success)
         assert plugin._is_initialized
 
     def test_initialization_failure(self):
@@ -493,7 +493,7 @@ class TestBasicDataProcessorPlugin:
         )
 
         result = invalid_plugin.initialize()
-        assert result.failure
+        tm.fail(result)
         assert "batch_size must be a positive integer" in result.error
 
     # Execution Tests
@@ -517,16 +517,16 @@ class TestBasicDataProcessorPlugin:
         # Execute plugin
         result = plugin.execute(test_data)
 
-        assert result.success
+        tm.ok(result.success)
         assert "processed_data" in result.value
         assert "metadata" in result.value
 
         # Check processed data
         processed_data = result.value["processed_data"]
-        assert processed_data["processed_payload"]["processed_name"] == "TEST USER"
-        assert processed_data["processed_payload"]["processed_age"] == 50
-        assert processed_data["processed_payload"]["processed_scores_count"] == 3
-        assert processed_data["transformation_count"] == 4
+        tm.that(processed_data["processed_payload"]["processed_name"], eq="TEST USER")
+        tm.that(processed_data["processed_payload"]["processed_age"], eq=50)
+        tm.that(processed_data["processed_payload"]["processed_scores_count"], eq=3)
+        tm.that(processed_data["transformation_count"], eq=4)
 
     def test_execution_without_initialization(self, plugin):
         """Test execution failure when plugin not initialized."""
@@ -535,7 +535,7 @@ class TestBasicDataProcessorPlugin:
         test_data = {"payload": {"test": "data"}}
         result = plugin.execute(test_data)
 
-        assert result.failure
+        tm.fail(result)
         assert "Plugin not initialized" in result.error
 
     def test_execution_when_inactive(self, plugin):
@@ -546,7 +546,7 @@ class TestBasicDataProcessorPlugin:
         test_data = {"payload": {"test": "data"}}
         result = plugin.execute(test_data)
 
-        assert result.failure
+        tm.fail(result)
         assert "Plugin not active" in result.error
 
     def test_execution_invalid_input(self, plugin):
@@ -558,7 +558,7 @@ class TestBasicDataProcessorPlugin:
         invalid_data = {"invalid": "data"}
         result = plugin.execute(invalid_data)
 
-        assert result.failure
+        tm.fail(result)
         assert "Input data must contain 'payload' key" in result.error
 
     # Statistics Tests
@@ -570,19 +570,19 @@ class TestBasicDataProcessorPlugin:
 
         # Initial statistics
         initial_stats = plugin.get_statistics()
-        assert initial_stats["total_processed"] == 0
-        assert initial_stats["total_errors"] == 0
+        tm.that(initial_stats["total_processed"], eq=0)
+        tm.that(initial_stats["total_errors"], eq=0)
 
         # Execute plugin successfully
         test_data = {"payload": {"test": "data"}}
         result = plugin.execute(test_data)
-        assert result.success
+        tm.ok(result.success)
 
         # Check updated statistics
         updated_stats = plugin.get_statistics()
-        assert updated_stats["total_processed"] == 1
-        assert updated_stats["total_errors"] == 0
-        assert updated_stats["last_execution"] is not None
+        tm.that(updated_stats["total_processed"], eq=1)
+        tm.that(updated_stats["total_errors"], eq=0)
+        tm.not_none(updated_stats["last_execution"])
 
     def test_statistics_reset(self, plugin):
         """Test statistics reset functionality."""
@@ -594,8 +594,8 @@ class TestBasicDataProcessorPlugin:
         plugin.reset_statistics()
 
         stats = plugin.get_statistics()
-        assert stats["total_processed"] == 0
-        assert stats["total_errors"] == 0
+        tm.that(stats["total_processed"], eq=0)
+        tm.that(stats["total_errors"], eq=0)
         assert stats["last_execution"] is None
 
     # Cleanup Tests
@@ -607,7 +607,7 @@ class TestBasicDataProcessorPlugin:
         plugin.initialize()
 
         result = plugin.cleanup()
-        assert result.success
+        tm.ok(result.success)
         assert not plugin._is_initialized
 
         # Verify statistics were saved
@@ -628,7 +628,7 @@ class TestBasicDataProcessorPlugin:
         assert activate_result.success
 
         # Execute plugin
-        test_data = {"payload": {"message": "hello world", "count": 5}}
+        test_data = {"payload": {"message": "hello world", c.Aggregation.COUNT: 5}}
 
         execute_result = platform.execute_plugin(plugin.name, test_data)
         assert execute_result.success
@@ -641,8 +641,8 @@ class TestBasicDataProcessorPlugin:
 
         # Check processed data
         processed = result_data["processed_data"]["processed_payload"]
-        assert processed["processed_message"] == "HELLO WORLD"
-        assert processed["processed_count"] == 10
+        tm.that(processed["processed_message"], eq="HELLO WORLD")
+        tm.that(processed["processed_count"], eq=10)
 
         # Deactivate plugin
         deactivate_result = platform.deactivate_plugin(plugin.name)
@@ -660,12 +660,12 @@ class TestBasicDataProcessorPlugin:
             test_data = {"payload": {"id": i, "value": f"test_{i}"}}
 
             result = platform.execute_plugin(plugin.name, test_data)
-            assert result.success
+            tm.ok(result.success)
 
         # Check final statistics
         stats = plugin.get_statistics()
-        assert stats["total_processed"] == 5
-        assert stats["total_errors"] == 0
+        tm.that(stats["total_processed"], eq=5)
+        tm.that(stats["total_errors"], eq=0)
 
     # Error Handling Tests
 
@@ -680,12 +680,12 @@ class TestBasicDataProcessorPlugin:
         ):
             result = plugin.execute({"payload": {"test": "data"}})
 
-            assert result.failure
+            tm.fail(result)
             assert "Processing error" in result.error
 
             # Check error statistics
             stats = plugin.get_statistics()
-            assert stats["total_errors"] == 1
+            tm.that(stats["total_errors"], eq=1)
 
 
 # Performance Tests
@@ -709,7 +709,7 @@ class TestPluginPerformance:
             "payload": {
                 "large_text": "x" * 1000,  # 1KB string
                 "numbers": list(range(100)),
-                "nested": {"deep": {"data": "value"}},
+                "nested": {c.MergeStrategy.DEEP: {"data": "value"}},
             }
         }
 
@@ -718,7 +718,7 @@ class TestPluginPerformance:
         result = initialized_plugin.execute(test_data)
         execution_time = time.time() - start_time
 
-        assert result.success
+        tm.ok(result.success)
         assert execution_time < 1.0  # Should complete in under 1 second
 
         # Verify processing time is recorded
@@ -754,7 +754,7 @@ if __name__ == "__main__":
     "transformations": {
       "strings": "uppercase",
       "numbers": "double",
-      "lists": "count",
+      c.Action.LISTs": c.Aggregation.COUNT,
       "objects": "preserve"
     },
     "validation": {

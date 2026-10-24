@@ -14,7 +14,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from flext_core import u
+from flext_cli import u
 
 from flext_plugin import c, m, r, t
 

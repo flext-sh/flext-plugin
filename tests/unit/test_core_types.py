@@ -99,7 +99,7 @@ class TestsFlextPluginCoreTypes:
     ) -> None:
         """Each status member exposes its canonical lowercase string."""
         tm.that(member.value, eq=value)
-        assert c.Plugin.PluginStatus(value) is member
+        tm.that(c.Plugin.PluginStatus(value) is member, truth=True)
 
     @staticmethod
     @pytest.mark.parametrize(
@@ -110,8 +110,8 @@ class TestsFlextPluginCoreTypes:
         member: c.Plugin.PluginStatus,
     ) -> None:
         """Error-class statuses classify as error and never operational."""
-        tm.that(member.is_error_state(), eq=True)
-        tm.that(member.is_operational(), eq=False)
+        tm.ok(member.is_error_state())
+        tm.fail(member.is_operational())
         tm.that(c.Plugin.PluginStatus.get_error_statuses(), has=member)
 
     @staticmethod
@@ -123,8 +123,8 @@ class TestsFlextPluginCoreTypes:
         member: c.Plugin.PluginStatus,
     ) -> None:
         """Operational statuses classify as operational and never error."""
-        tm.that(member.is_operational(), eq=True)
-        tm.that(member.is_error_state(), eq=False)
+        tm.ok(member.is_operational())
+        tm.fail(member.is_error_state())
         tm.that(c.Plugin.PluginStatus.get_operational_statuses(), has=member)
 
     @staticmethod
@@ -132,7 +132,7 @@ class TestsFlextPluginCoreTypes:
         """No status is simultaneously an error state and operational."""
         errors = c.Plugin.PluginStatus.get_error_statuses()
         operational = c.Plugin.PluginStatus.get_operational_statuses()
-        assert errors.isdisjoint(operational)
+        tm.that(errors.isdisjoint(operational), truth=True)
 
     @staticmethod
     def test_plugin_status_invalid_string_raises_value_error() -> None:

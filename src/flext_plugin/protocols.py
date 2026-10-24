@@ -1,3 +1,4 @@
+# AUTO-GENERATED FILE — Regenerate with: make gen
 """FLEXT Plugin Protocols - public facade composing from _protocols.
 
 Copyright (c) 2026 FLEXT Team. All rights reserved.

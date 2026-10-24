@@ -16,9 +16,9 @@ import socket
 import sys
 from typing import Annotated, Final, override
 
-from flext_cli import cli, m as cli_m, u as cli_u
+from flext_cli import cli
 
-from examples import c, p, r, s, t
+from examples import c, m, p, r, s, t, u
 from flext_plugin import FlextPluginApi, FlextPluginModels, FlextPluginPlatform
 
 _AUTHOR: Final[str] = "FLEXT Team"
@@ -60,7 +60,7 @@ def create_docker_postgres_plugin() -> tuple[
         "host": "localhost",
         "port": 5432,
         "database": "flext_db",
-        "user": "flext",
+        c.ContextScope.USER: "flext",
         "password": os.environ.get("FLEXT_DEMO_POSTGRES_PASSWORD", "<demo>"),
         "ssl_mode": "prefer",
         "connection_timeout": 10,
@@ -175,7 +175,7 @@ class ExamplesFlextPluginDockerIntegrationCommand(s[bool]):
 
     test_connections: Annotated[
         bool,
-        cli_u.Field(
+        u.Field(
             default=False,
             description=(
                 "Test connectivity to Docker services before creating plugins."
@@ -240,7 +240,7 @@ def main(args: t.StrSequence | None = None) -> int:
     cli.register_result_routes(
         app,
         [
-            cli_m.Cli.ResultCommandRoute(
+            m.Cli.ResultCommandRoute(
                 name="run",
                 help_text="Create the example plugins and validate them.",
                 model_cls=ExamplesFlextPluginDockerIntegrationCommand,

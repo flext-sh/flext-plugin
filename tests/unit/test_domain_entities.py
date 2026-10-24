@@ -65,7 +65,7 @@ class TestsFlextPluginDomainEntities:
         """A freshly created plugin is enabled and carries no metrics yet."""
         plugin = self._make_plugin()
 
-        tm.that(plugin.is_enabled, eq=True)
+        tm.ok(plugin.is_enabled)
         tm.that(dict(plugin.metadata), eq={})
 
     @staticmethod
@@ -86,7 +86,9 @@ class TestsFlextPluginDomainEntities:
             m.Plugin.Entity(name=bad_name)
 
     @staticmethod
-    @pytest.mark.parametrize("bad_version", ["1", "1.2.3.4", "x.y.z", "abc"])
+    @pytest.mark.parametrize(
+        "bad_version", [c.ParserBooleanToken.ONE, "1.2.3.4", "x.y.z", "abc"]
+    )
     def test_create_rejects_non_semantic_versions(bad_version: str) -> None:
         """Versions outside the X.Y.Z shape are rejected at construction."""
         with pytest.raises(ValueError, match=r"semantic|version|pattern|string"):
@@ -106,7 +108,7 @@ class TestsFlextPluginDomainEntities:
         result = FlextPluginPlatform.Rules.validate_business_rules(plugin)
 
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())
 
     # ------------------------------------------------------------------ #
     # PluginMetadata value object

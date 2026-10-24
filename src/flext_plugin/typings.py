@@ -6,11 +6,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable
-
 from flext_cli import FlextCliTypes
 
 from flext_plugin._typings import FlextPluginTypingsBase
+from flext_plugin._typings.events import FlextPluginTypingsEvents
 
 
 class FlextPluginTypes(FlextCliTypes, FlextPluginTypingsBase):
@@ -19,10 +18,7 @@ class FlextPluginTypes(FlextCliTypes, FlextPluginTypingsBase):
     class Plugin(FlextPluginTypingsBase):
         """Plugin domain namespace (flat members per AGENTS.md)."""
 
-        type EventHandler = Callable[
-            [FlextCliTypes.JsonMapping],
-            Awaitable[FlextCliTypes.JsonMapping],
-        ]
+        EventHandler = FlextPluginTypingsEvents.EventHandler
 
 
 t = FlextPluginTypes

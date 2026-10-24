@@ -11,7 +11,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import m, u
+from flext_cli import m
 
 
 class FlextPluginConfigModels:
@@ -22,24 +22,24 @@ class FlextPluginConfigModels:
 
         model_config = m.ConfigDict(frozen=True, extra="forbid")
 
-        default: str = u.Field(description="Default plugin version string.")
-        pattern: str = u.Field(description="Regex validating a semantic version.")
+        default: str = m.Field(description="Default plugin version string.")
+        pattern: str = m.Field(description="Regex validating a semantic version.")
 
     class NameValidation(m.BaseModel):
         """Constraints applied when validating plugin names."""
 
         model_config = m.ConfigDict(frozen=True, extra="forbid")
 
-        min_length: int = u.Field(ge=1, description="Minimum plugin name length.")
-        max_length: int = u.Field(ge=1, description="Maximum plugin name length.")
-        pattern: str = u.Field(description="Regex validating a plugin name.")
+        min_length: int = m.Field(ge=1, description="Minimum plugin name length.")
+        max_length: int = m.Field(ge=1, description="Maximum plugin name length.")
+        pattern: str = m.Field(description="Regex validating a plugin name.")
 
     class DescriptionValidation(m.BaseModel):
         """Constraints applied when validating plugin descriptions."""
 
         model_config = m.ConfigDict(frozen=True, extra="forbid")
 
-        max_length: int = u.Field(
+        max_length: int = m.Field(
             ge=1, description="Maximum plugin description length."
         )
 
@@ -48,14 +48,14 @@ class FlextPluginConfigModels:
 
         model_config = m.ConfigDict(frozen=True, extra="forbid")
 
-        max_length: int = u.Field(ge=1, description="Maximum author string length.")
+        max_length: int = m.Field(ge=1, description="Maximum author string length.")
 
     class DocstringValidation(m.BaseModel):
         """Rules for extracting plugin documentation strings."""
 
         model_config = m.ConfigDict(frozen=True, extra="forbid")
 
-        pattern: str = u.Field(
+        pattern: str = m.Field(
             description="Regex extracting the first triple-quoted docstring.",
         )
 
@@ -64,16 +64,16 @@ class FlextPluginConfigModels:
 
         model_config = m.ConfigDict(frozen=True, extra="forbid")
 
-        name: FlextPluginConfigModels.NameValidation = u.Field(
+        name: FlextPluginConfigModels.NameValidation = m.Field(
             description="Plugin name validation thresholds.",
         )
-        description: FlextPluginConfigModels.DescriptionValidation = u.Field(
+        description: FlextPluginConfigModels.DescriptionValidation = m.Field(
             description="Plugin description validation thresholds.",
         )
-        author: FlextPluginConfigModels.AuthorValidation = u.Field(
+        author: FlextPluginConfigModels.AuthorValidation = m.Field(
             description="Plugin author validation thresholds.",
         )
-        docstring: FlextPluginConfigModels.DocstringValidation = u.Field(
+        docstring: FlextPluginConfigModels.DocstringValidation = m.Field(
             description="Plugin docstring extraction rules.",
         )
 
@@ -82,25 +82,25 @@ class FlextPluginConfigModels:
 
         model_config = m.ConfigDict(frozen=True, extra="forbid")
 
-        python_extension: str = u.Field(description="Python source file extension.")
-        yaml_extension: str = u.Field(description="YAML file extension.")
-        json_extension: str = u.Field(description="JSON file extension.")
-        toml_extension: str = u.Field(description="TOML file extension.")
-        default_plugin_dir: str = u.Field(description="Default plugin directory.")
-        default_cache_dir: str = u.Field(description="Default plugin cache directory.")
+        python_extension: str = m.Field(description="Python source file extension.")
+        yaml_extension: str = m.Field(description="YAML file extension.")
+        json_extension: str = m.Field(description="JSON file extension.")
+        toml_extension: str = m.Field(description="TOML file extension.")
+        default_plugin_dir: str = m.Field(description="Default plugin directory.")
+        default_cache_dir: str = m.Field(description="Default plugin cache directory.")
 
     class Plugin(m.BaseModel):
         """Root namespace grouping plugin business-rule models."""
 
         model_config = m.ConfigDict(frozen=True, extra="forbid")
 
-        version: FlextPluginConfigModels.Version = u.Field(
+        version: FlextPluginConfigModels.Version = m.Field(
             description="Plugin version defaults and validation.",
         )
-        validation: FlextPluginConfigModels.Validation = u.Field(
+        validation: FlextPluginConfigModels.Validation = m.Field(
             description="Plugin validation rule namespace.",
         )
-        files: FlextPluginConfigModels.Files = u.Field(
+        files: FlextPluginConfigModels.Files = m.Field(
             description="Plugin file and directory defaults.",
         )
 
