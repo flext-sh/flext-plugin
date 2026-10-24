@@ -1,12 +1,13 @@
 # AGENTS.md — flext-plugin
 
-> **Parent workspace law** lives in [`../AGENTS.md`](../AGENTS.md) — read it first.
-> Universal engineering core: `~/.agents/UNIVERSAL_CORE.md`. Composition: global
-> skills + parent/root `AGENTS.md` + this scope delta. Do not re-embed universal law.
->
-> **Standalone / independent mode:** when `../AGENTS.md` does not resolve, pin the
-> parent raw `AGENTS.md` URL to the same branch/release as this package (never
-> `main`): <https://raw.githubusercontent.com/flext-sh/flext/0.12.0-dev/AGENTS.md>
+Read the branch-matched [FLEXT root](../AGENTS.md) and its local flext-law through
+that root's authority entry point. In standalone mode resolve the same branch or
+release; a coincidental parent instruction file does not establish FLEXT authority.
+This file adds only this package's domain delta. Command routing, architecture
+and universal execution stay with their parent owners.
+
+Embedded AI Hub or Beads generated blocks are retired delivery material, not
+active local rules. Their withdrawal remains the publisher's responsibility.
 
 <!-- AIHUB-AGENTS-SCOPE-LOCAL-BEGIN -->
 
@@ -15,25 +16,6 @@
 ## Overview
 
 Plugin system for the FLEXT platform — discovery, loading, lifecycle, hot reload.
-
-## Structure
-
-```text
-src/flext_plugin/
-├── api.py            # FlextPluginApi facade
-├── _utilities/
-│   ├── discovery.py         # discover_plugins
-│   ├── implementations.py
-│   └── plugin_platform.py   # lifecycle service inherited by the API through MRO
-├── constants.py typings.py protocols.py models.py utilities.py   # AUTO-GENERATED facets
-└── _config.py
-```
-
-## Code Map
-
-| Symbol           | Kind  | Location | Role                                                                                                    |
-| ---------------- | ----- | -------- | ------------------------------------------------------------------------------------------------------- |
-| `FlextPluginApi` | class | `api.py` | facade: `discover_plugins`, `load_plugin`, `register_plugin`, `execute_plugin`, `start/stop_hot_reload` |
 
 ## Conventions (specific to this package)
 
@@ -46,18 +28,6 @@ src/flext_plugin/
   Services inherit required ports from `m.Plugin.PortOptions` and never construct
   registries or mirror registered plugins in another cache. API operations are
   inherited directly, not accessed through a separate `.platform` object.
-- Config/settings canonical pattern: ADR-012.
-- Codemod governance (ast-grep + make mod): ADR-014.
-
-## Commands
-
-Run from the workspace root (selector-free; the root dispatcher routes to every
-member — `PROJECT=` is not a root Make variable):
-
-```bash
-make check
-make test
-```
 
 <!-- AIHUB-AGENTS-SCOPE-LOCAL-END -->
 
