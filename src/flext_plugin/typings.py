@@ -22,5 +22,4 @@ class FlextPluginTypes(FlextCliTypes, FlextPluginTypingsBase):
 
 
 t = FlextPluginTypes
-
 __all__: list[str] = ["FlextPluginTypes", "t"]

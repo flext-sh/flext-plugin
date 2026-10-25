@@ -32,7 +32,6 @@ class FlextPluginUtilities(FlextCliUtilities):
 
 
 u = FlextPluginUtilities
-
 __all__: list[str] = [
     "FlextPluginDiscovery",
     "FlextPluginPlatform",

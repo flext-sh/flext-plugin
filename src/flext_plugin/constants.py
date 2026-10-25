@@ -36,5 +36,4 @@ class FlextPluginConstants(FlextCliConstants):
 
 
 c = FlextPluginConstants
-
 __all__: list[str] = ["FlextPluginConstants", "c"]

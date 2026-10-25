@@ -29,11 +29,10 @@ class FlextPluginModels(FlextCliModels):
     """
 
     class Plugin(
-        FlextPluginModelsBase, FlextPluginModelsPlugin, FlextPluginConfigModels
+        FlextPluginModelsBase, FlextPluginConfigModels, FlextPluginModelsPlugin
     ):
         """Plugin domain models namespace composed via MRO."""
 
 
 m = FlextPluginModels
-
 __all__: list[str] = ["FlextPluginModels", "m"]
