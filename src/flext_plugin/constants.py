@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import c
+from flext_cli import c, c as flext_cli_c
 
 from flext_plugin._constants import (
     FlextPluginConstantsApi,
@@ -18,7 +18,7 @@ from flext_plugin._constants import (
 )
 
 
-class FlextPluginConstants(c):
+class FlextPluginConstants(flext_cli_c):
     """FlextPlugin domain constants extending FlextCliConstants via MRO."""
 
     class Plugin(

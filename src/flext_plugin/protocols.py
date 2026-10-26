@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import p
+from flext_cli import p, p as flext_cli_p
 
 from flext_plugin._protocols import (
     FlextPluginProtocolsBase,
@@ -16,7 +16,7 @@ from flext_plugin._protocols import (
 )
 
 
-class FlextPluginProtocols(p):
+class FlextPluginProtocols(flext_cli_p):
     """Unified plugin protocols extending flext_cli via MRO with internal protocols.
 
     Extends cli_p to inherit all foundation protocols (Result, Service, etc.)

@@ -7,12 +7,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import t
+from flext_cli import t, t as flext_cli_t
 
 from flext_plugin._typings import FlextPluginTypingsBase, FlextPluginTypingsEvents
 
 
-class FlextPluginTypes(t, FlextPluginTypingsBase):
+class FlextPluginTypes(flext_cli_t, FlextPluginTypingsBase):
     """Plugin type system extending flext_cli via MRO with internal typings."""
 
     class Plugin(FlextPluginTypingsBase, FlextPluginTypingsEvents):
