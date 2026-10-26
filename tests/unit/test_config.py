@@ -47,8 +47,11 @@ class TestsFlextPluginConfig:
         )
         replacement = original.model_copy(update={"version": replacement_version})
         candidate = FlextPluginConfig(Plugin=replacement)
-        restored = FlextPluginConfig.model_validate_json(candidate.model_dump_json())
+        restored = FlextPluginConfig.model_validate_json(
+            candidate.model_dump_json(round_trip=True)
+        )
         tm.that(restored.Plugin.model_dump(), eq=replacement.model_dump())
+        tm.that(restored.model_dump(), eq=candidate.model_dump())
         tm.that(config.Plugin.model_dump(), eq=original.model_dump())
 
     @staticmethod
