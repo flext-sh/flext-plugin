@@ -13,8 +13,23 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_tests import api, d, e, h, r, td, tf, tk, tm, x
+    from flext_tests import (
+        api,
+        config,
+        d,
+        e,
+        h,
+        install_local_packages,
+        r,
+        settings,
+        td,
+        tf,
+        tk,
+        tm,
+        x,
+    )
 
+    from flext_plugin import cli, main, plugin
     from tests.base import TestsFlextPluginServiceBase, s
     from tests.constants import TestsFlextPluginConstants, c
     from tests.models import TestsFlextPluginModels, m
@@ -34,13 +49,19 @@ __all__: tuple[str, ...] = (
     "TestsFlextPluginUtilities",
     "api",
     "c",
+    "cli",
+    "config",
     "d",
     "e",
     "h",
+    "install_local_packages",
     "m",
+    "main",
     "p",
+    "plugin",
     "r",
     "s",
+    "settings",
     "t",
     "td",
     "tf",
@@ -63,13 +84,19 @@ install_lazy_exports(
         "TestsFlextPluginUtilities": ".utilities",
         "api": "flext_tests",
         "c": ".constants",
+        "cli": "flext_plugin",
+        "config": "flext_tests",
         "d": "flext_tests",
         "e": "flext_tests",
         "h": "flext_tests",
+        "install_local_packages": "flext_tests",
         "m": ".models",
+        "main": "flext_plugin",
         "p": ".protocols",
+        "plugin": "flext_plugin",
         "r": "flext_tests",
         "s": ".base",
+        "settings": "flext_tests",
         "t": ".typings",
         "td": "flext_tests",
         "tf": "flext_tests",

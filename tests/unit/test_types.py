@@ -56,7 +56,7 @@ class TestsFlextPluginTypesUnit:
 
     @staticmethod
     def test_event_handler_alias_is_declared() -> None:
-        """Plugin.EventHandler is published under its declared name."""
+        """Plugin is published under its declared name."""
         event_handler = FlextPluginTypes.Plugin.EventHandler
         tm.ok(hasattr(event_handler, "__value__"))
 
