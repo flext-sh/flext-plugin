@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import t, t as flext_cli_t
+from flext_cli import t as flext_cli_t
 
 from flext_plugin._typings import FlextPluginTypingsBase, FlextPluginTypingsEvents
 
