@@ -50,6 +50,21 @@ python -c "import flext_plugin; u.Cli.print('Setup successful')"
 
 ### FLEXT-Core Compliance
 
+The service foundation imports the public upstream `FlextService` class and
+publishes `s` only for `FlextPluginServiceBase`. These names must remain distinct
+so consumers inherit the plugin bootstrap contract through the service MRO.
+`runtime_bootstrap_options()` selects `FlextPluginSettings`; callers can inject
+their settings instance through `FlextPluginApi(runtime_settings=...)`.
+
+Configuration construction retains the required inherited `Cli` and
+`ProcessIsolation` namespaces alongside `Plugin`. Consumers constructing a new
+configuration supply those validated namespaces from the public configuration
+owner; they must not add local defaults to silence missing-argument diagnostics.
+Runtime acceptance exercises bootstrap settings selection and a real plugin
+register/fetch/unregister cycle through `FlextPluginApi`, including payload
+identity and independent-registry isolation. Import or CLI-help success alone
+does not establish those capabilities.
+
 - **r<T>**: All operations must return r
 - **Single Class Per Module**: Each module has one main class with nested helpers
 - **Clean Architecture**: Proper layer separation
