@@ -12,11 +12,6 @@ from __future__ import annotations
 
 from flext_core import FlextService
 
-from flext_plugin import p
 
-
-class FlextPluginServiceBase[TDomainResult: p.Base](FlextService[TDomainResult]):
+class FlextPluginServiceBase[TDomainResult](FlextService[TDomainResult]):
     """Base class for flext-plugin services with typed plugin settings access."""
-
-
-s = FlextPluginServiceBase
