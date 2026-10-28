@@ -14,7 +14,7 @@ from __future__ import annotations
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class FlextPluginConfigModels:
+class FlextPluginModelsConfig:
     """Namespace of typed flext-plugin config models."""
 
     class Version(BaseModel):
@@ -62,16 +62,16 @@ class FlextPluginConfigModels:
 
         model_config = ConfigDict(frozen=True, extra="forbid")
 
-        name: FlextPluginConfigModels.NameValidation = Field(
+        name: FlextPluginModelsConfig.NameValidation = Field(
             description="Plugin name validation thresholds.",
         )
-        description: FlextPluginConfigModels.DescriptionValidation = Field(
+        description: FlextPluginModelsConfig.DescriptionValidation = Field(
             description="Plugin description validation thresholds.",
         )
-        author: FlextPluginConfigModels.AuthorValidation = Field(
+        author: FlextPluginModelsConfig.AuthorValidation = Field(
             description="Plugin author validation thresholds.",
         )
-        docstring: FlextPluginConfigModels.DocstringValidation = Field(
+        docstring: FlextPluginModelsConfig.DocstringValidation = Field(
             description="Plugin docstring extraction rules.",
         )
 
@@ -92,15 +92,15 @@ class FlextPluginConfigModels:
 
         model_config = ConfigDict(frozen=True, extra="forbid")
 
-        version: FlextPluginConfigModels.Version = Field(
+        version: FlextPluginModelsConfig.Version = Field(
             description="Plugin version defaults and validation.",
         )
-        validation: FlextPluginConfigModels.Validation = Field(
+        validation: FlextPluginModelsConfig.Validation = Field(
             description="Plugin validation rule namespace.",
         )
-        files: FlextPluginConfigModels.Files = Field(
+        files: FlextPluginModelsConfig.Files = Field(
             description="Plugin file and directory defaults.",
         )
 
 
-__all__: list[str] = ["FlextPluginConfigModels"]
+__all__: list[str] = ["FlextPluginModelsConfig"]

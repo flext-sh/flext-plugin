@@ -7,11 +7,11 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_plugin.config_models import FlextPluginConfigModels as _ConfigModels
+from flext_plugin.config_models import FlextPluginModelsConfig as _ConfigModels
 
 
-class FlextPluginConfigModels(_ConfigModels):
+class FlextPluginModelsConfig(_ConfigModels):
     """Public model holder sharing the canonical configuration declarations."""
 
 
-__all__: list[str] = ["FlextPluginConfigModels"]
+__all__: list[str] = ["FlextPluginModelsConfig"]
