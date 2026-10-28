@@ -101,6 +101,15 @@ All modules follow the FLEXT single-class-per-module pattern:
 # ✅ COMPLIANT - Current implementation
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 class FlextPluginModels:
     """Unified plugin entities following FLEXT standards"""
@@ -153,6 +162,15 @@ pytest -m "not slow"   # Skip slow tests
 
 `````python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_plugin import FlextPlugin, PluginType
 
@@ -232,6 +250,15 @@ make status --tree
 ````python
 # Enable debug logging
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 logging.basicConfig(level=logging.DEBUG)
 

@@ -75,6 +75,15 @@ flext-plugin follows Clean Architecture principles with clear separation of conc
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 class FlextPlugin(FlextModels.Entity):
     """Core plugin entity with business rules"""
@@ -95,6 +104,15 @@ class FlextPlugin(FlextModels.Entity):
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 
 class FlextPluginConfig(FlextModels.Entity):
@@ -122,6 +140,15 @@ Coordinates all plugin operations:
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 
 class FlextPluginPlatform:
@@ -157,6 +184,15 @@ class FlextPluginPlatform:
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 class FileSystemPluginDiscovery:
     """Discovers plugins from file system"""
@@ -169,6 +205,15 @@ class FileSystemPluginDiscovery:
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from collections.abc import Callable
 
@@ -193,6 +238,15 @@ All operations return `r[T]` for railway-oriented programming:
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 def load_plugin(self, plugin: FlextPluginModels.Entity) -> p.Result[bool]:
     try:
@@ -209,6 +263,15 @@ Uses FlextContainer for service management:
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 def _setup_services(self) -> None:
     """Register services in DI container"""
@@ -221,6 +284,15 @@ Plugins can implement Singer tap/target patterns:
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 
 class SingerTapPlugin(FlextPlugin):

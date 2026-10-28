@@ -7,19 +7,16 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from collections.abc import Sequence
 
 from flext_cli.services.cli import FlextCliCli
-
-if TYPE_CHECKING:
-    from flext_plugin import t
 
 
 class FlextPluginCli(FlextCliCli):
     """Flext-plugin CLI facade — extends flext-cli CLI."""
 
 
-def main(args: t.StrSequence | None = None) -> int:
+def main(args: Sequence[str] | None = None) -> int:
     """Console-script entry point — commands are not implemented yet.
 
     Args:

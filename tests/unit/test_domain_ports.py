@@ -11,12 +11,13 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 import pytest
 
 from flext_plugin import FlextPluginDiscovery
-from tests import p, t, tm, u
+from tests import p, tm, u
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -273,7 +274,7 @@ class TestsFlextPluginDomainPorts:
         """Entry-point discovery ignores paths: same output regardless of input."""
         strategy = FlextPluginDiscovery.EntryPointStrategy(logger)
 
-        with_paths: t.StrSequence = ["some/path", "another"]
+        with_paths: Sequence[str] = ["some/path", "another"]
         ignored = strategy.discover(with_paths)
         empty = strategy.discover([])
 

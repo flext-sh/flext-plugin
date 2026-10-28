@@ -75,6 +75,15 @@ Create a file called `hello_plugin.py`:
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_plugin import PluginType, create_flext_plugin
 
 # Create a simple utility plugin
@@ -110,6 +119,15 @@ Create `platform_example.py`:
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_plugin import PluginType, create_flext_plugin, create_flext_plugin_platform
 
@@ -177,6 +195,15 @@ Create `custom_plugin.py`:
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_plugin import FlextPlugin, PluginStatus, PluginType
 
@@ -309,6 +336,15 @@ FLEXT Plugin can automatically discover plugins in directories:
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_plugin import FlextPluginDiscoveryService
 
 
@@ -338,6 +374,15 @@ Create `test_greeting_plugin.py`:
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 import pytest
 from custom_plugin import GreetingPlugin
@@ -427,6 +472,15 @@ change:
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_plugin import create_flext_plugin_platform, enable_hot_reload
 
 
@@ -504,6 +558,15 @@ pip install --force-reinstall flext-plugin
 ```text
 # Check plugin status and validation
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 print(f"Plugin valid: {plugin.is_valid()}")
 print(f"Plugin status: {plugin.status}")

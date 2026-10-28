@@ -6,6 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import MutableSequence, Sequence
 from typing import override
 
 from flext_cli import u
@@ -105,7 +106,7 @@ class FlextPluginPlatform:
             """
             return self.fetch_plugin(plugin_name).map(lambda plugin: plugin.is_enabled)
 
-        def list_plugins(self) -> p.Result[t.SequenceOf[p.Plugin.Instance]]:
+        def list_plugins(self) -> p.Result[Sequence[p.Plugin.Instance]]:
             """Resolve the canonical names, failing on invalid stored payloads.
 
             Returns:
@@ -114,18 +115,18 @@ class FlextPluginPlatform:
             """
             names = self.registry.list_plugins(c.Plugin.REGISTRY_CATEGORY)
             if names.failure:
-                return r[t.SequenceOf[p.Plugin.Instance]].from_failure(names)
-            plugins: t.MutableSequenceOf[p.Plugin.Instance] = []
+                return r[Sequence[p.Plugin.Instance]].from_failure(names)
+            plugins: MutableSequence[p.Plugin.Instance] = []
             for name in names.value:
                 plugin = self.fetch_plugin(name)
                 if plugin.failure:
-                    return r[t.SequenceOf[p.Plugin.Instance]].from_failure(plugin)
+                    return r[Sequence[p.Plugin.Instance]].from_failure(plugin)
                 plugins.append(plugin.value)
-            return r[t.SequenceOf[p.Plugin.Instance]].ok(plugins)
+            return r[Sequence[p.Plugin.Instance]].ok(plugins)
 
         def discover_plugins(
-            self, paths: t.StrSequence
-        ) -> p.Result[t.SequenceOf[p.Plugin.Instance]]:
+            self, paths: Sequence[str]
+        ) -> p.Result[Sequence[p.Plugin.Instance]]:
             """Discover and validate all payloads before publishing any entries.
 
             Returns:
@@ -133,13 +134,13 @@ class FlextPluginPlatform:
 
             """
             if self.discovery is None:
-                return r[t.SequenceOf[p.Plugin.Instance]].fail(
+                return r[Sequence[p.Plugin.Instance]].fail(
                     "Discovery protocol not configured"
                 )
             discovered = self.discovery.discover_plugins(paths)
             if discovered.failure:
-                return r[t.SequenceOf[p.Plugin.Instance]].from_failure(discovered)
-            plugins: t.MutableSequenceOf[p.Plugin.Instance] = []
+                return r[Sequence[p.Plugin.Instance]].from_failure(discovered)
+            plugins: MutableSequence[p.Plugin.Instance] = []
             for data in discovered.value:
                 candidate = u.validate_value(
                     m.Plugin.Entity,
@@ -150,13 +151,13 @@ class FlextPluginPlatform:
                     },
                 )
                 if candidate.failure:
-                    return r[t.SequenceOf[p.Plugin.Instance]].from_failure(candidate)
+                    return r[Sequence[p.Plugin.Instance]].from_failure(candidate)
                 plugins.append(candidate.value)
             for plugin in plugins:
                 registered = self.register_plugin(plugin)
                 if registered.failure:
-                    return r[t.SequenceOf[p.Plugin.Instance]].from_failure(registered)
-            return r[t.SequenceOf[p.Plugin.Instance]].ok(plugins)
+                    return r[Sequence[p.Plugin.Instance]].from_failure(registered)
+            return r[Sequence[p.Plugin.Instance]].ok(plugins)
 
         def load_plugin(self, plugin_path: str) -> p.Result[p.Plugin.Instance]:
             """Validate loader ingress once, then register the owned plugin.
@@ -236,11 +237,11 @@ class FlextPluginPlatform:
             """Return tracked execution state."""
             return self.executions.get(eid)
 
-        def list_executions(self) -> t.SequenceOf[p.Plugin.Run]:
+        def list_executions(self) -> Sequence[p.Plugin.Run]:
             """Return a snapshot of execution references."""
             return list(self.executions.values())
 
-        def list_running_executions(self) -> t.SequenceOf[p.Plugin.Run]:
+        def list_running_executions(self) -> Sequence[p.Plugin.Run]:
             """Return the currently running executions."""
             return [run for run in self.executions.values() if run.is_running]
 
@@ -295,7 +296,7 @@ class FlextPluginPlatform:
             )
 
         @staticmethod
-        def start_hot_reload(paths: t.StrSequence) -> p.Result[bool]:
+        def start_hot_reload(paths: Sequence[str]) -> p.Result[bool]:
             """Preserve the existing hot-reload lifecycle contract.
 
             Args:

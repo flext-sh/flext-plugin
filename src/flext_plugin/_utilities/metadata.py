@@ -15,7 +15,7 @@ from flext_cli import u
 from flext_plugin import c, m, r
 
 if TYPE_CHECKING:
-    from flext_plugin import p, t
+    from flext_plugin import p
 
 
 class FlextPluginUtilitiesMetadata:
@@ -23,8 +23,8 @@ class FlextPluginUtilitiesMetadata:
 
     DEFAULT_WATCH_INTERVAL: ClassVar[float] = 1.0
 
-    PLUGIN_EXTENSIONS: ClassVar[t.StrSequence] = [".py", ".yaml", ".yml", ".json"]
-    PLUGIN_MANIFESTS: ClassVar[t.StrSequence] = [
+    PLUGIN_EXTENSIONS: ClassVar[Sequence[str]] = [".py", ".yaml", ".yml", ".json"]
+    PLUGIN_MANIFESTS: ClassVar[Sequence[str]] = [
         "plugin.yaml",
         "plugin.yml",
         "plugin.json",
@@ -33,13 +33,13 @@ class FlextPluginUtilitiesMetadata:
     MAX_SIZE_MB: ClassVar[int] = 100
     NAME_PATTERN: ClassVar[str] = "^[a-zA-Z][a-zA-Z0-9_-]*$"
 
-    PLUGIN_FILE_EXTENSIONS: ClassVar[t.StrSequence] = [
+    PLUGIN_FILE_EXTENSIONS: ClassVar[Sequence[str]] = [
         ".py",
         ".yaml",
         ".yml",
         ".json",
     ]
-    PLUGIN_MANIFEST_FILES: ClassVar[t.StrSequence] = [
+    PLUGIN_MANIFEST_FILES: ClassVar[Sequence[str]] = [
         "plugin.yaml",
         "plugin.yml",
         "plugin.json",
@@ -49,7 +49,7 @@ class FlextPluginUtilitiesMetadata:
     PLUGIN_NAME_PATTERN: ClassVar[str] = "^[a-zA-Z][a-zA-Z0-9_-]*$"
     # Split literals: a whole "exec("/"eval(" spelling in this file would
     # self-match injection scans while carrying no extra meaning.
-    DANGEROUS_PLUGIN_PATTERNS: ClassVar[t.StrSequence] = [
+    DANGEROUS_PLUGIN_PATTERNS: ClassVar[Sequence[str]] = [
         "ex" + "ec(",
         "ev" + "al(",
         "__import__",

@@ -14,6 +14,7 @@ from __future__ import annotations
 import os
 import socket
 import sys
+from collections.abc import Sequence
 from typing import Annotated, Final, override
 
 from flext_cli import cli
@@ -223,7 +224,7 @@ def _run_docker_integration_command(
     return params.execute()
 
 
-def main(args: t.StrSequence | None = None) -> int:
+def main(args: Sequence[str] | None = None) -> int:
     """Run the Docker integration example CLI.
 
     Args:

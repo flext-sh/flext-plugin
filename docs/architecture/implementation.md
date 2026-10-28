@@ -59,6 +59,15 @@ recommendations based on the established Clean Architecture foundation.
 # flext_plugin/entities.py - Domain entities with business rules
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 class FlextPluginModels:
     """Domain entities following FLEXT single-class-per-module pattern."""
@@ -124,6 +133,15 @@ class FlextPluginModels:
 ```text
 # flext_plugin/services.py - Application services
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_plugin import FlextPluginModels
 
@@ -201,6 +219,15 @@ class FlextPluginServices:
 ```text
 # flext_plugin/discovery.py - Infrastructure adapters
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from pathlib import Path
 
@@ -294,6 +321,15 @@ class FlextPluginDiscovery:
 # flext_plugin/protocols.py - Structural typing protocols
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 import typing
 
 from flext_plugin import FlextPluginModels
@@ -356,6 +392,15 @@ class FlextPluginProtocols:
 # Example protocol implementation
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_plugin import FlextPluginProtocols
 
 
@@ -377,6 +422,15 @@ class FilePluginDiscovery(FlextPluginProtocols.PluginDiscovery):
 ```text
 # Railway pattern throughout the system
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 
 async def process_plugins_workflow(
@@ -430,6 +484,15 @@ async def _load_plugins(
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 # tests/unit/test_entities.py
 from flext_plugin import FlextPluginModels
@@ -490,6 +553,15 @@ class TestPluginEntity:
 ```text
 # tests/unit/test_services.py
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from unittest.mock import AsyncMock, MagicMock
 
@@ -564,6 +636,15 @@ class TestPluginServices:
 ```text
 # tests/integration/test_plugin_lifecycle.py
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 import pytest
 
@@ -671,6 +752,15 @@ License: MIT
 
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 import typing
 
 from flext_core import FlextContainer, p, r
@@ -761,6 +851,15 @@ __all__: list[str] = ["FlextPlugin[ModuleName]"]
 # Railway pattern for complex operations
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 async def complex_operation(
     self, input_data: FlextPluginTypes.ComplexInput
@@ -796,6 +895,15 @@ def _handle_error(self, error: str, input_data: FlextPluginTypes.ComplexInput) -
 ```text
 # flext_plugin/settings.py
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_core import m, t, u
 
@@ -981,6 +1089,15 @@ spec:
 # flext_plugin/health.py
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 class FlextPluginHealth:
     """Health check implementation for FLEXT Plugin system."""
@@ -1079,6 +1196,15 @@ class FlextPluginHealth:
 # flext_plugin/cache.py
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 import asyncio
 from datetime import datetime, timedelta
 
@@ -1135,6 +1261,15 @@ class FlextPluginCache:
 ```text
 # flext_plugin/executor.py
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 import asyncio
 from concurrent.futures import ThreadPoolExecutor

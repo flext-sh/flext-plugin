@@ -6,6 +6,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import MutableMapping
 from datetime import datetime
 from pathlib import Path
 from types import MappingProxyType
@@ -40,7 +41,7 @@ class FlextPluginModelsPlugin:
         executor: t.Port[p.Plugin.Execution] | None = m.Field(
             default=None, exclude=True, description="Optional plugin execution adapter"
         )
-        executions: t.MutableMappingKV[str, t.Port[p.Plugin.Run]] = m.Field(
+        executions: MutableMapping[str, t.Port[p.Plugin.Run]] = m.Field(
             default_factory=dict,
             exclude=True,
             description="Execution records owned by this platform instance",
