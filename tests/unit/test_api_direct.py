@@ -31,10 +31,8 @@ class TestsFlextPluginApi:
         """The service base selects its settings owner without copying its API."""
         supplied = FlextPluginSettings()
         api = FlextPluginApi(runtime_settings=supplied)
-        options: p.RuntimeBootstrapOptions = api.runtime_bootstrap_options()
         runtime_settings: p.Settings = api.settings
-        tm.that(isinstance(options, p.RuntimeBootstrapOptions), truth=True)
-        tm.that(options.settings_type is FlextPluginSettings, truth=True)
+        tm.that(api.settings_type is FlextPluginSettings, truth=True)
         tm.that(isinstance(runtime_settings, p.Settings), truth=True)
         tm.that(runtime_settings.model_dump(), eq=supplied.model_dump())
 
