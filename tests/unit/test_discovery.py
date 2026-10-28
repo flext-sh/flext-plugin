@@ -26,8 +26,8 @@ if TYPE_CHECKING:
 class TestsFlextPluginDiscovery:
     """Behavioral tests for the plugin discovery public contract."""
 
-    @staticmethod
     @pytest.fixture
+    @staticmethod
     def discovery() -> FlextPluginDiscovery:
         """Provide a fresh discovery instance.
 
@@ -37,8 +37,8 @@ class TestsFlextPluginDiscovery:
         """
         return FlextPluginDiscovery()
 
-    @staticmethod
     @pytest.fixture
+    @staticmethod
     def plugin_tree() -> Generator[Path]:
         """Create a directory tree with two plugin files and ignored entries.
 
