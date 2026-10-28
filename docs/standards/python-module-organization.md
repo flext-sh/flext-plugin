@@ -1104,7 +1104,7 @@ class PluginCache:
 
     def cache_plugin_result(
         self,
-        cache_key_func: collections.abc.Callable[..., str],
+        cache_key_func: collections.abc.Callable[..., ...]
         invalidate_on_plugin_change: bool = True,
     ):
         """Decorator for caching plugin operation results."""

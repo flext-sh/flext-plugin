@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 
-from tests import m, t, tm, u
+from tests import m, tm, u
 
 
 def _examples_dir() -> Path:
@@ -46,7 +46,7 @@ class TestsFlextPluginExamples:
     )
     def test_example_script_runs_to_success(
         module: str,
-        args: t.VariadicTuple[str],
+        args: tuple[str, ...],
     ) -> None:
         """Each example exits 0 and emits no traceback to stderr."""
         result = u.Cli.run_raw(

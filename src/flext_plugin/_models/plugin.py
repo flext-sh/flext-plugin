@@ -272,7 +272,7 @@ class FlextPluginModelsPlugin:
         plugin_type: Annotated[str, m.Field(description="Type of plugin")] = "extension"
         entry_point: Annotated[str, m.Field(description="Entry point for plugin")]
         dependencies: Annotated[
-            t.VariadicTuple[str],
+            tuple[str, ...],
             m.Field(description="List of plugin dependencies"),
         ] = m.Field(default_factory=tuple)
         metadata: Annotated[

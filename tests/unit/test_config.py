@@ -17,7 +17,7 @@ import pytest
 from flext_core import FlextSettings
 
 from flext_plugin import FlextPluginConfig, FlextPluginSettings, config
-from tests import t, tm, u
+from tests import tm, u
 
 # NOTE (multi-agent): no-mock/SSOT rewrite — the old _ROOT_FIELDS list asserted the
 # absence of 7 fields (app_name, enable_caching, cache_ttl, max_workers,
@@ -26,7 +26,7 @@ from tests import t, tm, u
 # the runtime SSOT instead: FlextSettings.model_fields is the single source of
 # truth for the universal operational fields (debug/trace/log_level/timezone/
 # async_logging), and FlextPluginSettings must neither add nor drop fields.
-_UNIVERSAL_FIELDS: t.VariadicTuple[str] = (
+_UNIVERSAL_FIELDS: tuple[str, ...] = (
     "debug",
     "trace",
     "log_level",

@@ -33,4 +33,4 @@ def main(args: t.StrSequence | None = None) -> int:
     return 0
 
 
-__all__: t.VariadicTuple[str] = ("FlextPluginCli", "main")
+__all__: tuple[str, ...] = ("FlextPluginCli", "main")

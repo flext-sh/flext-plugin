@@ -75,8 +75,7 @@ class TestsFlextPluginImports:
 
     @staticmethod
     @pytest.mark.parametrize(
-        "alias",
-        ["c", "d", "e", "h", "m", "p", "r", "s", "t", "u", "x"],
+        "alias", ["c", "d", "e", "h", "m", "p", "r", "s", "t", "u", ...]
     )
     def test_short_facade_aliases_are_exposed(alias: str) -> None:
         """Each short facade alias is published and resolves to an object."""
