@@ -19,7 +19,7 @@ _Type = c.Plugin.Type
 _Status = c.Plugin.PluginStatus
 
 
-class TestsFlextPluginCoreTypes:
+class TestsFlextPluginTypesCore:
     """Behavioral contract of c.Plugin.Type / PluginStatus enums and errors."""
 
     @staticmethod
