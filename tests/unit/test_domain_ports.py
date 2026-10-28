@@ -31,13 +31,11 @@ class TestsFlextPluginDomainPorts:
     """
 
     @pytest.fixture
-    @staticmethod
     def logger() -> p.Logger:
         """Return a real logger for strategy/static-method construction."""
         return u.fetch_logger("tests.flext_plugin.discovery")
 
     @pytest.fixture
-    @staticmethod
     def discovery() -> FlextPluginDiscovery:
         """Return a fresh discovery facade instance."""
         return FlextPluginDiscovery()
