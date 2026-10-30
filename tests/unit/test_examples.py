@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 
-from tests import m, t, tm, u
+from tests import m, tm, u
 
 
 def _examples_dir() -> Path:
@@ -46,7 +46,7 @@ class TestsFlextPluginExamples:
     )
     def test_example_script_runs_to_success(
         module: str,
-        args: t.VariadicTuple[str],
+        args: tuple[str, ...],
     ) -> None:
         """Each example exits 0 and emits no traceback to stderr."""
         result = u.Cli.run_raw(
@@ -57,7 +57,7 @@ class TestsFlextPluginExamples:
 
         tm.ok(result)
         output = result.value
-        tm.that(u.Cli.process_succeeded(output.outcome), eq=True)
+        tm.ok(u.Cli.process_succeeded(output.outcome))
         tm.that(output.stderr, lacks="Traceback (most recent call last)")
 
     @staticmethod
@@ -88,8 +88,8 @@ class TestsFlextPluginExamples:
         )
 
         tm.ok(result)
-        tm.that(u.Cli.process_succeeded(result.value.outcome), eq=True)
+        tm.ok(u.Cli.process_succeeded(result.value.outcome))
         output = result.value.stdout
         tm.that(output, has="Service Connectivity Check")
-        assert "Available" in output or "Unavailable" in output
+        tm.that("Available" in output or "Unavailable" in output, truth=True)
         tm.that(output, lacks="Skipped")

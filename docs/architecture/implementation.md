@@ -59,6 +59,15 @@ recommendations based on the established Clean Architecture foundation.
 # flext_plugin/entities.py - Domain entities with business rules
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 class FlextPluginModels:
     """Domain entities following FLEXT single-class-per-module pattern."""
@@ -124,6 +133,15 @@ class FlextPluginModels:
 ```text
 # flext_plugin/services.py - Application services
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_plugin import FlextPluginModels
 
@@ -201,6 +219,15 @@ class FlextPluginServices:
 ```text
 # flext_plugin/discovery.py - Infrastructure adapters
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from pathlib import Path
 
@@ -294,6 +321,15 @@ class FlextPluginDiscovery:
 # flext_plugin/protocols.py - Structural typing protocols
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 import typing
 
 from flext_plugin import FlextPluginModels
@@ -356,6 +392,15 @@ class FlextPluginProtocols:
 # Example protocol implementation
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_plugin import FlextPluginProtocols
 
 
@@ -377,6 +422,15 @@ class FilePluginDiscovery(FlextPluginProtocols.PluginDiscovery):
 ```text
 # Railway pattern throughout the system
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 
 async def process_plugins_workflow(
@@ -431,6 +485,15 @@ async def _load_plugins(
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 # tests/unit/test_entities.py
 from flext_plugin import FlextPluginModels
 
@@ -444,9 +507,9 @@ class TestPluginEntity:
             name="test-plugin", plugin_version="1.0.0", settings={"type": "extension"}
         )
 
-        assert plugin.name == "test-plugin"
-        assert plugin.plugin_version == "1.0.0"
-        assert plugin.status == PluginStatus.INACTIVE
+        tm.that(plugin.name, eq="test-plugin")
+        tm.that(plugin.plugin_version, eq="1.0.0")
+        tm.that(plugin.status, eq=PluginStatus.INACTIVE)
 
     def test_plugin_validation_business_rules(self):
         """Test plugin business rule validation."""
@@ -455,14 +518,14 @@ class TestPluginEntity:
             name="valid-plugin", plugin_version="1.0.0", settings={}
         )
         result = plugin.validate_business_rules()
-        assert result.success
+        tm.ok(result.success)
 
         # Invalid plugin (empty name)
         plugin = FlextPluginModels.Plugin.create(
             name="", plugin_version="1.0.0", settings={}
         )
         result = plugin.validate_business_rules()
-        assert result.failure
+        tm.fail(result)
         assert "name cannot be empty" in result.error
 
     def test_plugin_activation_workflow(self):
@@ -473,16 +536,16 @@ class TestPluginEntity:
 
         # Should fail validation initially
         result = plugin.validate_business_rules()
-        assert result.failure
+        tm.fail(result)
 
         # Fix configuration and activate
         plugin.settings = {"type": "extension", "author": "test"}
         result = plugin.validate_business_rules()
-        assert result.success
+        tm.ok(result.success)
 
         activation_result = plugin.activate()
         assert activation_result.success
-        assert plugin.status == PluginStatus.ACTIVE
+        tm.that(plugin.status, eq=PluginStatus.ACTIVE)
 ```
 
 #### **Application Service Testing**
@@ -490,6 +553,15 @@ class TestPluginEntity:
 ```text
 # tests/unit/test_services.py
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from unittest.mock import AsyncMock, MagicMock
 
@@ -531,11 +603,11 @@ class TestPluginServices:
         result = await plugin_service.discover_plugins(["/plugins"], mock_discovery)
 
         # Verify results
-        assert result.success
+        tm.ok(result.success)
         plugins = result.unwrap()
-        assert len(plugins) == 1
-        assert plugins[0].name == "test-plugin"
-        assert plugins[0].plugin_version == "1.0.0"
+        tm.that(len(plugins), eq=1)
+        tm.that(plugins[0].name, eq="test-plugin")
+        tm.that(plugins[0].plugin_version, eq="1.0.0")
 
     @pytest.mark.asyncio
     async def test_discover_plugins_validation_failure(self, plugin_service):
@@ -552,9 +624,9 @@ class TestPluginServices:
         result = await plugin_service.discover_plugins(["/plugins"], mock_discovery)
 
         # Should succeed but with empty list (invalid plugin filtered out)
-        assert result.success
+        tm.ok(result.success)
         plugins = result.unwrap()
-        assert len(plugins) == 0
+        tm.that(len(plugins), eq=0)
 ```
 
 ### Integration Testing Patterns
@@ -564,6 +636,15 @@ class TestPluginServices:
 ```text
 # tests/integration/test_plugin_lifecycle.py
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 import pytest
 
@@ -614,10 +695,10 @@ def create_plugin():
         assert discovery_result.success
 
         plugins = discovery_result.unwrap()
-        assert len(plugins) == 1
+        tm.that(len(plugins), eq=1)
 
         plugin = plugins[0]
-        assert plugin.name == "test-plugin"
+        tm.that(plugin.name, eq="test-plugin")
 
         # 2. Load plugin
         load_result = await platform.load_plugin(
@@ -626,20 +707,20 @@ def create_plugin():
         assert load_result.success
 
         loaded_plugin = load_result.unwrap()
-        assert loaded_plugin.name == "test-plugin"
+        tm.that(loaded_plugin.name, eq="test-plugin")
 
         # 3. Register plugin
         register_result = await platform.register_plugin(loaded_plugin)
         assert register_result.success
 
         # 4. Execute plugin
-        context = {"input": "test data", "operation": "test"}
+        context = {"input": "test data", c.ContextScope.OPERATION: "test"}
         execution_result = await platform.execute_plugin(
             "test-plugin", context, execution_id="test-execution-123"
         )
 
         # Execution might fail for test plugin, but should return proper result
-        assert execution_result.success or execution_result.failure
+        tm.fail(execution_result.success or execution_result)
         # (Actual execution depends on plugin implementation)
 
         # 5. Verify execution history
@@ -670,6 +751,15 @@ License: MIT
 """
 
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 import typing
 
@@ -761,6 +851,15 @@ __all__: list[str] = ["FlextPlugin[ModuleName]"]
 # Railway pattern for complex operations
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 async def complex_operation(
     self, input_data: FlextPluginTypes.ComplexInput
@@ -797,6 +896,15 @@ def _handle_error(self, error: str, input_data: FlextPluginTypes.ComplexInput) -
 # flext_plugin/settings.py
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_core import m, t, u
 
 
@@ -827,7 +935,7 @@ class FlextPluginSettings(m.BaseModel):
     enable_tracing: bool = u.Field(default=True)
     metrics_interval: int = u.Field(default=60, ge=10, le=3600)
 
-    @u.field_validator("plugin_paths")
+    @m.field_validator("plugin_paths")
     @classmethod
     def validate_plugin_paths(cls, paths: t.StringList) -> t.StringList:
         """Validate plugin paths exist or are valid."""
@@ -981,6 +1089,15 @@ spec:
 # flext_plugin/health.py
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 class FlextPluginHealth:
     """Health check implementation for FLEXT Plugin system."""
@@ -1079,6 +1196,15 @@ class FlextPluginHealth:
 # flext_plugin/cache.py
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 import asyncio
 from datetime import datetime, timedelta
 
@@ -1135,6 +1261,15 @@ class FlextPluginCache:
 ```text
 # flext_plugin/executor.py
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 import asyncio
 from concurrent.futures import ThreadPoolExecutor

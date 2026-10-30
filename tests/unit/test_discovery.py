@@ -26,7 +26,6 @@ if TYPE_CHECKING:
 class TestsFlextPluginDiscovery:
     """Behavioral tests for the plugin discovery public contract."""
 
-    @staticmethod
     @pytest.fixture
     def discovery() -> FlextPluginDiscovery:
         """Provide a fresh discovery instance.
@@ -37,7 +36,6 @@ class TestsFlextPluginDiscovery:
         """
         return FlextPluginDiscovery()
 
-    @staticmethod
     @pytest.fixture
     def plugin_tree() -> Generator[Path]:
         """Create a directory tree with two plugin files and ignored entries.
@@ -90,7 +88,7 @@ class TestsFlextPluginDiscovery:
 
         tm.ok(result)
         names = {data.name for data in result.unwrap()}
-        assert {"alpha_plugin", "beta_plugin"} <= names
+        tm.that({"alpha_plugin", "beta_plugin"} <= names, truth=True)
 
     @staticmethod
     def test_discover_plugins_ignores_private_and_non_python_files(
@@ -184,7 +182,7 @@ class TestsFlextPluginDiscovery:
         result = discovery.validate_plugin(plugin_data=discovered)
 
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())
 
     # ------------------------------------------------------------------ #
     # discover_python_plugins_in_directory                                #

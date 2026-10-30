@@ -12,7 +12,6 @@ from __future__ import annotations
 import asyncio
 
 import pytest
-from flext_cli import t as cli_t
 
 import flext_plugin
 from flext_plugin import FlextPluginTypes
@@ -25,12 +24,12 @@ class TestsFlextPluginTypesUnit:
     @staticmethod
     def test_facade_exposes_inherited_cli_type_aliases() -> None:
         """The facade resolves inherited CLI type aliases to the same objects."""
-        tm.that(FlextPluginTypes.JsonMapping is cli_t.JsonMapping, eq=True)
+        tm.ok(FlextPluginTypes.JsonMapping is t.JsonMapping)
 
     @staticmethod
     def test_module_alias_is_the_facade() -> None:
         """The module-level ``t`` alias exposes the facade itself."""
-        tm.that(flext_plugin.t is FlextPluginTypes, eq=True)
+        tm.ok(flext_plugin.t is FlextPluginTypes)
 
     @staticmethod
     def test_tests_facade_exposes_plugin_namespace() -> None:
@@ -44,39 +43,38 @@ class TestsFlextPluginTypesUnit:
     @pytest.mark.parametrize("inherited_alias", ["JsonMapping"])
     def test_inherits_cli_type_aliases(inherited_alias: str) -> None:
         """flext_cli type aliases remain reachable through the facade."""
-        tm.that(hasattr(FlextPluginTypes, inherited_alias), eq=True)
+        tm.ok(hasattr(FlextPluginTypes, inherited_alias))
         tm.that(
-            getattr(FlextPluginTypes, inherited_alias)
-            is getattr(cli_t, inherited_alias),
+            getattr(FlextPluginTypes, inherited_alias) is getattr(t, inherited_alias),
             eq=True,
         )
 
     @staticmethod
     def test_plugin_namespace_is_exposed() -> None:
         """The Plugin domain namespace is a public attribute of the facade."""
-        tm.that(hasattr(FlextPluginTypes, "Plugin"), eq=True)
+        tm.ok(hasattr(FlextPluginTypes, "Plugin"))
 
     @staticmethod
     def test_event_handler_alias_is_declared() -> None:
-        """Plugin.EventHandler is published under its declared name."""
+        """Plugin is published under its declared name."""
         event_handler = FlextPluginTypes.Plugin.EventHandler
-        tm.that(hasattr(event_handler, "__value__"), eq=True)
+        tm.ok(hasattr(event_handler, "__value__"))
 
     @staticmethod
     def test_event_handler_resolves_to_async_json_mapping_signature() -> None:
         """EventHandler is a JsonMapping -> Awaitable[JsonMapping] callable."""
         resolved = repr(FlextPluginTypes.Plugin.EventHandler.__value__)
-        tm.that("Callable" in resolved, eq=True)
-        tm.that("Awaitable" in resolved, eq=True)
-        tm.that("JsonMapping" in resolved, eq=True)
+        tm.ok("Callable" in resolved)
+        tm.ok("Awaitable" in resolved)
+        tm.ok("JsonMapping" in resolved)
 
     @staticmethod
     def test_event_handler_is_usable_as_annotation() -> None:
         """The alias is a valid, concrete annotation for handler callables."""
 
-        async def handler(payload: cli_t.JsonMapping) -> cli_t.JsonMapping:
+        async def handler(payload: t.JsonMapping) -> t.JsonMapping:
             await asyncio.sleep(0)
             return payload
 
         annotated: FlextPluginTypes.Plugin.EventHandler = handler
-        tm.that(annotated is handler, eq=True)
+        tm.ok(annotated is handler)

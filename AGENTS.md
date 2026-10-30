@@ -24,7 +24,7 @@ src/flext_plugin/
 ├── _utilities/
 │   ├── discovery.py         # discover_plugins
 │   ├── implementations.py
-│   └── plugin_platform.py   # platform (delegated to via _build_default_platform / _platform)
+│   └── plugin_platform.py   # lifecycle service inherited by the API through MRO
 ├── constants.py typings.py protocols.py models.py utilities.py   # AUTO-GENERATED facets
 └── _config.py
 ```
@@ -41,7 +41,12 @@ src/flext_plugin/
   hot reload is managed through the facade.
 - Registration/discovery is protocol-driven (`p.*`); depend on abstractions, not
   concrete plugin classes.
-- Config/settings canonical pattern: ADR-012.
+- `api.py` is the only registry composition root. `FlextPluginApi()` owns an
+  instance-scoped registry; sharing requires injecting the same `p.Registry`.
+  Services inherit required ports from `m.Plugin.PortOptions` and never construct
+  registries or mirror registered plugins in another cache. API operations are
+  inherited directly, not accessed through a separate `.platform` object.
+- Config/settings canonical pattern: ADR-005 (SSOT) and ADR-024 (DI config contract).
 - Codemod governance (ast-grep + make mod): ADR-014.
 
 ## Commands
@@ -51,7 +56,7 @@ member — `PROJECT=` is not a root Make variable):
 
 ```bash
 make check
-make test
+make tests
 ```
 
 <!-- AIHUB-AGENTS-SCOPE-LOCAL-END -->

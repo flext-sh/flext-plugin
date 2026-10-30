@@ -13,7 +13,7 @@ from pathlib import Path
 
 from flext_cli import u
 
-from flext_plugin import c, m, p, r, t
+from flext_plugin import c, m, p, r
 
 
 class FlextPluginDiscovery:
@@ -27,7 +27,7 @@ class FlextPluginDiscovery:
     def __init__(self) -> None:
         """Initialize discovery with all strategies."""
         self.logger = u.fetch_logger(__name__)
-        self.strategies: t.SequenceOf[p.Plugin.DiscoveryStrategy] = [
+        self.strategies: Sequence[p.Plugin.DiscoveryStrategy] = [
             self.FileSystemStrategy(self.logger),
             self.EntryPointStrategy(self.logger),
         ]
@@ -37,7 +37,7 @@ class FlextPluginDiscovery:
         path: Path,
         discover_file: Callable[[Path], TDiscovery | None],
         logger: p.Logger,
-    ) -> t.SequenceOf[TDiscovery]:
+    ) -> Sequence[TDiscovery]:
         """Discover Python plugins recursively in a directory.
 
         Args:
@@ -102,7 +102,7 @@ class FlextPluginDiscovery:
 
     def discover_plugins(
         self,
-        paths: t.StrSequence,
+        paths: Sequence[str],
     ) -> p.Result[Sequence[m.Plugin.DiscoveryData]]:
         """Discover plugins using all strategies.
 
@@ -174,7 +174,7 @@ class FlextPluginDiscovery:
 
     def _discover_unique_plugins(
         self,
-        paths: t.StrSequence,
+        paths: Sequence[str],
     ) -> MutableMapping[str, m.Plugin.DiscoveryData]:
         """Discover unique plugins across all configured strategies.
 
@@ -233,7 +233,7 @@ class FlextPluginDiscovery:
 
         def discover(
             self,
-            paths: t.StrSequence,
+            paths: Sequence[str],
         ) -> p.Result[Sequence[m.Plugin.DiscoveryData]]:
             """Discover plugins in file system paths.
 
@@ -262,7 +262,7 @@ class FlextPluginDiscovery:
         def _discover_directory(
             self,
             path: Path,
-        ) -> t.SequenceOf[m.Plugin.DiscoveryData]:
+        ) -> Sequence[m.Plugin.DiscoveryData]:
             """Recursively discover plugins in directory.
 
             Args:
@@ -304,7 +304,7 @@ class FlextPluginDiscovery:
                 metadata={},
             )
 
-        def _discover_path(self, path_str: str) -> t.SequenceOf[m.Plugin.DiscoveryData]:
+        def _discover_path(self, path_str: str) -> Sequence[m.Plugin.DiscoveryData]:
             """Discover plugins from one path string.
 
             Args:
@@ -331,8 +331,8 @@ class FlextPluginDiscovery:
 
         def _discover_paths(
             self,
-            paths: t.StrSequence,
-        ) -> t.SequenceOf[m.Plugin.DiscoveryData]:
+            paths: Sequence[str],
+        ) -> Sequence[m.Plugin.DiscoveryData]:
             """Discover plugins from all path strings.
 
             Args:
@@ -352,7 +352,7 @@ class FlextPluginDiscovery:
 
         def discover(
             self,
-            paths: t.StrSequence,
+            paths: Sequence[str],
         ) -> p.Result[Sequence[m.Plugin.DiscoveryData]]:
             """Discover plugins using entry points (paths ignored).
 
@@ -413,7 +413,7 @@ class FlextPluginDiscovery:
                 metadata={"entry_point": f"{entry_point.module}:{entry_point.attr}"},
             )
 
-        def _discover_entry_points(self) -> t.SequenceOf[m.Plugin.DiscoveryData]:
+        def _discover_entry_points(self) -> Sequence[m.Plugin.DiscoveryData]:
             """Discover plugins from the installed entry point registry.
 
             Returns:

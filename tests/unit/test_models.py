@@ -55,8 +55,8 @@ class TestsFlextPluginModelsUnit:
     ) -> None:
         """Operational statuses are reported operational and not error states."""
         tm.that(c.Plugin.PluginStatus.get_operational_statuses(), has=status)
-        tm.that(status.is_operational(), eq=True)
-        tm.that(status.is_error_state(), eq=False)
+        tm.ok(status.is_operational())
+        tm.fail(status.is_error_state())
 
     @staticmethod
     @pytest.mark.parametrize(
@@ -72,8 +72,8 @@ class TestsFlextPluginModelsUnit:
     ) -> None:
         """Error statuses report as error states and never as operational."""
         tm.that(c.Plugin.PluginStatus.get_error_statuses(), has=status)
-        tm.that(status.is_error_state(), eq=True)
-        tm.that(status.is_operational(), eq=False)
+        tm.ok(status.is_error_state())
+        tm.fail(status.is_operational())
 
     @staticmethod
     @pytest.mark.parametrize(
@@ -110,8 +110,8 @@ class TestsFlextPluginModelsUnit:
         )
         tm.that(plugin.name, eq="test-plugin")
         tm.that(plugin.plugin_version, eq="1.2.3")
-        assert plugin.plugin_type is c.Plugin.Type.UTILITY
-        tm.that(plugin.is_enabled, eq=True)
+        tm.that(plugin.plugin_type is c.Plugin.Type.UTILITY, truth=True)
+        tm.ok(plugin.is_enabled)
 
     @staticmethod
     def test_entity_applies_documented_field_defaults() -> None:
@@ -120,8 +120,8 @@ class TestsFlextPluginModelsUnit:
         tm.that(plugin.plugin_version, eq=c.Plugin.DEFAULT_PLUGIN_VERSION)
         tm.that(plugin.description, eq="")
         tm.that(plugin.author, eq="")
-        assert plugin.plugin_type is c.Plugin.Type.UTILITY
-        tm.that(plugin.is_enabled, eq=True)
+        tm.that(plugin.plugin_type is c.Plugin.Type.UTILITY, truth=True)
+        tm.ok(plugin.is_enabled)
         tm.that(dict(plugin.metadata), eq={})
 
     @staticmethod
@@ -133,7 +133,7 @@ class TestsFlextPluginModelsUnit:
     @staticmethod
     @pytest.mark.parametrize(
         "bad_version",
-        ["invalid-version", "1", "1.0.0.0", "a.b.c", "x.y"],
+        ["invalid-version", c.ParserBooleanToken.ONE, "1.0.0.0", "a.b.c", "x.y"],
     )
     def test_entity_rejects_non_semantic_version(bad_version: str) -> None:
         """Versions outside the X.Y[.Z] numeric form are refused."""
@@ -155,7 +155,7 @@ class TestsFlextPluginModelsUnit:
         plugin = m.Plugin.Entity(name="valid", plugin_version="1.0.0")
         result = FlextPluginPlatform.Rules.validate_business_rules(plugin)
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())
 
     # ---- explicit-type construction -------------------------------------
 
@@ -169,7 +169,7 @@ class TestsFlextPluginModelsUnit:
         )
         tm.that(plugin.name, eq="factory-plugin")
         tm.that(plugin.plugin_version, eq="2.0.0")
-        assert plugin.plugin_type is c.Plugin.Type.SERVICE
+        tm.that(plugin.plugin_type is c.Plugin.Type.SERVICE, truth=True)
 
     # ---- PluginMetadata value object ------------------------------------
 

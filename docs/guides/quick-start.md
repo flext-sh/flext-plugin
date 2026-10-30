@@ -75,6 +75,15 @@ Create a file called `hello_plugin.py`:
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_plugin import PluginType, create_flext_plugin
 
 # Create a simple utility plugin
@@ -110,6 +119,15 @@ Create `platform_example.py`:
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_plugin import PluginType, create_flext_plugin, create_flext_plugin_platform
 
@@ -178,6 +196,15 @@ Create `custom_plugin.py`:
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_plugin import FlextPlugin, PluginStatus, PluginType
 
 
@@ -200,7 +227,7 @@ class GreetingPlugin(FlextPlugin):
         """Initialize plugin resources."""
         print(f"Initializing {self.name}...")
         # Setup any resources here
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)=True)
 
     def execute(self, data: dict) -> p.Result[dict]:
         """Generate greeting based on input data."""
@@ -240,7 +267,7 @@ class GreetingPlugin(FlextPlugin):
     def cleanup(self) -> p.Result[bool]:
         """Cleanup plugin resources."""
         print(f"Cleaning up {self.name}...")
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)=True)
 
 
 # Usage example
@@ -309,6 +336,15 @@ FLEXT Plugin can automatically discover plugins in directories:
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_plugin import FlextPluginDiscoveryService
 
 
@@ -339,6 +375,15 @@ Create `test_greeting_plugin.py`:
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 import pytest
 from custom_plugin import GreetingPlugin
 
@@ -362,14 +407,14 @@ class TestGreetingPlugin:
 
     def test_plugin_creation(self, plugin):
         """Test plugin creation."""
-        assert plugin.name == "greeting-generator"
-        assert plugin.plugin_version == "0.9.9"
+        tm.that(plugin.name, eq="greeting-generator")
+        tm.that(plugin.plugin_version, eq="0.9.9")
         assert plugin.is_valid()
 
     def test_plugin_initialization(self, plugin):
         """Test plugin initialization."""
         result = plugin.initialize()
-        assert result.success
+        tm.ok(result.success)
 
     def test_greeting_generation(self, plugin):
         """Test greeting generation."""
@@ -378,12 +423,12 @@ class TestGreetingPlugin:
 
         # Test English greeting
         result = plugin.execute({"name": "Test", "language": "english"})
-        assert result.success
+        tm.ok(result.success)
         assert result.value["greeting"] == "Hello, Test!"
 
         # Test Spanish greeting
         result = plugin.execute({"name": "Test", "language": "spanish"})
-        assert result.success
+        tm.ok(result.success)
         assert result.value["greeting"] == "¡Hola, Test!"
 
     def test_platform_integration(self, platform, plugin):
@@ -426,6 +471,15 @@ change:
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_plugin import create_flext_plugin_platform, enable_hot_reload
 
@@ -504,6 +558,15 @@ pip install --force-reinstall flext-plugin
 ```text
 # Check plugin status and validation
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 print(f"Plugin valid: {plugin.is_valid()}")
 print(f"Plugin status: {plugin.status}")

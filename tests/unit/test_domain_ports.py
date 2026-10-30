@@ -11,12 +11,13 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 import pytest
 
 from flext_plugin import FlextPluginDiscovery
-from tests import p, t, tm, u
+from tests import p, tm, u
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -30,13 +31,11 @@ class TestsFlextPluginDomainPorts:
     attribute or internal-collaborator access.
     """
 
-    @staticmethod
     @pytest.fixture
     def logger() -> p.Logger:
         """Return a real logger for strategy/static-method construction."""
         return u.fetch_logger("tests.flext_plugin.discovery")
 
-    @staticmethod
     @pytest.fixture
     def discovery() -> FlextPluginDiscovery:
         """Return a fresh discovery facade instance."""
@@ -75,9 +74,9 @@ class TestsFlextPluginDomainPorts:
         """An unresolvable path yields a failure result, never a raised error."""
         result = discovery.discover_plugin(missing_path)
 
-        tm.that(result.success, eq=False)
+        tm.fail(result.success)
         tm.that(result.error, is_=str)
-        assert result.error
+        tm.that(result.error, truth=True)
 
     @staticmethod
     def test_discover_plugin_failure_unwrap_raises(
@@ -86,7 +85,7 @@ class TestsFlextPluginDomainPorts:
         """Unwrapping a failed discovery raises rather than fabricating data."""
         result = discovery.discover_plugin("no/such/plugin_qwerty.py")
 
-        tm.that(result.success, eq=False)
+        tm.fail(result.success)
         with pytest.raises(RuntimeError):
             result.unwrap()
 
@@ -101,7 +100,7 @@ class TestsFlextPluginDomainPorts:
         """No search paths still succeeds and yields an empty sequence."""
         result = discovery.discover_plugins([])
 
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
         tm.that(list(result.unwrap()), eq=[])
 
     def test_discover_plugins_directory_returns_success_sequence(
@@ -114,7 +113,7 @@ class TestsFlextPluginDomainPorts:
 
         result = discovery.discover_plugins([str(tmp_path)])
 
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
         discovered = list(result.unwrap())
         # Names, when present, are unique (facade dedupes by plugin name).
         names = [item.name for item in discovered]
@@ -128,7 +127,7 @@ class TestsFlextPluginDomainPorts:
         first = discovery.discover_plugins([])
         second = discovery.discover_plugins([])
 
-        assert first.success is second.success is True
+        tm.that(first.success is second.success is True, truth=True)
         tm.that(list(first.unwrap()), eq=list(second.unwrap()))
 
     # ------------------------------------------------------------------ #
@@ -177,7 +176,7 @@ class TestsFlextPluginDomainPorts:
             logger,
         )
 
-        assert (filename in discovered) is expected_present
+        tm.that((filename in discovered) is expected_present, truth=True)
 
     @staticmethod
     def test_directory_walk_skips_dunder_directories(
@@ -241,7 +240,7 @@ class TestsFlextPluginDomainPorts:
 
         result = strategy.discover([])
 
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
         tm.that(list(result.unwrap()), eq=[])
 
     @staticmethod
@@ -253,7 +252,7 @@ class TestsFlextPluginDomainPorts:
 
         result = strategy.discover(["   "])
 
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
         tm.that(list(result.unwrap()), eq=[])
 
     @staticmethod
@@ -265,7 +264,7 @@ class TestsFlextPluginDomainPorts:
 
         result = strategy.discover([])
 
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
         tm.that(list(result.unwrap()), eq=list(result.unwrap()))
 
     @staticmethod
@@ -275,9 +274,9 @@ class TestsFlextPluginDomainPorts:
         """Entry-point discovery ignores paths: same output regardless of input."""
         strategy = FlextPluginDiscovery.EntryPointStrategy(logger)
 
-        with_paths: t.StrSequence = ["some/path", "another"]
+        with_paths: Sequence[str] = ["some/path", "another"]
         ignored = strategy.discover(with_paths)
         empty = strategy.discover([])
 
-        assert ignored.success is empty.success is True
+        tm.that(ignored.success is empty.success is True, truth=True)
         tm.that(list(ignored.unwrap()), eq=list(empty.unwrap()))

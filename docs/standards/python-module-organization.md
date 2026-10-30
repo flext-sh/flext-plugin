@@ -87,6 +87,15 @@ orchestration.
 ```text
 # Primary entry point for plugin system
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 ```
 
 ### **Core Layer** (`src/flext_plugin/core/`)
@@ -106,6 +115,15 @@ logic.
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_plugin import PluginStatus, PluginType
 
@@ -132,6 +150,15 @@ status = PluginStatus.ACTIVE  # Plugin lifecycle state
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_plugin import FlextPlugin
 
 
@@ -146,7 +173,7 @@ class CustomPlugin(FlextPlugin):
         # Business logic and domain events
         self.status = PluginStatus.ACTIVE
         self.add_domain_event("PluginActivated", {"plugin_id": self.id})
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)=True)
 ```
 
 ### **Application Layer** (`src/flext_plugin/application/`)
@@ -165,6 +192,15 @@ class CustomPlugin(FlextPlugin):
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_plugin import FlextPluginService
 
@@ -203,6 +239,15 @@ management.
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_core import FlextSettings
 from flext_plugin import PluginSystemSettings
 
@@ -239,6 +284,15 @@ All plugin-related exports use consistent prefixing to avoid namespace conflicts
 # Core plugin patterns
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 FlextPlugin  # Main plugin entity
 FlextPluginModels.Config  # Plugin configuration entity
 FlextPluginModels.Metadata  # Plugin metadata value object
@@ -265,6 +319,15 @@ FlextPluginReloader  # Hot-reload management
 # Core functionality modules
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 types.py  # Plugin types, enums, and result objects
 entities.py  # Domain entities (FlextPlugin, FlextPluginModels.Registry)
 ports.py  # Domain interfaces and contracts
@@ -286,6 +349,15 @@ loader.py  # Dynamic plugin loading mechanisms
 ```text
 # Singer ETL plugin types (Meltano integration)
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 PluginType.TAP  # Data extraction from sources
 PluginType.TARGET  # Data loading to destinations
@@ -319,6 +391,15 @@ PluginType.PROCESSOR  # Data processing components
 # Import from main package - gets everything needed
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_plugin import PluginType, create_flext_plugin, create_flext_plugin_platform
 
 
@@ -337,6 +418,15 @@ def deploy_plugin():
 # Import from specific modules for clarity
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_plugin import FlextPlugin, FlextPluginService
 
 # More explicit but verbose
@@ -349,6 +439,15 @@ plugin = FlextPlugin(name="custom", version="0.9.9")
 ```text
 # Use factory functions for common operations
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_plugin import create_flext_plugin
 
@@ -370,6 +469,15 @@ plugin = create_flext_plugin(
 ```text
 # ❌ Don't import everything
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_plugin import *
 
@@ -470,6 +578,15 @@ from flext_plugin import *
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_plugin import PluginType, create_flext_plugin
 
 
@@ -511,6 +628,15 @@ def deploy_tap_plugin(settings: dict) -> p.Result[FlextPlugin]:
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_plugin import FlextPlugin, PluginStatus
 
 
@@ -536,7 +662,7 @@ class PluginLifecycleManager:
             plugin.status = PluginStatus.INACTIVE
             self._emit_plugin_event("PluginInitialized", plugin)
 
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)=True)
 
         except Exception as e:
             self._cleanup_plugin_resources(plugin)
@@ -600,6 +726,15 @@ class PluginLifecycleManager:
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_plugin import FlextPluginDiscoveryService, PluginDiscovery
 
@@ -683,6 +818,15 @@ class AdvancedPluginDiscovery:
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from datetime import datetime
 
 from flext_plugin import FlextPlugin, PluginStatus, PluginType
@@ -733,7 +877,7 @@ class FlextPlugin(FlextModels.Entity):
         if not self._validate_dependencies():
             return r[bool].fail("Plugin dependencies not satisfied")
 
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)=True)
 
     def activate(self) -> p.Result[bool]:
         """Activate plugin with business validation and event generation."""
@@ -754,7 +898,7 @@ class FlextPlugin(FlextModels.Entity):
             "plugin_type": self.plugin_type.value,
         })
 
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)=True)
 
     def record_execution(self, success: bool, execution_time: float) -> None:
         """Record plugin execution with metrics."""
@@ -807,6 +951,15 @@ class FlextPlugin(FlextModels.Entity):
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 
 class FlextPluginRegistry(FlextModels.AggregateRoot):
@@ -917,6 +1070,15 @@ class FlextPluginRegistry(FlextModels.AggregateRoot):
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 class FlextPluginMetadata(FlextModels.Value):
     """Immutable plugin metadata value object.
@@ -1018,6 +1180,15 @@ class FlextPluginConfig(FlextModels.Value):
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from functools import cached_property
 
 
@@ -1090,6 +1261,15 @@ class LazyPluginLoader:
 `````python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 import json
 from functools import wraps
 
@@ -1104,7 +1284,7 @@ class PluginCache:
 
     def cache_plugin_result(
         self,
-        cache_key_func: collections.abc.Callable[..., str],
+        cache_key_func: collections.abc.Callable[..., ...]
         invalidate_on_plugin_change: bool = True,
     ):
         """Decorator for caching plugin operation results."""
@@ -1209,6 +1389,15 @@ def execute_plugin_cached(plugin_id: str, settings: dict) -> p.Result[t.JsonValu
 # ✅ Complete type annotations for plugin interfaces
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 import typing
 
 
@@ -1263,6 +1452,15 @@ def execute_plugin(plugin, data):  # Missing types
 # ✅ Plugin-specific error handling with r
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_plugin import PluginError
 
 
@@ -1291,7 +1489,7 @@ def safe_plugin_operation(plugin: FlextPlugin) -> p.Result[bool]:
             )
             return result
 
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)=True)
 
     except PluginError as e:
         # Handle plugin-specific errors
@@ -1331,6 +1529,15 @@ def bad_plugin_operation(plugin: FlextPlugin) -> None:
 
 ````python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 
 class DataProcessorPlugin(FlextPlugin):
@@ -1557,6 +1764,15 @@ class DataProcessorPlugin(FlextPlugin):
 # ✅ Standard plugin creation across ecosystem projects
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_plugin import PluginType, create_flext_plugin
 
 
@@ -1605,6 +1821,15 @@ class OracleCustomPlugin:  # Creates ecosystem fragmentation
 # ✅ Extend plugin configuration patterns consistently
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_core import FlextSettings
 from flext_plugin import PluginSystemSettings
 
@@ -1636,6 +1861,15 @@ class ProjectPluginConfig(PluginSystemSettings):
 ```text
 # ✅ Use centralized plugin registry across ecosystem
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_plugin import FlextPluginModels.Registry
 from flext_plugin import create_flext_plugin_platform

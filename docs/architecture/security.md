@@ -577,6 +577,15 @@ make audit # Dependency and security audit
 # Security event monitoring
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_plugin import FlextPluginSecurityMonitor
 
 monitor = FlextPluginSecurityMonitor()
