@@ -6,7 +6,9 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_plugin import p, u
+from flext_core import FlextRegistry
+
+from flext_plugin import p
 from flext_plugin._utilities import FlextPluginPlatform
 
 
@@ -24,7 +26,7 @@ class FlextPluginApi(FlextPluginPlatform.PluginPlatformService):
     ) -> None:
         """Wire collaborators without discovery, registration, or execution effects."""
         super().__init__(
-            registry=u.build_registry() if registry is None else registry,
+            registry=FlextRegistry.create() if registry is None else registry,
             discovery=discovery,
             loader=loader,
             executor=executor,
