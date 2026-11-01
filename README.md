@@ -57,7 +57,7 @@ required validation.
   classes listed under Module Map above.
 - Public extensions exposed by this project: `FlextPluginApi`, `FlextPluginCli`,
   `FlextPluginConfig`, `FlextPluginConstants`, `FlextPluginDiscovery`,
-  `FlextPluginModels` (+7 more).
+  `FlextPluginModels` (+8 more).
 - Library abstraction boundaries: see the project `AGENTS.md` and the referenced parent
   architecture rules.
 
