@@ -112,6 +112,15 @@ unexpected runtime exceptions into success or ad-hoc error dictionaries.
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from math import isclose
 
 from flext_core import p, r
@@ -149,6 +158,15 @@ through its declared ports at composition time.
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_core import FlextSettings
 
 settings = FlextSettings.fetch_global()
@@ -161,6 +179,15 @@ Subprojects extend `FlextSettings` with their own `env_prefix`:
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_core import FlextSettings, m
 
@@ -198,6 +225,15 @@ collaborator directly through its protocol port; it does not look it up by this 
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_core import FlextContainer, p
 
 container = FlextContainer()
@@ -231,6 +267,15 @@ dispatcher migration is complete merely because this guide describes its contrac
 ```python
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_core import u
 
 logger = u.fetch_logger(__name__)
@@ -241,6 +286,15 @@ logger.info("user.created", user_id=42)
 
 ```python
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from typing import override
 
