@@ -13,24 +13,7 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
-    from flext_cli import (
-        build_lazy_import_map,
-        cleanup_submodule_namespace,
-        cli,
-        core,
-        d,
-        e,
-        h,
-        install_lazy_exports,
-        lazy,
-        lazy_getattr,
-        lazy_member,
-        merge_lazy_imports,
-        normalize_lazy_imports,
-        r,
-        resolve_lazy_members,
-        x,
-    )
+    from flext_cli import d, e, h, r, x
 
     from flext_plugin.__version__ import (
         FlextPluginVersion,
@@ -48,6 +31,7 @@ if TYPE_CHECKING:
     from flext_plugin.api import FlextPluginApi, plugin
     from flext_plugin.base import FlextPluginServiceBase, s
     from flext_plugin.cli import FlextPluginCli, main
+    from flext_plugin.config_models import FlextPluginModelsConfig
     from flext_plugin.constants import FlextPluginConstants, c
     from flext_plugin.models import FlextPluginModels, m
     from flext_plugin.protocols import FlextPluginProtocols, p
@@ -67,6 +51,7 @@ __all__: tuple[str, ...] = (
     "FlextPluginConstants",
     "FlextPluginDiscovery",
     "FlextPluginModels",
+    "FlextPluginModelsConfig",
     "FlextPluginPlatform",
     "FlextPluginProtocols",
     "FlextPluginServiceBase",
@@ -82,27 +67,16 @@ __all__: tuple[str, ...] = (
     "__url__",
     "__version__",
     "__version_info__",
-    "build_lazy_import_map",
     "c",
-    "cleanup_submodule_namespace",
-    "cli",
     "config",
-    "core",
     "d",
     "e",
     "h",
-    "install_lazy_exports",
-    "lazy",
-    "lazy_getattr",
-    "lazy_member",
     "m",
     "main",
-    "merge_lazy_imports",
-    "normalize_lazy_imports",
     "p",
     "plugin",
     "r",
-    "resolve_lazy_members",
     "s",
     "settings",
     "t",
@@ -120,6 +94,7 @@ install_lazy_exports(
         "FlextPluginConstants": ".constants",
         "FlextPluginDiscovery": ".utilities",
         "FlextPluginModels": ".models",
+        "FlextPluginModelsConfig": ".config_models",
         "FlextPluginPlatform": ".utilities",
         "FlextPluginProtocols": ".protocols",
         "FlextPluginServiceBase": ".base",
@@ -134,27 +109,16 @@ install_lazy_exports(
         "__title__": ".__version__",
         "__url__": ".__version__",
         "__version_info__": ".__version__",
-        "build_lazy_import_map": "flext_cli",
         "c": ".constants",
-        "cleanup_submodule_namespace": "flext_cli",
-        "cli": "flext_cli",
         "config": "._config",
-        "core": "flext_cli",
         "d": "flext_cli",
         "e": "flext_cli",
         "h": "flext_cli",
-        "install_lazy_exports": "flext_cli",
-        "lazy": "flext_cli",
-        "lazy_getattr": "flext_cli",
-        "lazy_member": "flext_cli",
         "m": ".models",
         "main": ".cli",
-        "merge_lazy_imports": "flext_cli",
-        "normalize_lazy_imports": "flext_cli",
         "p": ".protocols",
         "plugin": ".api",
         "r": "flext_cli",
-        "resolve_lazy_members": "flext_cli",
         "s": ".base",
         "settings": "._settings",
         "t": ".typings",

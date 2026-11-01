@@ -10,11 +10,7 @@ from __future__ import annotations
 
 from flext_cli import m as flext_cli_m
 
-from flext_plugin._models import (
-    FlextPluginModelsBase,
-    FlextPluginModelsConfig,
-    FlextPluginModelsPlugin,
-)
+from flext_plugin._models import FlextPluginModelsBase, FlextPluginModelsPlugin
 
 
 class FlextPluginModels(flext_cli_m):
@@ -29,7 +25,8 @@ class FlextPluginModels(flext_cli_m):
     """
 
     class Plugin(
-        FlextPluginModelsBase, FlextPluginModelsConfig, FlextPluginModelsPlugin
+        FlextPluginModelsBase,
+        FlextPluginModelsPlugin,
     ):
         """Plugin domain models namespace composed via MRO."""
 

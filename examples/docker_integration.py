@@ -19,7 +19,7 @@ from typing import Annotated, Final, override
 
 from flext_cli import cli
 
-from examples import c, m, p, r, s, t, u
+from examples import c, m, p, r, s, t
 from flext_plugin import FlextPluginApi, FlextPluginModels, FlextPluginPlatform
 
 _AUTHOR: Final[str] = "FLEXT Team"
@@ -176,7 +176,7 @@ class ExamplesFlextPluginDockerIntegrationCommand(s[bool]):
 
     test_connections: Annotated[
         bool,
-        u.Field(
+        m.Field(
             default=False,
             description=(
                 "Test connectivity to Docker services before creating plugins."

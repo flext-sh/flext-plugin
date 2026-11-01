@@ -7,8 +7,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from flext_plugin.config_models import FlextPluginModelsConfig
 
-class FlextPluginModelsBase:
+
+class FlextPluginModelsBase(FlextPluginModelsConfig):
     """Base models shared by every flext-plugin models shard."""
 
 
