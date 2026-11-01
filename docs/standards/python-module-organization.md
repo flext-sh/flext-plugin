@@ -1577,7 +1577,7 @@ class DataProcessorPlugin(FlextPlugin):
                 "deduplicate": false
             }
         }
-        ```
+`````
 
     Example:
         >>> settings = FlextPluginModels.Config({
@@ -1910,3 +1910,4 @@ class EcosystemPluginManager:
 ecosystem contributors **Scope**: Python module organization for plugin system
 development **Version**: 0.12.0-dev → 0.9.9 development guidelines for plugin
 architecture
+`````

@@ -73,15 +73,6 @@ the FLEXT Plugin system.
 ```python
 from __future__ import annotations
 
-from collections.abc import (
-    Iterable,
-    Iterator,
-    Mapping,
-    MutableMapping,
-    MutableSequence,
-    Sequence,
-)
-
 from flext_plugin import PluginType, create_flext_plugin, create_flext_plugin_platform
 
 # Create simple plugin
@@ -99,15 +90,6 @@ platform.activate_plugin("hello-world")
 
 ```python
 from __future__ import annotations
-
-from collections.abc import (
-    Iterable,
-    Iterator,
-    Mapping,
-    MutableMapping,
-    MutableSequence,
-    Sequence,
-)
 
 from flext_plugin import PluginType
 
@@ -129,15 +111,6 @@ tap_plugin = create_flext_plugin(
 ```python
 from __future__ import annotations
 
-from collections.abc import (
-    Iterable,
-    Iterator,
-    Mapping,
-    MutableMapping,
-    MutableSequence,
-    Sequence,
-)
-
 from flext_plugin import enable_hot_reload
 
 # Enable hot reload for development
@@ -150,15 +123,6 @@ print("Hot reload enabled - modify plugin files to see changes")
 
 ```python
 from __future__ import annotations
-
-from collections.abc import (
-    Iterable,
-    Iterator,
-    Mapping,
-    MutableMapping,
-    MutableSequence,
-    Sequence,
-)
 
 import pytest
 from flext_plugin import create_flext_plugin_platform
@@ -265,17 +229,7 @@ echo "# Modified at $(date)" >> demo_plugin.py
 ```python
 from __future__ import annotations
 
-from collections.abc import (
-    Iterable,
-    Iterator,
-    Mapping,
-    MutableMapping,
-    MutableSequence,
-    Sequence,
-)
-
 from flext_plugin import FlextPlugin, PluginStatus, PluginType
-
 
 class ExamplePlugin(FlextPlugin):
     """Template for creating custom plugins."""
@@ -340,15 +294,6 @@ class ExamplePlugin(FlextPlugin):
 
 ```python
 from __future__ import annotations
-
-from collections.abc import (
-    Iterable,
-    Iterator,
-    Mapping,
-    MutableMapping,
-    MutableSequence,
-    Sequence,
-)
 
 import pytest
 from flext_plugin import create_flext_plugin_platform
@@ -453,15 +398,6 @@ All examples demonstrate proper error handling using `r` pattern:
 ```python
 from __future__ import annotations
 
-from collections.abc import (
-    Iterable,
-    Iterator,
-    Mapping,
-    MutableMapping,
-    MutableSequence,
-    Sequence,
-)
-
 
 def run_operation() -> p.Result[bool]:
     try:
@@ -481,16 +417,6 @@ Proper resource cleanup in plugin lifecycle:
 
 ```python
 from __future__ import annotations
-
-from collections.abc import (
-    Iterable,
-    Iterator,
-    Mapping,
-    MutableMapping,
-    MutableSequence,
-    Sequence,
-)
-
 
 def cleanup(self) -> p.Result[bool]:
     """Cleanup with error handling."""
@@ -513,15 +439,6 @@ All examples use proper type hints:
 
 ```python
 from __future__ import annotations
-
-from collections.abc import (
-    Iterable,
-    Iterator,
-    Mapping,
-    MutableMapping,
-    MutableSequence,
-    Sequence,
-)
 
 
 def process_data(self, data: dict) -> p.Result[dict]:

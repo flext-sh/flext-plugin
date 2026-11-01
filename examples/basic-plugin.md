@@ -23,22 +23,12 @@ The basic plugin example shows:
 # basic_plugin.py
 from __future__ import annotations
 
-from collections.abc import (
-    Iterable,
-    Iterator,
-    Mapping,
-    MutableMapping,
-    MutableSequence,
-    Sequence,
-)
-
 import json
 from datetime import datetime
 
 from flext_plugin import FlextPlugin, PluginStatus, PluginType
 
 logger = logging.getLogger(__name__)
-
 
 class BasicDataProcessorPlugin(FlextPlugin):
     """
@@ -313,15 +303,6 @@ class BasicDataProcessorPlugin(FlextPlugin):
 # usage_example.py
 from __future__ import annotations
 
-from collections.abc import (
-    Iterable,
-    Iterator,
-    Mapping,
-    MutableMapping,
-    MutableSequence,
-    Sequence,
-)
-
 from basic_plugin import BasicDataProcessorPlugin
 from flext_plugin import create_flext_plugin_platform
 
@@ -451,15 +432,6 @@ if __name__ == "__main__":
 ```python
 # test_basic_plugin.py
 from __future__ import annotations
-
-from collections.abc import (
-    Iterable,
-    Iterator,
-    Mapping,
-    MutableMapping,
-    MutableSequence,
-    Sequence,
-)
 
 from unittest.mock import mock_open, patch
 

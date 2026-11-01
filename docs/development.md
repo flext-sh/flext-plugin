@@ -101,29 +101,20 @@ All modules follow the FLEXT single-class-per-module pattern:
 # ✅ COMPLIANT - Current implementation
 from __future__ import annotations
 
-from collections.abc import (
-    Iterable,
-    Iterator,
-    Mapping,
-    MutableMapping,
-    MutableSequence,
-    Sequence,
-)
+from flext_core import m
 
 
-class FlextPluginModels:
-    """Unified plugin entities following FLEXT standards"""
+class FlextPluginModels(m):
+    """Unified plugin entities following FLEXT standards."""
 
-    class Plugin(FlextModels.Entity):
-        """Main plugin entity with business rules"""
+    class Plugin(m.Entity):
+        """Main plugin entity with business rules."""
 
-    class Config(FlextModels.Entity):
-        """Plugin configuration with validation"""
+    class Config(m.Entity):
+        """Plugin configuration with validation."""
+````
 
-    class _ValidationHelper:
-        """Nested helper class for domain logic"""
-        ```
-______________________________________________________________________
+---
 
 ## Testing
 
@@ -160,49 +151,13 @@ pytest -m "not slow"   # Skip slow tests
 
 ### Creating Plugins
 
-`````python
-from __future__ import annotations
+Plugins are discovered, fetched and executed through the public
+`FlextPluginApi` facade (`discover_plugins`, `fetch_plugin`, `execute_plugin`);
+see the generated API reference for their signatures. Plugin entities and
+configuration are declared on the models facade (`m.Plugin`), never as
+ad-hoc dictionaries.
 
-from collections.abc import (
-    Iterable,
-    Iterator,
-    Mapping,
-    MutableMapping,
-    MutableSequence,
-    Sequence,
-)
-
-from flext_plugin import FlextPlugin, PluginType
-
-
-class MyPlugin(FlextPlugin):
-    def __init__(self, **kwargs):
-        super().__init__(
-            name="my-plugin",
-            version="0.9.9",
-            settings={"plugin_type": PluginType.UTILITY},
-            **kwargs,
-        )
-
-    def execute(self, data: dict) -> p.Result[dict]:
-        """Plugin business logic"""
-        try:
-            # Process data
-            return r[dict].ok(processed_data)
-        except Exception as e:
-            return r[dict].fail(str(e))
-            ```
-### Hot Reload Development
-
-```bash
-# Enable hot reload for development
-make plugin-watch
-
-# Environment variables
-export FLEXT_PLUGIN_HOT_RELOAD=true
-export FLEXT_PLUGIN_WATCH_INTERVAL=2
-```
-______________________________________________________________________
+---
 
 ## Contributing Process
 
@@ -229,7 +184,7 @@ make test             # 85% coverage required
 - Reference related issues
 - Pass all CI checks
 
-______________________________________________________________________
+---
 
 ## Debugging
 
@@ -247,26 +202,10 @@ make status --tree
 
 #### Plugin Loading Issues
 
-````python
-# Enable debug logging
-from __future__ import annotations
+`FlextPluginApi.discover_plugins`, `fetch_plugin` and `execute_plugin` return a
+result; a failure carries its cause in `result.error`. Inspect that value
+instead of catching exceptions around the call.
 
-from collections.abc import (
-    Iterable,
-    Iterator,
-    Mapping,
-    MutableMapping,
-    MutableSequence,
-    Sequence,
-)
-
-logging.basicConfig(level=logging.DEBUG)
-
-# Use platform validation
-result = platform.validate_plugin(plugin)
-if result.failure:
-    print(f"Validation error: {result.error}")
-    ```
 #### Hot Reload Problems
 
 ```bash
@@ -276,7 +215,8 @@ make check
 # Verify file permissions
 ls -la plugins/
 ```
-______________________________________________________________________
+
+---
 
 ## Release Process
 
@@ -293,7 +233,7 @@ ______________________________________________________________________
 - Architecture compliance verified
 - Documentation updated
 
-______________________________________________________________________
+---
 
 ## Getting Help
 
@@ -301,7 +241,9 @@ ______________________________________________________________________
 - **Issues**: [GitHub Issues](https://github.com/flext-sh/flext/issues)
 - **Code Review**: Submit PRs for review and feedback
 
-______________________________________________________________________
+---
 
 For specific plugin development patterns and examples, see examples/ directory.
+`````
+
 `````
