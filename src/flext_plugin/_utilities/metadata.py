@@ -61,7 +61,7 @@ class FlextPluginUtilitiesMetadata:
     def discover_plugin_metadata(
         cls,
         directory: Path | str,
-    ) -> p.Result[Sequence[m.Plugin.Metadata]]:
+    ) -> p.Result[Sequence[p.Plugin.Metadata]]:
         """Discover plugin metadata in the specified directory.
 
         Args:
@@ -74,13 +74,13 @@ class FlextPluginUtilitiesMetadata:
         try:
             search_path = Path(directory)
             if not search_path.exists():
-                return r[Sequence[m.Plugin.Metadata]].fail(
+                return r[Sequence[p.Plugin.Metadata]].fail(
                     f"Plugin directory does not exist: {search_path}",
                 )
             plugins = cls._discover_metadata(search_path)
-            return r[Sequence[m.Plugin.Metadata]].ok(plugins)
+            return r[Sequence[p.Plugin.Metadata]].ok(plugins)
         except c.EXC_BROAD_IO_TYPE as error:
-            return r[Sequence[m.Plugin.Metadata]].fail_op(
+            return r[Sequence[p.Plugin.Metadata]].fail_op(
                 "Plugin discovery",
                 error,
             )
@@ -89,7 +89,7 @@ class FlextPluginUtilitiesMetadata:
     def extract_plugin_metadata(
         cls,
         plugin_path: Path,
-    ) -> p.Result[m.Plugin.Metadata]:
+    ) -> p.Result[p.Plugin.Metadata]:
         """Extract metadata from plugin file.
 
         Args:
@@ -100,9 +100,9 @@ class FlextPluginUtilitiesMetadata:
 
         """
         try:
-            return r[m.Plugin.Metadata].ok(cls._build_metadata(plugin_path))
+            return r[p.Plugin.Metadata].ok(cls._build_metadata(plugin_path))
         except c.EXC_BROAD_IO_TYPE as error:
-            return r[m.Plugin.Metadata].fail_op("Metadata extraction", error)
+            return r[p.Plugin.Metadata].fail_op("Metadata extraction", error)
 
     @classmethod
     def validate_plugin_file(cls, plugin_path: Path) -> p.Result[bool]:
@@ -142,7 +142,7 @@ class FlextPluginUtilitiesMetadata:
         return r[bool].ok(value=True)
 
     @classmethod
-    def _build_metadata(cls, plugin_path: Path) -> m.Plugin.Metadata:
+    def _build_metadata(cls, plugin_path: Path) -> p.Plugin.Metadata:
         """Build plugin metadata for one plugin file.
 
         Returns:
@@ -162,14 +162,14 @@ class FlextPluginUtilitiesMetadata:
         )
 
     @classmethod
-    def _discover_metadata(cls, search_path: Path) -> Sequence[m.Plugin.Metadata]:
+    def _discover_metadata(cls, search_path: Path) -> Sequence[p.Plugin.Metadata]:
         """Discover plugin metadata under one search path.
 
         Returns:
-            The resulting ``Sequence[m.Plugin.Metadata]``.
+            The resulting ``Sequence[p.Plugin.Metadata]``.
 
         """
-        plugins: MutableSequence[m.Plugin.Metadata] = []
+        plugins: MutableSequence[p.Plugin.Metadata] = []
         for plugin_file in search_path.rglob("*"):
             if not cls._is_candidate_file(plugin_file):
                 continue

@@ -8,12 +8,9 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from typing import TYPE_CHECKING, Protocol, runtime_checkable
+from typing import Protocol, runtime_checkable
 
 from flext_cli import p, t
-
-if TYPE_CHECKING:
-    from flext_plugin import m
 
 
 class FlextPluginProtocolsPlugin:
@@ -89,7 +86,7 @@ class FlextPluginProtocolsPlugin:
     class Discovery(Protocol):
         """Protocol for plugin discovery operations."""
 
-        def discover_plugin(self, plugin_path: str) -> p.Result[m.Plugin.DiscoveryData]:
+        def discover_plugin(self, plugin_path: str) -> p.Result[p.Plugin.DiscoveryData]:
             """Discover a single plugin at the specified path.
 
             Args:
@@ -104,7 +101,7 @@ class FlextPluginProtocolsPlugin:
         def discover_plugins(
             self,
             paths: Sequence[str],
-        ) -> p.Result[Sequence[m.Plugin.DiscoveryData]]:
+        ) -> p.Result[Sequence[p.Plugin.DiscoveryData]]:
             """Discover plugins at the given paths.
 
             Args:
@@ -119,7 +116,7 @@ class FlextPluginProtocolsPlugin:
 
         def validate_plugin(
             self,
-            plugin_data: m.Plugin.DiscoveryData,
+            plugin_data: p.Plugin.DiscoveryData,
         ) -> p.Result[bool]:
             """Validate plugin discovery data.
 
@@ -286,7 +283,7 @@ class FlextPluginProtocolsPlugin:
             """
             ...
 
-        def validate_plugin_security(self, plugin: m.Plugin.Entity) -> bool:
+        def validate_plugin_security(self, plugin: p.Plugin.Entity) -> bool:
             """Validate plugin security compliance.
 
             Args:
@@ -668,7 +665,7 @@ class FlextPluginProtocolsPlugin:
         def discover(
             self,
             paths: Sequence[str],
-        ) -> p.Result[Sequence[m.Plugin.DiscoveryData]]:
+        ) -> p.Result[Sequence[p.Plugin.DiscoveryData]]:
             """Discover plugins using this strategy.
 
             Args:

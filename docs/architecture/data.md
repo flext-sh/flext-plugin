@@ -425,7 +425,7 @@ from collections.abc import (
     Sequence,
 )
 
-from flext_core import m, t, u
+from flext_core import m, p, t, u
 
 
 class FlextPluginSettings(m.BaseModel):

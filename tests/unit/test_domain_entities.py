@@ -15,7 +15,7 @@ from __future__ import annotations
 import pytest
 
 from flext_plugin import FlextPluginPlatform
-from tests import c, m, tm
+from tests import c, m, p, tm
 
 
 class TestsFlextPluginDomainEntities:
@@ -33,7 +33,7 @@ class TestsFlextPluginDomainEntities:
         plugin_version: str = "1.0.0",
         description: str = "Test plugin",
         author: str = "Test Author",
-    ) -> m.Plugin.Entity:
+    ) -> p.Plugin.Entity:
         """Construct a Plugin entity through the public factory.
 
         Returns:

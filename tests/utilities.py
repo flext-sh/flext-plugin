@@ -15,7 +15,7 @@ from pathlib import Path
 from flext_tests import FlextTestsUtilities
 
 from flext_plugin import FlextPluginUtilities
-from tests import c, m, p, r, t
+from tests import c, p, r, t
 
 
 class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
@@ -212,35 +212,35 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
                 @staticmethod
                 def discover_plugin(
                     plugin_path: str,
-                ) -> p.Result[m.Plugin.DiscoveryData]:
+                ) -> p.Result[p.Plugin.DiscoveryData]:
                     """Report a real discovery failure for one plugin.
 
                     Returns:
-                        The resulting ``p.Result[m.Plugin.DiscoveryData]``.
+                        The resulting ``p.Result[p.Plugin.DiscoveryData]``.
 
                     """
                     _ = plugin_path
-                    return r[m.Plugin.DiscoveryData].fail("discovery failed")
+                    return r[p.Plugin.DiscoveryData].fail("discovery failed")
 
                 @staticmethod
                 def discover_plugins(
                     paths: Sequence[str],
-                ) -> p.Result[Sequence[m.Plugin.DiscoveryData]]:
+                ) -> p.Result[Sequence[p.Plugin.DiscoveryData]]:
                     """Report a real discovery failure for the given paths.
 
                     Returns:
                         The resulting
-                            ``p.Result[Sequence[m.Plugin.DiscoveryData]]``.
+                            ``p.Result[Sequence[p.Plugin.DiscoveryData]]``.
 
                     """
                     _ = paths
-                    return r[Sequence[m.Plugin.DiscoveryData]].fail(
+                    return r[Sequence[p.Plugin.DiscoveryData]].fail(
                         "discovery failed",
                     )
 
                 @staticmethod
                 def validate_plugin(
-                    plugin_data: m.Plugin.DiscoveryData,
+                    plugin_data: p.Plugin.DiscoveryData,
                 ) -> p.Result[bool]:
                     """Report a real validation failure.
 
