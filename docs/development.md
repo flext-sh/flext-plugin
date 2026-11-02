@@ -101,7 +101,7 @@ All modules follow the FLEXT single-class-per-module pattern:
 # ✅ COMPLIANT - Current implementation
 from __future__ import annotations
 
-from flext_core import m
+from flext_core import m, p
 
 
 class FlextPluginModels(m):
