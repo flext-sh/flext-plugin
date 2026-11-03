@@ -29,7 +29,7 @@ class FlextPluginProtocolsPlugin:
     """
 
     @runtime_checkable
-    class Instance(p.Model, Protocol):
+    class Instance(p.BaseModel, Protocol):
         """Owned plugin payload capabilities consumed by lifecycle services."""
 
         @property
@@ -689,7 +689,7 @@ class FlextPluginProtocolsPlugin:
             ...
 
     @runtime_checkable
-    class PortOptions(FlextCliProtocols.Model, Protocol):
+    class PortOptions(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -718,7 +718,7 @@ class FlextPluginProtocolsPlugin:
             ...
 
     @runtime_checkable
-    class Entity(FlextCliProtocols.Model, Protocol):
+    class Entity(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -726,97 +726,36 @@ class FlextPluginProtocolsPlugin:
             """List of uncommitted domain events for event sourcing."""
             ...
 
-        @property
-        def name(self) -> str:
-            """Plugin unique identifier name."""
-            ...
-
-        @property
-        def plugin_version(self) -> str:
-            """Plugin semantic version (X.Y.Z)."""
-            ...
-
-        @property
-        def description(self) -> str:
-            """Plugin functionality description."""
-            ...
-
-        @property
-        def author(self) -> str:
-            """Plugin author/maintainer."""
-            ...
+        name: str
+        plugin_version: str
+        description: str
+        author: str
 
         @property
         def plugin_type(self) -> FlextPluginConstantsPlugin.Type:
             """Plugin type classification."""
             ...
 
-        @property
-        def is_enabled(self) -> bool:
-            """Plugin enabled state."""
-            ...
-
-        @property
-        def metadata(self) -> t.JsonMapping:
-            """Extensible plugin metadata."""
-            ...
+        is_enabled: bool
+        metadata: t.JsonMapping
 
     @runtime_checkable
-    class Execution(FlextCliProtocols.Model, Protocol):
+    class Execution(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
-        @property
-        def plugin_name(self) -> str:
-            """Executed plugin name."""
-            ...
-
-        @property
-        def execution_id(self) -> str:
-            """Unique execution identifier."""
-            ...
-
-        @property
-        def input_data(self) -> t.JsonMapping:
-            """Executor input payload."""
-            ...
-
-        @property
-        def is_running(self) -> bool:
-            """Run in progress."""
-            ...
-
-        @property
-        def is_completed(self) -> bool:
-            """Run finished."""
-            ...
-
-        @property
-        def success(self) -> bool:
-            """Run succeeded."""
-            ...
-
-        @property
-        def error_message(self) -> str | None:
-            """Failure reason."""
-            ...
-
-        @property
-        def result(self) -> t.JsonMapping | None:
-            """Executor output."""
-            ...
-
-        @property
-        def started_at(self) -> str | None:
-            """Start ISO timestamp."""
-            ...
-
-        @property
-        def completed_at(self) -> str | None:
-            """Completion ISO timestamp."""
-            ...
+        plugin_name: str
+        execution_id: str
+        input_data: t.JsonMapping
+        is_running: bool
+        is_completed: bool
+        success: bool
+        error_message: str | None
+        result: t.JsonMapping | None
+        started_at: str | None
+        completed_at: str | None
 
     @runtime_checkable
-    class DiscoveryData(FlextCliProtocols.Model, Protocol):
+    class DiscoveryData(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -850,7 +789,7 @@ class FlextPluginProtocolsPlugin:
             ...
 
     @runtime_checkable
-    class Metadata(FlextCliProtocols.Model, Protocol):
+    class Metadata(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
@@ -894,7 +833,7 @@ class FlextPluginProtocolsPlugin:
             ...
 
     @runtime_checkable
-    class Registry(FlextCliProtocols.Model, Protocol):
+    class Registry(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
         @property
