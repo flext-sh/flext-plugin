@@ -38,7 +38,7 @@ class FlextPluginModelsPlugin:
         loader: t.Port[p.Plugin.Loader] | None = m.Field(
             default=None, exclude=True, description="Optional plugin loading adapter"
         )
-        executor: t.Port[p.Plugin.Execution] | None = m.Field(
+        executor: t.Port[p.Plugin.Executor] | None = m.Field(
             default=None, exclude=True, description="Optional plugin execution adapter"
         )
         executions: MutableMapping[str, t.Port[p.Plugin.Run]] = m.Field(

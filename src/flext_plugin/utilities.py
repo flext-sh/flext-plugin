@@ -13,7 +13,6 @@ from flext_plugin._utilities import (
     FlextPluginDiscovery,
     FlextPluginImplementations,
     FlextPluginPlatform,
-    FlextPluginUtilitiesBase,
     FlextPluginUtilitiesMetadata,
 )
 
@@ -22,10 +21,9 @@ class FlextPluginUtilities(flext_cli_u):
     """composition-based utilities using Python 3.13+ patterns."""
 
     class Plugin(
-        FlextPluginUtilitiesMetadata,
-        FlextPluginUtilitiesBase,
         FlextPluginDiscovery,
         FlextPluginImplementations,
+        FlextPluginUtilitiesMetadata,
         FlextPluginPlatform,
     ):
         """Plugin discovery and validation utilities."""

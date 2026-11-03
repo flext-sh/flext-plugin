@@ -30,8 +30,8 @@ class FlextPluginProtocols(flext_cli_p):
 
     class Plugin(
         FlextPluginProtocolsBase,
-        FlextPluginProtocolsPlugin,
         FlextPluginProtocolsPlatform,
+        FlextPluginProtocolsPlugin,
     ):
         """Plugin domain-specific protocols.
 

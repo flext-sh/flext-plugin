@@ -182,7 +182,7 @@ class FlextPluginImplementations:
             return r[bool].ok(value=True)
 
     class EchoExecutor:
-        """Real executor implementing p.Plugin.Execution.
+        """Real executor implementing p.Plugin.Executor.
 
         Echoes the execution context back as the result so tests can
         assert the real execution-record bookkeeping of the platform.

@@ -21,7 +21,7 @@ class FlextPluginApi(FlextPluginPlatform.PluginPlatformService):
         registry: p.Registry | None = None,
         discovery: p.Plugin.Discovery | None = None,
         loader: p.Plugin.Loader | None = None,
-        executor: p.Plugin.Execution | None = None,
+        executor: p.Plugin.Executor | None = None,
         runtime_settings: p.Settings | None = None,
     ) -> None:
         """Wire collaborators without discovery, registration, or execution effects."""

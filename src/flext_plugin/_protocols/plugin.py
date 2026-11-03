@@ -8,9 +8,15 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from typing import Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
-from flext_cli import p, t
+from flext_cli import FlextCliProtocols, p, t
+
+if TYPE_CHECKING:
+    from datetime import datetime
+    from pathlib import Path
+
+    from flext_plugin._constants import FlextPluginConstantsPlugin
 
 
 class FlextPluginProtocolsPlugin:
@@ -86,7 +92,9 @@ class FlextPluginProtocolsPlugin:
     class Discovery(Protocol):
         """Protocol for plugin discovery operations."""
 
-        def discover_plugin(self, plugin_path: str) -> p.Result[p.Plugin.DiscoveryData]:
+        def discover_plugin(
+            self, plugin_path: str
+        ) -> p.Result[FlextPluginProtocolsPlugin.DiscoveryData]:
             """Discover a single plugin at the specified path.
 
             Args:
@@ -101,7 +109,7 @@ class FlextPluginProtocolsPlugin:
         def discover_plugins(
             self,
             paths: Sequence[str],
-        ) -> p.Result[Sequence[p.Plugin.DiscoveryData]]:
+        ) -> p.Result[Sequence[FlextPluginProtocolsPlugin.DiscoveryData]]:
             """Discover plugins at the given paths.
 
             Args:
@@ -116,7 +124,7 @@ class FlextPluginProtocolsPlugin:
 
         def validate_plugin(
             self,
-            plugin_data: p.Plugin.DiscoveryData,
+            plugin_data: FlextPluginProtocolsPlugin.DiscoveryData,
         ) -> p.Result[bool]:
             """Validate plugin discovery data.
 
@@ -181,7 +189,7 @@ class FlextPluginProtocolsPlugin:
             ...
 
     @runtime_checkable
-    class Execution(Protocol):
+    class Executor(Protocol):
         """Protocol for plugin execution operations."""
 
         def execute_plugin(
@@ -283,7 +291,9 @@ class FlextPluginProtocolsPlugin:
             """
             ...
 
-        def validate_plugin_security(self, plugin: p.Plugin.Entity) -> bool:
+        def validate_plugin_security(
+            self, plugin: (FlextPluginProtocolsPlugin.Entity)
+        ) -> bool:
             """Validate plugin security compliance.
 
             Args:
@@ -665,7 +675,7 @@ class FlextPluginProtocolsPlugin:
         def discover(
             self,
             paths: Sequence[str],
-        ) -> p.Result[Sequence[p.Plugin.DiscoveryData]]:
+        ) -> p.Result[Sequence[FlextPluginProtocolsPlugin.DiscoveryData]]:
             """Discover plugins using this strategy.
 
             Args:
@@ -676,6 +686,235 @@ class FlextPluginProtocolsPlugin:
                 discovery error.
 
             """
+            ...
+
+    @runtime_checkable
+    class PortOptions(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def registry(self) -> p.Registry:
+            """Canonical instance-scoped plugin registry."""
+            ...
+
+        @property
+        def discovery(self) -> FlextPluginProtocolsPlugin.Discovery | None:
+            """Optional plugin discovery adapter."""
+            ...
+
+        @property
+        def loader(self) -> FlextPluginProtocolsPlugin.Loader | None:
+            """Optional plugin loading adapter."""
+            ...
+
+        @property
+        def executor(self) -> FlextPluginProtocolsPlugin.Executor | None:
+            """Optional plugin execution adapter."""
+            ...
+
+        @property
+        def executions(self) -> Mapping[str, FlextPluginProtocolsPlugin.Run]:
+            """Execution records owned by this platform instance."""
+            ...
+
+    @runtime_checkable
+    class Entity(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def domain_events(self) -> Sequence[p.DomainEvent]:
+            """List of uncommitted domain events for event sourcing."""
+            ...
+
+        @property
+        def name(self) -> str:
+            """Plugin unique identifier name."""
+            ...
+
+        @property
+        def plugin_version(self) -> str:
+            """Plugin semantic version (X.Y.Z)."""
+            ...
+
+        @property
+        def description(self) -> str:
+            """Plugin functionality description."""
+            ...
+
+        @property
+        def author(self) -> str:
+            """Plugin author/maintainer."""
+            ...
+
+        @property
+        def plugin_type(self) -> FlextPluginConstantsPlugin.Type:
+            """Plugin type classification."""
+            ...
+
+        @property
+        def is_enabled(self) -> bool:
+            """Plugin enabled state."""
+            ...
+
+        @property
+        def metadata(self) -> t.JsonMapping:
+            """Extensible plugin metadata."""
+            ...
+
+    @runtime_checkable
+    class Execution(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def plugin_name(self) -> str:
+            """Executed plugin name."""
+            ...
+
+        @property
+        def execution_id(self) -> str:
+            """Unique execution identifier."""
+            ...
+
+        @property
+        def input_data(self) -> t.JsonMapping:
+            """Executor input payload."""
+            ...
+
+        @property
+        def is_running(self) -> bool:
+            """Run in progress."""
+            ...
+
+        @property
+        def is_completed(self) -> bool:
+            """Run finished."""
+            ...
+
+        @property
+        def success(self) -> bool:
+            """Run succeeded."""
+            ...
+
+        @property
+        def error_message(self) -> str | None:
+            """Failure reason."""
+            ...
+
+        @property
+        def result(self) -> t.JsonMapping | None:
+            """Executor output."""
+            ...
+
+        @property
+        def started_at(self) -> str | None:
+            """Start ISO timestamp."""
+            ...
+
+        @property
+        def completed_at(self) -> str | None:
+            """Completion ISO timestamp."""
+            ...
+
+    @runtime_checkable
+    class DiscoveryData(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def name(self) -> str:
+            """Plugin unique identifier name."""
+            ...
+
+        @property
+        def version(self) -> str:
+            """Plugin semantic version (X.Y.Z)."""
+            ...
+
+        @property
+        def path(self) -> Path:
+            """File system path to plugin."""
+            ...
+
+        @property
+        def discovery_type(self) -> str:
+            """Type of discovered plugin."""
+            ...
+
+        @property
+        def discovery_method(self) -> str:
+            """Discovery method used."""
+            ...
+
+        @property
+        def metadata(self) -> t.JsonMapping:
+            """Extensible discovery metadata."""
+            ...
+
+    @runtime_checkable
+    class Metadata(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def name(self) -> str:
+            """Plugin unique identifier."""
+            ...
+
+        @property
+        def version(self) -> str:
+            """Plugin semantic version."""
+            ...
+
+        @property
+        def description(self) -> str:
+            """Plugin description."""
+            ...
+
+        @property
+        def author(self) -> str:
+            """Plugin author."""
+            ...
+
+        @property
+        def plugin_type(self) -> str:
+            """Type of plugin."""
+            ...
+
+        @property
+        def entry_point(self) -> str:
+            """Entry point for plugin."""
+            ...
+
+        @property
+        def dependencies(self) -> tuple[str, ...]:
+            """List of plugin dependencies."""
+            ...
+
+        @property
+        def metadata(self) -> t.JsonMapping:
+            """Additional metadata."""
+            ...
+
+    @runtime_checkable
+    class Registry(FlextCliProtocols.Model, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def version(self) -> str:
+            """Registry schema version."""
+            ...
+
+        @property
+        def plugins(self) -> t.JsonMapping:
+            """Dictionary of registered plugins."""
+            ...
+
+        @property
+        def last_updated(self) -> datetime:
+            """Last update timestamp."""
+            ...
+
+        @property
+        def created_at(self) -> datetime:
+            """Registry creation timestamp."""
             ...
 
 
