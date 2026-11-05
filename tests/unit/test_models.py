@@ -9,7 +9,7 @@ from __future__ import annotations
 import pytest
 
 from flext_plugin import FlextPluginPlatform
-from tests import c, m, tm
+from tests import c, m, tm, u
 
 
 class TestsFlextPluginModelsUnit:
@@ -127,7 +127,7 @@ class TestsFlextPluginModelsUnit:
     @staticmethod
     def test_entity_rejects_empty_name() -> None:
         """An empty name violates the name constraint and is refused."""
-        with pytest.raises(ValueError, match=r".*"):
+        with u.Tests.raises(ValueError, match=r".*"):
             m.Plugin.Entity(name="", plugin_version="1.0.0")
 
     @staticmethod
@@ -137,7 +137,7 @@ class TestsFlextPluginModelsUnit:
     )
     def test_entity_rejects_non_semantic_version(bad_version: str) -> None:
         """Versions outside the X.Y[.Z] numeric form are refused."""
-        with pytest.raises(ValueError, match=r"semantic"):
+        with u.Tests.raises(ValueError, match=r"semantic"):
             m.Plugin.Entity(name="test-plugin", plugin_version=bad_version)
 
     @staticmethod

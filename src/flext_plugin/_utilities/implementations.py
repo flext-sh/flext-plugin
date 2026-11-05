@@ -15,9 +15,11 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from flext_cli import u
-
-from flext_plugin import c, m, r, t
+from flext_plugin.constants import c
+from flext_plugin.models import m
+from flext_plugin.result import r
+from flext_plugin.typings import t
+from flext_plugin.utilities import u
 
 if TYPE_CHECKING:
     from flext_plugin import p

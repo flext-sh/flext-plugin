@@ -15,7 +15,7 @@ from __future__ import annotations
 import pytest
 
 from flext_plugin import FlextPluginPlatform
-from tests import c, m, p, tm
+from tests import c, m, p, tm, u
 
 
 class TestsFlextPluginDomainEntities:
@@ -82,7 +82,7 @@ class TestsFlextPluginDomainEntities:
     @pytest.mark.parametrize("bad_name", ["ab", "-bad", "1bad", ""])
     def test_create_rejects_names_violating_contract(bad_name: str) -> None:
         """Names shorter than the minimum or breaking the pattern are refused."""
-        with pytest.raises(ValueError, match=r".+"):
+        with u.Tests.raises(ValueError, match=r".+"):
             m.Plugin.Entity(name=bad_name)
 
     @staticmethod
@@ -91,7 +91,7 @@ class TestsFlextPluginDomainEntities:
     )
     def test_create_rejects_non_semantic_versions(bad_version: str) -> None:
         """Versions outside the X.Y.Z shape are rejected at construction."""
-        with pytest.raises(ValueError, match=r"semantic|version|pattern|string"):
+        with u.Tests.raises(ValueError, match=r"semantic|version|pattern|string"):
             m.Plugin.Entity(
                 name="valid-plugin",
                 plugin_version=bad_version,

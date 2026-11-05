@@ -136,7 +136,7 @@ class TestsFlextPluginConfig:
     @staticmethod
     def test_update_global_rejects_unknown_field() -> None:
         """``update_global`` raises ``ValueError`` naming the settings class."""
-        with pytest.raises(ValueError, match="FlextPluginSettings"):
+        with u.Tests.raises(ValueError, match="FlextPluginSettings"):
             FlextPluginSettings.update_global(nonexistent_field=42)
 
     @staticmethod

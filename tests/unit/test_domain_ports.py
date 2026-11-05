@@ -86,7 +86,7 @@ class TestsFlextPluginDomainPorts:
         result = discovery.discover_plugin("no/such/plugin_qwerty.py")
 
         tm.fail(result.success)
-        with pytest.raises(RuntimeError):
+        with u.Tests.raises(RuntimeError):
             result.unwrap()
 
     # ------------------------------------------------------------------ #

@@ -13,7 +13,10 @@ from pathlib import Path
 
 from flext_cli import u
 
-from flext_plugin import c, m, p, r
+from flext_plugin.constants import c
+from flext_plugin.models import m
+from flext_plugin.protocols import p
+from flext_plugin.result import r
 
 
 class FlextPluginDiscovery:

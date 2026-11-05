@@ -12,7 +12,9 @@ from typing import TYPE_CHECKING, ClassVar
 
 from flext_cli import u
 
-from flext_plugin import c, m, r
+from flext_plugin.constants import c
+from flext_plugin.models import m
+from flext_plugin.result import r
 
 if TYPE_CHECKING:
     from flext_plugin import p

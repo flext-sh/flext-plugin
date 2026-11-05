@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import pytest
 
-from tests import c, e, tm
+from tests import c, e, tm, u
 
 _Type = c.Plugin.Type
 _Status = c.Plugin.PluginStatus
@@ -54,7 +54,7 @@ class TestsFlextPluginTypesCore:
     @staticmethod
     def test_plugin_type_invalid_string_raises_value_error() -> None:
         """An unknown string is rejected with ValueError naming the input."""
-        with pytest.raises(ValueError, match=r"invalid_type"):
+        with u.Tests.raises(ValueError, match=r"invalid_type"):
             c.Plugin.Type("invalid_type")
 
     @staticmethod
@@ -137,7 +137,7 @@ class TestsFlextPluginTypesCore:
     @staticmethod
     def test_plugin_status_invalid_string_raises_value_error() -> None:
         """An unknown status string is rejected with ValueError."""
-        with pytest.raises(ValueError, match=r"not_a_status"):
+        with u.Tests.raises(ValueError, match=r"not_a_status"):
             c.Plugin.PluginStatus("not_a_status")
 
     @staticmethod
@@ -165,7 +165,7 @@ class TestsFlextPluginTypesCore:
 
         """
         message = "plugin failed to load"
-        with pytest.raises(e.BaseError, match=r"plugin failed to load") as excinfo:
+        with u.Tests.raises(e.BaseError, match=r"plugin failed to load") as excinfo:
             raise e.BaseError(message)
         tm.that(str(excinfo.value), has=message)
         tm.that(excinfo.value, is_=Exception)

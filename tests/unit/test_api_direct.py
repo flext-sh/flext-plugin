@@ -124,7 +124,7 @@ class TestsFlextPluginApi:
         """Every public collaborator assignment validates before replacing its port."""
         api = FlextPluginApi()
         original = getattr(api, field_name)
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             setattr(api, field_name, "invalid")
         tm.that(getattr(api, field_name) is original, truth=True)
 

@@ -9,7 +9,7 @@ from __future__ import annotations
 import pytest
 
 from flext_plugin import FlextPluginApi, FlextPluginPlatform
-from tests import c, m, tm
+from tests import c, m, tm, u
 
 
 class TestsFlextPluginPlugin:
@@ -47,7 +47,7 @@ class TestsFlextPluginPlugin:
     )
     def test_invalid_version_is_rejected_at_ingress(bad_version: str) -> None:
         """Invalid owned payloads never reach the registration operation."""
-        with pytest.raises(c.ValidationError):
+        with u.Tests.raises(c.ValidationError):
             m.Plugin.Entity(name="invalid-version-plugin", plugin_version=bad_version)
 
     @staticmethod
