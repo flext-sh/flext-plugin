@@ -6,8 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import pytest
-
 from flext_plugin import FlextPluginApi, FlextPluginPlatform
 from tests import c, m, tm, u
 
@@ -28,7 +26,7 @@ class TestsFlextPluginPlugin:
         )
 
     @staticmethod
-    @pytest.mark.parametrize("enabled", [True, False])
+    @c.Tests.MARK.parametrize("enabled", [True, False])
     def test_status_is_derived_from_supplied_enabled_state(*, enabled: bool) -> None:
         """Both entity and API projections observe the same stored payload."""
         payload = m.Plugin.Entity(name="status-plugin", is_enabled=enabled)
@@ -42,7 +40,7 @@ class TestsFlextPluginPlugin:
         tm.that(api.fetch_plugin(payload.name).value is payload, truth=True)
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         "bad_version", [c.ParserBooleanToken.ONE, "1.2.3.4", "1.x", "abc"]
     )
     def test_invalid_version_is_rejected_at_ingress(bad_version: str) -> None:

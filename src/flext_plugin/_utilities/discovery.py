@@ -11,12 +11,9 @@ import importlib.metadata
 from collections.abc import Callable, MutableMapping, MutableSequence, Sequence
 from pathlib import Path
 
-from flext_cli import u
+from flext_cli import r, u
 
-from flext_plugin.constants import c
-from flext_plugin.models import m
-from flext_plugin.protocols import p
-from flext_plugin.result import r
+from flext_plugin import c, m, p
 
 
 class FlextPluginDiscovery:

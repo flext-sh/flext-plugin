@@ -12,12 +12,9 @@ from pathlib import Path
 from types import MappingProxyType
 from typing import Annotated
 
-from flext_cli import m
+from flext_cli import m, u
 
-from flext_plugin.constants import c
-from flext_plugin.protocols import p
-from flext_plugin.typings import t
-from flext_plugin.utilities import u
+from flext_plugin import c, p, t
 
 
 class FlextPluginModelsPlugin:

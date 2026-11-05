@@ -12,8 +12,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import pytest
-
 from flext_plugin import FlextPluginPlatform
 from tests import c, m, p, tm, u
 
@@ -79,14 +77,14 @@ class TestsFlextPluginDomainEntities:
         tm.that(plugin.plugin_type, eq=c.Plugin.Type.UTILITY)
 
     @staticmethod
-    @pytest.mark.parametrize("bad_name", ["ab", "-bad", "1bad", ""])
+    @c.Tests.MARK.parametrize("bad_name", ["ab", "-bad", "1bad", ""])
     def test_create_rejects_names_violating_contract(bad_name: str) -> None:
         """Names shorter than the minimum or breaking the pattern are refused."""
         with u.Tests.raises(ValueError, match=r".+"):
             m.Plugin.Entity(name=bad_name)
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         "bad_version", [c.ParserBooleanToken.ONE, "1.2.3.4", "x.y.z", "abc"]
     )
     def test_create_rejects_non_semantic_versions(bad_version: str) -> None:

@@ -13,16 +13,10 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from pathlib import Path
-from typing import TYPE_CHECKING
 
-from flext_plugin.constants import c
-from flext_plugin.models import m
-from flext_plugin.result import r
-from flext_plugin.typings import t
-from flext_plugin.utilities import u
+from flext_cli import r, u
 
-if TYPE_CHECKING:
-    from flext_plugin import p
+from flext_plugin import c, m, p, t
 
 
 class FlextPluginImplementations:

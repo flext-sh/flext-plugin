@@ -11,11 +11,8 @@ from __future__ import annotations
 
 import asyncio
 
-import pytest
-
-import flext_plugin
 from flext_plugin import FlextPluginTypes
-from tests import t, tm
+from tests import c, t, tm
 
 
 class TestsFlextPluginTypesUnit:
@@ -29,7 +26,7 @@ class TestsFlextPluginTypesUnit:
     @staticmethod
     def test_module_alias_is_the_facade() -> None:
         """The module-level ``t`` alias exposes the facade itself."""
-        tm.ok(flext_plugin.t is FlextPluginTypes)
+        tm.ok(t is FlextPluginTypes)
 
     @staticmethod
     def test_tests_facade_exposes_plugin_namespace() -> None:
@@ -40,7 +37,7 @@ class TestsFlextPluginTypesUnit:
         )
 
     @staticmethod
-    @pytest.mark.parametrize("inherited_alias", ["JsonMapping"])
+    @c.Tests.MARK.parametrize("inherited_alias", ["JsonMapping"])
     def test_inherits_cli_type_aliases(inherited_alias: str) -> None:
         """flext_cli type aliases remain reachable through the facade."""
         tm.ok(hasattr(FlextPluginTypes, inherited_alias))

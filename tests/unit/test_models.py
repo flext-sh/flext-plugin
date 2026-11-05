@@ -6,8 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import pytest
-
 from flext_plugin import FlextPluginPlatform
 from tests import c, m, tm, u
 
@@ -18,7 +16,7 @@ class TestsFlextPluginModelsUnit:
     # ---- Enum public contract -------------------------------------------
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         ("status", "expected_value"),
         [
             (c.Plugin.PluginStatus.UNKNOWN, "unknown"),
@@ -42,7 +40,7 @@ class TestsFlextPluginModelsUnit:
         tm.that(str(status), eq=expected_value)
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         "status",
         [
             c.Plugin.PluginStatus.ACTIVE,
@@ -59,7 +57,7 @@ class TestsFlextPluginModelsUnit:
         tm.fail(status.is_error_state())
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         "status",
         [
             c.Plugin.PluginStatus.ERROR,
@@ -76,7 +74,7 @@ class TestsFlextPluginModelsUnit:
         tm.fail(status.is_operational())
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         ("plugin_type", "expected_value"),
         [
             (c.Plugin.Type.TAP, "tap"),
@@ -131,7 +129,7 @@ class TestsFlextPluginModelsUnit:
             m.Plugin.Entity(name="", plugin_version="1.0.0")
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         "bad_version",
         ["invalid-version", c.ParserBooleanToken.ONE, "1.0.0.0", "a.b.c", "x.y"],
     )
@@ -141,7 +139,7 @@ class TestsFlextPluginModelsUnit:
             m.Plugin.Entity(name="test-plugin", plugin_version=bad_version)
 
     @staticmethod
-    @pytest.mark.parametrize("good_version", ["1.0.0", "10.20.30", "2.3.4"])
+    @c.Tests.MARK.parametrize("good_version", ["1.0.0", "10.20.30", "2.3.4"])
     def test_entity_accepts_valid_semantic_versions(good_version: str) -> None:
         """Well-formed semantic versions are accepted verbatim."""
         plugin = m.Plugin.Entity(name="ok-plugin", plugin_version=good_version)

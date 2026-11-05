@@ -14,8 +14,6 @@ import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import pytest
-
 from flext_plugin import FlextPluginDiscovery
 from tests import c, tm, u
 
@@ -26,7 +24,7 @@ if TYPE_CHECKING:
 class TestsFlextPluginDiscovery:
     """Behavioral tests for the plugin discovery public contract."""
 
-    @pytest.fixture
+    @u.Tests.fixture
     def discovery() -> FlextPluginDiscovery:
         """Provide a fresh discovery instance.
 
@@ -36,7 +34,7 @@ class TestsFlextPluginDiscovery:
         """
         return FlextPluginDiscovery()
 
-    @pytest.fixture
+    @u.Tests.fixture
     def plugin_tree() -> Generator[Path]:
         """Create a directory tree with two plugin files and ignored entries.
 

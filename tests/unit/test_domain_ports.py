@@ -14,10 +14,8 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
-import pytest
-
 from flext_plugin import FlextPluginDiscovery
-from tests import p, tm, u
+from tests import c, p, tm, u
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -31,12 +29,12 @@ class TestsFlextPluginDomainPorts:
     attribute or internal-collaborator access.
     """
 
-    @pytest.fixture
+    @u.Tests.fixture
     def logger() -> p.Logger:
         """Return a real logger for strategy/static-method construction."""
         return u.fetch_logger("tests.flext_plugin.discovery")
 
-    @pytest.fixture
+    @u.Tests.fixture
     def discovery() -> FlextPluginDiscovery:
         """Return a fresh discovery facade instance."""
         return FlextPluginDiscovery()
@@ -59,7 +57,7 @@ class TestsFlextPluginDomainPorts:
     # ------------------------------------------------------------------ #
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         "missing_path",
         [
             "definitely/not/here/nope_plugin.py",
@@ -151,7 +149,7 @@ class TestsFlextPluginDomainPorts:
         tm.that(sorted(discovered), eq=["alpha", "beta"])
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         ("filename", "expected_present"),
         [
             ("plain.py", True),

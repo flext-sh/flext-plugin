@@ -13,11 +13,10 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import pytest
 from flext_core import FlextSettings
 
 from flext_plugin import FlextPluginConfig, FlextPluginSettings, config
-from tests import tm, u
+from tests import c, tm, u
 
 # NOTE (multi-agent): no-mock/SSOT rewrite — the old _ROOT_FIELDS list asserted the
 # absence of 7 fields (app_name, enable_caching, cache_ttl, max_workers,
@@ -97,7 +96,7 @@ class TestsFlextPluginConfig:
         )
 
     @staticmethod
-    @pytest.mark.parametrize("universal_field", _UNIVERSAL_FIELDS)
+    @c.Tests.MARK.parametrize("universal_field", _UNIVERSAL_FIELDS)
     def test_universal_fields_are_inherited(universal_field: str) -> None:
         """Every universal operational flag is inherited from the SSOT root."""
         tm.ok(universal_field in FlextPluginSettings.model_fields)

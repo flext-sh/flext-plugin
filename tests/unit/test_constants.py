@@ -6,8 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import pytest
-
 from tests import c, tm
 
 
@@ -29,7 +27,7 @@ class TestsFlextPluginConstantsUnit:
             tm.that(len(category) > 0, truth=True)
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         ("category", "expected_values"),
         [
             (c.Plugin.SINGER_PLUGIN_TYPES, {"tap", "target", "transform"}),
@@ -79,7 +77,7 @@ class TestsFlextPluginConstantsUnit:
         )
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         ("left", "right"),
         [
             (c.Plugin.SINGER_PLUGIN_TYPES, c.Plugin.ARCHITECTURE_PLUGIN_TYPES),
