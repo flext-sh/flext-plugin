@@ -11,9 +11,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
-from tests import tm, u
+from tests import c, tm, u
 
 
 class TestsFlextPluginUtilities:
@@ -151,7 +149,7 @@ class TestsFlextPluginUtilities:
         tm.ok(result.success)
 
     @staticmethod
-    @pytest.mark.parametrize("bad_name", ["123-invalid", "", "no spaces", "invalid!"])
+    @c.Tests.MARK.parametrize("bad_name", ["123-invalid", "", "no spaces", "invalid!"])
     def test_validate_plugin_name_rejects_invalid_names(bad_name: str) -> None:
         """validate_plugin_name() fails for names violating the pattern."""
         result = u.Plugin.validate_plugin_name(bad_name)

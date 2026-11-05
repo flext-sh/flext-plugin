@@ -15,9 +15,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-import pytest
-
-from tests import m, tm, u
+from tests import c, m, tm, u
 
 
 def _examples_dir() -> Path:
@@ -28,16 +26,16 @@ class TestsFlextPluginExamples:
     """Observable contract of the example scripts run as processes."""
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         ("module", "args"),
         [
-            pytest.param("examples.basic_plugin", (), id="basic-plugin"),
-            pytest.param(
+            u.Tests.param("examples.basic_plugin", (), id="basic-plugin"),
+            u.Tests.param(
                 "examples.plugin_configuration",
                 (),
                 id="plugin-configuration",
             ),
-            pytest.param(
+            u.Tests.param(
                 "examples.docker_integration",
                 ("run",),
                 id="docker-integration-run",

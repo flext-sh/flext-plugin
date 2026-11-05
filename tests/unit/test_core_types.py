@@ -11,8 +11,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import pytest
-
 from tests import c, e, tm, u
 
 _Type = c.Plugin.Type
@@ -23,7 +21,7 @@ class TestsFlextPluginTypesCore:
     """Behavioral contract of c.Plugin.Type / PluginStatus enums and errors."""
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         ("member", "value"),
         [
             (_Type.TAP, "tap"),
@@ -43,7 +41,7 @@ class TestsFlextPluginTypesCore:
         tm.that(member, eq=value)  # StrEnum equality with the raw string
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         "value",
         ["tap", "target", "transform", "utility", "service", "core"],
     )
@@ -73,14 +71,14 @@ class TestsFlextPluginTypesCore:
         tm.that(total, eq=len(union))  # disjoint: no type in two categories
 
     @staticmethod
-    @pytest.mark.parametrize("member", [_Type.TAP, _Type.TARGET, _Type.TRANSFORM])
+    @c.Tests.MARK.parametrize("member", [_Type.TAP, _Type.TARGET, _Type.TRANSFORM])
     def test_singer_types_belong_to_singer_group(member: c.Plugin.Type) -> None:
         """Singer plugin types are classified in the Singer frozenset."""
         tm.that(c.Plugin.SINGER_PLUGIN_TYPES, has=member)
         tm.that(c.Plugin.ALL_PLUGIN_TYPES, has=member)
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         ("member", "value"),
         [
             (_Status.UNKNOWN, "unknown"),
@@ -102,7 +100,7 @@ class TestsFlextPluginTypesCore:
         tm.that(c.Plugin.PluginStatus(value) is member, truth=True)
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         "member",
         [_Status.ERROR, _Status.UNHEALTHY, _Status.DISABLED],
     )
@@ -115,7 +113,7 @@ class TestsFlextPluginTypesCore:
         tm.that(c.Plugin.PluginStatus.get_error_statuses(), has=member)
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         "member",
         [_Status.ACTIVE, _Status.HEALTHY, _Status.LOADED],
     )
@@ -141,7 +139,7 @@ class TestsFlextPluginTypesCore:
             c.Plugin.PluginStatus("not_a_status")
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         ("member", "value"),
         [
             (c.Plugin.DiscoveryTypeLiteral.FILE, "file"),

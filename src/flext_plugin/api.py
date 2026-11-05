@@ -8,8 +8,8 @@ from __future__ import annotations
 
 from flext_core import FlextRegistry
 
+from flext_plugin import p
 from flext_plugin._utilities import FlextPluginPlatform
-from flext_plugin.protocols import p
 
 
 class FlextPluginApi(FlextPluginPlatform.PluginPlatformService):

@@ -9,13 +9,9 @@ from __future__ import annotations
 from collections.abc import MutableSequence, Sequence
 from typing import override
 
-from flext_plugin.constants import c
-from flext_plugin.models import m
-from flext_plugin.protocols import p
-from flext_plugin.result import r
-from flext_plugin.service import s
-from flext_plugin.typings import t
-from flext_plugin.utilities import u
+from flext_cli import r, s, u
+
+from flext_plugin import c, m, p, t
 
 
 class FlextPluginPlatform:

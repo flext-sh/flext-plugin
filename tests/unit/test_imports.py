@@ -15,8 +15,6 @@ from __future__ import annotations
 
 import sys
 
-import pytest
-
 import flext_plugin
 from flext_plugin import (
     FlextPluginApi,
@@ -26,8 +24,9 @@ from flext_plugin import (
     FlextPluginSettings,
     FlextPluginTypes,
     FlextPluginUtilities,
+    plugin,
 )
-from tests import tm
+from tests import c, tm
 
 
 class TestsFlextPluginImports:
@@ -40,14 +39,14 @@ class TestsFlextPluginImports:
         tm.ok(len(flext_plugin.__all__) > 0)
 
     @staticmethod
-    @pytest.mark.parametrize("public_name", list(flext_plugin.__all__))
+    @c.Tests.MARK.parametrize("public_name", list(flext_plugin.__all__))
     def test_every_public_name_resolves(public_name: str) -> None:
         """Every name advertised in ``__all__`` is importable and non-None."""
         tm.ok(hasattr(flext_plugin, public_name))
         tm.ok(getattr(flext_plugin, public_name) is not None)
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         ("facade_name", "expected"),
         [
             ("FlextPluginApi", FlextPluginApi),
@@ -70,11 +69,11 @@ class TestsFlextPluginImports:
 
     @staticmethod
     def test_plugin_alias_is_the_api_facade() -> None:
-        """The ``plugin`` alias is exactly the ``FlextPluginApi`` facade."""
-        tm.ok(flext_plugin.FlextPluginApi is FlextPluginApi)
+        """The ``plugin`` alias is an instance of the ``FlextPluginApi`` facade."""
+        tm.ok(isinstance(plugin, FlextPluginApi))
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         "alias", ["c", "d", "e", "h", "m", "p", "r", "s", "t", "u", ...]
     )
     def test_short_facade_aliases_are_exposed(alias: str) -> None:
@@ -83,7 +82,7 @@ class TestsFlextPluginImports:
         tm.ok(getattr(flext_plugin, alias) is not None)
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         "version_attr",
         [
             "__version__",
@@ -109,4 +108,3 @@ class TestsFlextPluginImports:
     def test_package_reimport_is_idempotent() -> None:
         """The package resolves to one stable module object in the import system."""
         tm.ok(sys.modules["flext_plugin"] is flext_plugin)
-        tm.ok(flext_plugin.FlextPluginApi is FlextPluginApi)

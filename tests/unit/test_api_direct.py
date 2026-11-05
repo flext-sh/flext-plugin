@@ -8,8 +8,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import pytest
-
 from flext_plugin import (
     FlextPluginApi,
     FlextPluginDiscovery,
@@ -117,7 +115,7 @@ class TestsFlextPluginApi:
         )
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         "field_name", ["registry", "discovery", "loader", "executor"]
     )
     def test_service_port_assignment_is_validated(field_name: str) -> None:
