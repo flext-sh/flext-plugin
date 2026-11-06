@@ -12,11 +12,11 @@ from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from flext_cli import FlextCliProtocols, p, t
 
+from flext_plugin import c
+
 if TYPE_CHECKING:
     from datetime import datetime
     from pathlib import Path
-
-    from flext_plugin._constants import FlextPluginConstantsPlugin
 
 
 class FlextPluginProtocolsPlugin:
@@ -730,12 +730,7 @@ class FlextPluginProtocolsPlugin:
         plugin_version: str
         description: str
         author: str
-
-        @property
-        def plugin_type(self) -> FlextPluginConstantsPlugin.Type:
-            """Plugin type classification."""
-            ...
-
+        plugin_type: c.Plugin.Type
         is_enabled: bool
         metadata: t.JsonMapping
 

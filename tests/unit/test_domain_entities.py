@@ -13,7 +13,7 @@ SPDX-License-Identifier: MIT
 from __future__ import annotations
 
 from flext_plugin import FlextPluginPlatform
-from tests import c, m, p, tm, u
+from tests import c, m, tm, u
 
 
 class TestsFlextPluginDomainEntities:
@@ -31,7 +31,7 @@ class TestsFlextPluginDomainEntities:
         plugin_version: str = "1.0.0",
         description: str = "Test plugin",
         author: str = "Test Author",
-    ) -> p.Plugin.Entity:
+    ) -> m.Plugin.Entity:
         """Construct a Plugin entity through the public factory.
 
         Returns:

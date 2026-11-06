@@ -175,7 +175,7 @@ class FlextPluginDiscovery:
     def _discover_unique_plugins(
         self,
         paths: Sequence[str],
-    ) -> MutableMapping[str, m.Plugin.DiscoveryData]:
+    ) -> MutableMapping[str, p.Plugin.DiscoveryData]:
         """Discover unique plugins across all configured strategies.
 
         Args:
@@ -185,7 +185,7 @@ class FlextPluginDiscovery:
             Mapping of plugin name to its first discovered data record.
 
         """
-        discovered: MutableMapping[str, m.Plugin.DiscoveryData] = {}
+        discovered: MutableMapping[str, p.Plugin.DiscoveryData] = {}
         for strategy in self.strategies:
             result = strategy.discover(paths)
             if result.success:
