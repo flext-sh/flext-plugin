@@ -11,15 +11,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from pathlib import Path
-from typing import TYPE_CHECKING
 
-from flext_core import u
+from flext_cli import r, u
 
-from flext_plugin import c, m, r, t
-
-if TYPE_CHECKING:
-    from flext_plugin import p
+from flext_plugin import c, m, p, t
 
 
 class FlextPluginImplementations:
@@ -38,7 +35,7 @@ class FlextPluginImplementations:
             """Initialize with empty discovered-plugin tracking."""
             self._discovered: list[str] = []
 
-        def discover_plugin(self, plugin_path: str) -> p.Result[m.Plugin.DiscoveryData]:
+        def discover_plugin(self, plugin_path: str) -> p.Result[p.Plugin.DiscoveryData]:
             """Discover a single plugin from a real file.
 
             Args:
@@ -51,11 +48,11 @@ class FlextPluginImplementations:
             """
             path = Path(plugin_path)
             if not path.is_file():
-                return r[m.Plugin.DiscoveryData].fail(
+                return r[p.Plugin.DiscoveryData].fail(
                     f"Plugin file not found: {plugin_path}",
                 )
             self._discovered.append(path.stem)
-            return r[m.Plugin.DiscoveryData].ok(
+            return r[p.Plugin.DiscoveryData].ok(
                 m.Plugin.DiscoveryData(
                     name=path.stem,
                     version=c.Plugin.DEFAULT_PLUGIN_VERSION,
@@ -68,8 +65,8 @@ class FlextPluginImplementations:
 
         def discover_plugins(
             self,
-            paths: t.StrSequence,
-        ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
+            paths: Sequence[str],
+        ) -> p.Result[Sequence[p.Plugin.DiscoveryData]]:
             """Discover plugins from multiple paths.
 
             Args:
@@ -80,7 +77,7 @@ class FlextPluginImplementations:
                 Ok with the discovery data of the discovered plugins.
 
             """
-            results: list[m.Plugin.DiscoveryData] = []
+            results: list[p.Plugin.DiscoveryData] = []
             for path_str in paths:
                 path = Path(path_str)
                 if path.is_file() and path.suffix == ".py":
@@ -93,11 +90,11 @@ class FlextPluginImplementations:
                             result = self.discover_plugin(str(py_file))
                             if result.success:
                                 results.append(result.value)
-            return r[t.SequenceOf[m.Plugin.DiscoveryData]].ok(results)
+            return r[Sequence[p.Plugin.DiscoveryData]].ok(results)
 
         @staticmethod
         def validate_plugin(
-            plugin_data: m.Plugin.DiscoveryData,
+            plugin_data: p.Plugin.DiscoveryData,
         ) -> p.Result[bool]:
             """Validate discovered plugin data.
 
@@ -125,7 +122,7 @@ class FlextPluginImplementations:
             """Initialize with empty loaded-plugin tracking."""
             self._loaded: list[str] = []
 
-        def get_loaded_plugins(self) -> t.StrSequence:
+        def get_loaded_plugins(self) -> Sequence[str]:
             """Return the names of plugins loaded through this loader."""
             return list(self._loaded)
 
@@ -181,7 +178,7 @@ class FlextPluginImplementations:
             return r[bool].ok(value=True)
 
     class EchoExecutor:
-        """Real executor implementing p.Plugin.Execution.
+        """Real executor implementing p.Plugin.Executor.
 
         Echoes the execution context back as the result so tests can
         assert the real execution-record bookkeeping of the platform.
@@ -229,7 +226,7 @@ class FlextPluginImplementations:
             return r[str].ok("completed")
 
         @staticmethod
-        def list_running_executions() -> t.StrSequence:
+        def list_running_executions() -> Sequence[str]:
             """No execution stays running after execute_plugin returns.
 
             Returns:
@@ -289,7 +286,7 @@ class FlextPluginImplementations:
             return r[str].ok("failed")
 
         @staticmethod
-        def list_running_executions() -> t.StrSequence:
+        def list_running_executions() -> Sequence[str]:
             """No execution stays running after a failure.
 
             Returns:
@@ -316,7 +313,7 @@ class FlextPluginImplementations:
         """Real discovery whose operations always fail deterministically."""
 
         @staticmethod
-        def discover_plugin(plugin_path: str) -> p.Result[m.Plugin.DiscoveryData]:
+        def discover_plugin(plugin_path: str) -> p.Result[p.Plugin.DiscoveryData]:
             """Report a real discovery failure for one plugin.
 
             Args:
@@ -328,12 +325,12 @@ class FlextPluginImplementations:
 
             """
             _ = plugin_path
-            return r[m.Plugin.DiscoveryData].fail("discovery failed")
+            return r[p.Plugin.DiscoveryData].fail("discovery failed")
 
         @staticmethod
         def discover_plugins(
-            paths: t.StrSequence,
-        ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
+            paths: Sequence[str],
+        ) -> p.Result[Sequence[p.Plugin.DiscoveryData]]:
             """Report a real discovery failure for the given paths.
 
             Args:
@@ -344,11 +341,11 @@ class FlextPluginImplementations:
 
             """
             _ = paths
-            return r[t.SequenceOf[m.Plugin.DiscoveryData]].fail("discovery failed")
+            return r[Sequence[p.Plugin.DiscoveryData]].fail("discovery failed")
 
         @staticmethod
         def validate_plugin(
-            plugin_data: m.Plugin.DiscoveryData,
+            plugin_data: p.Plugin.DiscoveryData,
         ) -> p.Result[bool]:
             """Report a real validation failure.
 

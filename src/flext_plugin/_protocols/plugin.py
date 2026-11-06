@@ -7,27 +7,94 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
+from flext_cli import FlextCliProtocols, p, t
+
 if TYPE_CHECKING:
-    from flext_plugin import m, p, t
-    from flext_plugin._utilities import FlextPluginPlatform
+    from datetime import datetime
+    from pathlib import Path
+
+    from flext_plugin._constants import FlextPluginConstantsPlugin
 
 
 class FlextPluginProtocolsPlugin:
     """Namespace of the plugin-domain protocol contracts.
 
-    Groups the discovery, loading, registry, execution, security,
+    Groups the discovery, loading, execution, security,
     hot-reload, monitoring, configuration, lifecycle, validation, and
-    storage protocols plus the platform lifecycle host contract.
+    storage protocols plus the owned plugin and execution payload contracts.
 
     """
+
+    @runtime_checkable
+    class Instance(p.BaseModel, Protocol):
+        """Owned plugin payload capabilities consumed by lifecycle services."""
+
+        @property
+        def name(self) -> str: ...
+
+        @property
+        def plugin_version(self) -> str: ...
+
+        @property
+        def is_enabled(self) -> bool: ...
+
+        @property
+        def metadata(self) -> t.JsonMapping: ...
+
+    @runtime_checkable
+    class Run(Protocol):
+        """Observable execution record, independent of its concrete model."""
+
+        @property
+        def plugin_name(self) -> str: ...
+
+        @property
+        def execution_id(self) -> str: ...
+
+        @property
+        def input_data(self) -> t.JsonMapping: ...
+
+        @property
+        def is_running(self) -> bool: ...
+
+        @property
+        def is_completed(self) -> bool: ...
+
+        @property
+        def success(self) -> bool: ...
+
+        @property
+        def error_message(self) -> str | None: ...
+
+        @property
+        def result(self) -> t.JsonMapping | None: ...
+
+        @property
+        def started_at(self) -> str | None: ...
+
+        @property
+        def completed_at(self) -> str | None: ...
+
+    @runtime_checkable
+    class Snapshot(Protocol):
+        """Transport snapshot returned by platform execution."""
+
+        @property
+        def version(self) -> str: ...
+
+        @property
+        def plugins(self) -> t.JsonMapping: ...
 
     @runtime_checkable
     class Discovery(Protocol):
         """Protocol for plugin discovery operations."""
 
-        def discover_plugin(self, plugin_path: str) -> p.Result[m.Plugin.DiscoveryData]:
+        def discover_plugin(
+            self, plugin_path: str
+        ) -> p.Result[FlextPluginProtocolsPlugin.DiscoveryData]:
             """Discover a single plugin at the specified path.
 
             Args:
@@ -41,8 +108,8 @@ class FlextPluginProtocolsPlugin:
 
         def discover_plugins(
             self,
-            paths: t.StrSequence,
-        ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
+            paths: Sequence[str],
+        ) -> p.Result[Sequence[FlextPluginProtocolsPlugin.DiscoveryData]]:
             """Discover plugins at the given paths.
 
             Args:
@@ -57,7 +124,7 @@ class FlextPluginProtocolsPlugin:
 
         def validate_plugin(
             self,
-            plugin_data: m.Plugin.DiscoveryData,
+            plugin_data: FlextPluginProtocolsPlugin.DiscoveryData,
         ) -> p.Result[bool]:
             """Validate plugin discovery data.
 
@@ -75,7 +142,7 @@ class FlextPluginProtocolsPlugin:
     class Loader(Protocol):
         """Protocol for plugin loading operations."""
 
-        def get_loaded_plugins(self) -> t.StrSequence:
+        def get_loaded_plugins(self) -> Sequence[str]:
             """List the currently loaded plugin names.
 
             Returns:
@@ -122,81 +189,7 @@ class FlextPluginProtocolsPlugin:
             ...
 
     @runtime_checkable
-    class Registry(Protocol):
-        """Protocol for plugin registry operations."""
-
-        def fetch_plugin(self, plugin_name: str) -> t.JsonValue | None:
-            """Fetch a registered plugin by name.
-
-            Args:
-                plugin_name: Name of the plugin to fetch.
-
-            Returns:
-                The registered plugin payload, or ``None`` when no plugin
-                is registered under the name.
-
-            """
-            ...
-
-        def plugin_registered(self, plugin_name: str) -> bool:
-            """Check whether a plugin is registered.
-
-            Args:
-                plugin_name: Name of the plugin to check.
-
-            Returns:
-                ``True`` when the plugin is registered, ``False`` otherwise.
-
-            """
-            ...
-
-        def list_plugins(self) -> t.SequenceOf[t.JsonMapping]:
-            """List all registered plugins.
-
-            Returns:
-                Payloads of all registered plugins.
-
-            """
-            ...
-
-        def register_plugin(self, plugin: m.Plugin.Entity | t.JsonValue) -> bool:
-            """Register a plugin.
-
-            Args:
-                plugin: Plugin entity or payload to register.
-
-            Returns:
-                ``True`` when the plugin is registered, ``False`` otherwise.
-
-            """
-            ...
-
-        def register(self, plugin: m.Plugin.Entity) -> bool:
-            """Register a plugin with normalized API.
-
-            Args:
-                plugin: Plugin entity to register.
-
-            Returns:
-                ``True`` when the plugin is registered, ``False`` otherwise.
-
-            """
-            ...
-
-        def unregister_plugin(self, plugin_name: str) -> bool:
-            """Unregister a plugin.
-
-            Args:
-                plugin_name: Name of the plugin to remove.
-
-            Returns:
-                ``True`` when the plugin is removed, ``False`` otherwise.
-
-            """
-            ...
-
-    @runtime_checkable
-    class Execution(Protocol):
+    class Executor(Protocol):
         """Protocol for plugin execution operations."""
 
         def execute_plugin(
@@ -230,7 +223,7 @@ class FlextPluginProtocolsPlugin:
             """
             ...
 
-        def list_running_executions(self) -> t.StrSequence:
+        def list_running_executions(self) -> Sequence[str]:
             """List all currently running execution ids.
 
             Returns:
@@ -259,7 +252,7 @@ class FlextPluginProtocolsPlugin:
         def check_permissions(
             self,
             plugin_name: str,
-            permissions: t.StrSequence,
+            permissions: Sequence[str],
         ) -> bool:
             """Check whether a plugin has the specified permissions.
 
@@ -298,7 +291,9 @@ class FlextPluginProtocolsPlugin:
             """
             ...
 
-        def validate_plugin_security(self, plugin: m.Plugin.Entity) -> bool:
+        def validate_plugin_security(
+            self, plugin: (FlextPluginProtocolsPlugin.Entity)
+        ) -> bool:
             """Validate plugin security compliance.
 
             Args:
@@ -315,7 +310,7 @@ class FlextPluginProtocolsPlugin:
     class HotReload(Protocol):
         """Protocol for hot reload operations."""
 
-        def get_watched_paths(self) -> t.StrSequence:
+        def get_watched_paths(self) -> Sequence[str]:
             """List the currently watched paths.
 
             Returns:
@@ -345,7 +340,7 @@ class FlextPluginProtocolsPlugin:
             """
             ...
 
-        def start_watching(self, paths: t.StrSequence) -> bool:
+        def start_watching(self, paths: Sequence[str]) -> bool:
             """Start watching paths for plugin changes.
 
             Args:
@@ -548,7 +543,7 @@ class FlextPluginProtocolsPlugin:
             """
             ...
 
-        def list_plugin_statuses(self) -> t.StrMapping:
+        def list_plugin_statuses(self) -> Mapping[str, str]:
             """Fetch the status of every plugin.
 
             Returns:
@@ -627,7 +622,7 @@ class FlextPluginProtocolsPlugin:
             """
             ...
 
-        def list_stored_plugins(self) -> t.StrSequence:
+        def list_stored_plugins(self) -> Sequence[str]:
             """List all stored plugin names.
 
             Returns:
@@ -679,8 +674,8 @@ class FlextPluginProtocolsPlugin:
 
         def discover(
             self,
-            paths: t.StrSequence,
-        ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
+            paths: Sequence[str],
+        ) -> p.Result[Sequence[FlextPluginProtocolsPlugin.DiscoveryData]]:
             """Discover plugins using this strategy.
 
             Args:
@@ -694,152 +689,171 @@ class FlextPluginProtocolsPlugin:
             ...
 
     @runtime_checkable
-    class LifecycleHost(Protocol):
-        """Structure required by the platform lifecycle operations."""
+    class PortOptions(FlextCliProtocols.BaseModel, Protocol):
+        """Structural data contract projected from the owning model."""
 
         @property
-        def discovery(self) -> p.Plugin.Discovery | None:
-            """The configured discovery protocol implementation."""
-            ...
-
-        @property
-        def loader(self) -> p.Plugin.Loader | None:
-            """The configured loader protocol implementation."""
+        def registry(self) -> p.Registry:
+            """Canonical instance-scoped plugin registry."""
             ...
 
         @property
-        def registry(
-            self,
-        ) -> FlextPluginPlatform.PluginRegistry:
-            """The plugin registry."""
+        def discovery(self) -> FlextPluginProtocolsPlugin.Discovery | None:
+            """Optional plugin discovery adapter."""
             ...
 
         @property
-        def plugins(
-            self,
-        ) -> t.MappingKV[str, FlextPluginPlatform.Plugin]:
-            """The registered plugins by name."""
+        def loader(self) -> FlextPluginProtocolsPlugin.Loader | None:
+            """Optional plugin loading adapter."""
             ...
 
         @property
-        def executions(
-            self,
-        ) -> t.MappingKV[
-            str,
-            FlextPluginPlatform.PluginExecution,
-        ]:
-            """The tracked executions by id."""
+        def executor(self) -> FlextPluginProtocolsPlugin.Executor | None:
+            """Optional plugin execution adapter."""
             ...
 
-        def fetch_plugin(self, name: str) -> FlextPluginPlatform.Plugin | None:
-            """Fetch a plugin by name.
-
-            Args:
-                name: Name of the plugin to fetch.
-
-            Returns:
-                The registered plugin, or ``None`` when no plugin is
-                registered under the name.
-
-            """
+        @property
+        def executions(self) -> Mapping[str, FlextPluginProtocolsPlugin.Run]:
+            """Execution records owned by this platform instance."""
             ...
 
-        def get_plugin(self, name: str) -> p.Result[FlextPluginPlatform.Plugin]:
-            """Fetch a plugin by name as a typed result.
+    @runtime_checkable
+    class Entity(FlextCliProtocols.BaseModel, Protocol):
+        """Structural data contract projected from the owning model."""
 
-            Args:
-                name: Name of the plugin to fetch.
-
-            Returns:
-                Ok with the plugin, or Fail when no plugin is registered
-                under the name.
-
-            """
+        @property
+        def domain_events(self) -> Sequence[p.DomainEvent]:
+            """List of uncommitted domain events for event sourcing."""
             ...
 
-        def prepare_execution(
-            self,
-            execution: (FlextPluginPlatform.PluginExecution),
-        ) -> p.Result[FlextPluginPlatform.PluginExecution]:
-            """Prepare a plugin execution before dispatch.
+        name: str
+        plugin_version: str
+        description: str
+        author: str
 
-            Args:
-                execution: Execution to prepare.
-
-            Returns:
-                Ok with the prepared execution, or Fail with the
-                preparation error.
-
-            """
+        @property
+        def plugin_type(self) -> FlextPluginConstantsPlugin.Type:
+            """Plugin type classification."""
             ...
 
-        def execute_with_executor(
-            self,
-            execution: (FlextPluginPlatform.PluginExecution),
-        ) -> p.Result[FlextPluginPlatform.PluginExecution]:
-            """Run an execution through the configured executor.
+        is_enabled: bool
+        metadata: t.JsonMapping
 
-            Args:
-                execution: Execution to run.
+    @runtime_checkable
+    class Execution(FlextCliProtocols.BaseModel, Protocol):
+        """Structural data contract projected from the owning model."""
 
-            Returns:
-                Ok with the completed execution, or Fail with the
-                execution error.
+        plugin_name: str
+        execution_id: str
+        input_data: t.JsonMapping
+        is_running: bool
+        is_completed: bool
+        success: bool
+        error_message: str | None
+        result: t.JsonMapping | None
+        started_at: str | None
+        completed_at: str | None
 
-            """
+    @runtime_checkable
+    class DiscoveryData(FlextCliProtocols.BaseModel, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def name(self) -> str:
+            """Plugin unique identifier name."""
             ...
 
-        def register_all(
-            self,
-            plugins: t.SequenceOf[FlextPluginPlatform.Plugin],
-        ) -> t.SequenceOf[FlextPluginPlatform.Plugin]:
-            """Register every plugin in the given sequence.
-
-            Args:
-                plugins: Plugins to register.
-
-            Returns:
-                The plugins accepted by the registry.
-
-            """
+        @property
+        def version(self) -> str:
+            """Plugin semantic version (X.Y.Z)."""
             ...
 
-        def register_single(
-            self, plugin: FlextPluginPlatform.Plugin
-        ) -> FlextPluginPlatform.Plugin:
-            """Register one plugin and return it.
-
-            Args:
-                plugin: Plugin to register.
-
-            Returns:
-                The registered plugin.
-
-            """
+        @property
+        def path(self) -> Path:
+            """File system path to plugin."""
             ...
 
-        def add_to_plugins(self, plugin: FlextPluginPlatform.Plugin) -> bool:
-            """Add a plugin to the plugins mapping.
-
-            Args:
-                plugin: Plugin to add.
-
-            Returns:
-                ``True`` when the plugin is added, ``False`` otherwise.
-
-            """
+        @property
+        def discovery_type(self) -> str:
+            """Type of discovered plugin."""
             ...
 
-        def remove_from_plugins(self, plugin_name: str) -> bool:
-            """Remove a plugin from the plugins mapping.
+        @property
+        def discovery_method(self) -> str:
+            """Discovery method used."""
+            ...
 
-            Args:
-                plugin_name: Name of the plugin to remove.
+        @property
+        def metadata(self) -> t.JsonMapping:
+            """Extensible discovery metadata."""
+            ...
 
-            Returns:
-                ``True`` when the plugin is removed, ``False`` otherwise.
+    @runtime_checkable
+    class Metadata(FlextCliProtocols.BaseModel, Protocol):
+        """Structural data contract projected from the owning model."""
 
-            """
+        @property
+        def name(self) -> str:
+            """Plugin unique identifier."""
+            ...
+
+        @property
+        def version(self) -> str:
+            """Plugin semantic version."""
+            ...
+
+        @property
+        def description(self) -> str:
+            """Plugin description."""
+            ...
+
+        @property
+        def author(self) -> str:
+            """Plugin author."""
+            ...
+
+        @property
+        def plugin_type(self) -> str:
+            """Type of plugin."""
+            ...
+
+        @property
+        def entry_point(self) -> str:
+            """Entry point for plugin."""
+            ...
+
+        @property
+        def dependencies(self) -> tuple[str, ...]:
+            """List of plugin dependencies."""
+            ...
+
+        @property
+        def metadata(self) -> t.JsonMapping:
+            """Additional metadata."""
+            ...
+
+    @runtime_checkable
+    class Registry(FlextCliProtocols.BaseModel, Protocol):
+        """Structural data contract projected from the owning model."""
+
+        @property
+        def version(self) -> str:
+            """Registry schema version."""
+            ...
+
+        @property
+        def plugins(self) -> t.JsonMapping:
+            """Dictionary of registered plugins."""
+            ...
+
+        @property
+        def last_updated(self) -> datetime:
+            """Last update timestamp."""
+            ...
+
+        @property
+        def created_at(self) -> datetime:
+            """Registry creation timestamp."""
             ...
 
 

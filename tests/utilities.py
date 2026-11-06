@@ -9,12 +9,13 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from pathlib import Path
 
 from flext_tests import FlextTestsUtilities
 
 from flext_plugin import FlextPluginUtilities
-from tests import m, p, r, t
+from tests import c, p, r, t
 
 
 class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
@@ -26,8 +27,8 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
         class Tests:
             """Internal tests declarations.
 
-            Real protocol-conforming collaborators injected into the platform
-            service seams (``_discovery`` / ``_loader`` / ``_executor``) so tests
+            Real protocol-conforming collaborators injected through the API
+            constructor (discovery, loader, executor) so tests
             exercise the real delegation and payload-mapping code paths — no
             patching or test doubles anywhere (workspace no-mock rule).
             """
@@ -44,7 +45,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
                     """Initialize with empty loaded-plugin tracking."""
                     self._loaded: list[str] = []
 
-                def get_loaded_plugins(self) -> t.StrSequence:
+                def get_loaded_plugins(self) -> Sequence[str]:
                     """Return the names of plugins loaded through this loader."""
                     return list(self._loaded)
 
@@ -72,7 +73,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
                     self._loaded.append(path.stem)
                     return r[t.JsonMapping].ok({
                         "name": path.stem,
-                        "version": "1.0.0",
+                        "version": c.Plugin.DEFAULT_PLUGIN_VERSION,
                         "path": str(path),
                         "load_type": "file",
                         "loaded_at": "",
@@ -90,7 +91,7 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
                     return r[bool].ok(value=True)
 
             class EchoExecutor:
-                """Real executor implementing ``p.Plugin.Execution``.
+                """Real executor implementing ``p.Plugin.Executor``.
 
                 Echoes the execution context back as the result so tests can
                 assert the real execution-record bookkeeping of the platform.
@@ -133,14 +134,14 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
                     return r[str].ok("completed")
 
                 @staticmethod
-                def list_running_executions() -> t.StrSequence:
+                def list_running_executions() -> Sequence[str]:
                     """No execution stays running after execute_plugin returns.
 
                     Returns:
-                        The resulting ``t.StrSequence``.
+                        The resulting ``Sequence[str]``.
 
                     """
-                    running: t.StrSequence = []
+                    running: Sequence[str] = []
                     return running
 
                 @staticmethod
@@ -184,14 +185,14 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
                     return r[str].ok("failed")
 
                 @staticmethod
-                def list_running_executions() -> t.StrSequence:
+                def list_running_executions() -> Sequence[str]:
                     """No execution stays running after a failure.
 
                     Returns:
-                        The resulting ``t.StrSequence``.
+                        The resulting ``Sequence[str]``.
 
                     """
-                    running: t.StrSequence = []
+                    running: Sequence[str] = []
                     return running
 
                 @staticmethod
@@ -211,35 +212,35 @@ class TestsFlextPluginUtilities(FlextTestsUtilities, FlextPluginUtilities):
                 @staticmethod
                 def discover_plugin(
                     plugin_path: str,
-                ) -> p.Result[m.Plugin.DiscoveryData]:
+                ) -> p.Result[p.Plugin.DiscoveryData]:
                     """Report a real discovery failure for one plugin.
 
                     Returns:
-                        The resulting ``p.Result[m.Plugin.DiscoveryData]``.
+                        The resulting ``p.Result[p.Plugin.DiscoveryData]``.
 
                     """
                     _ = plugin_path
-                    return r[m.Plugin.DiscoveryData].fail("discovery failed")
+                    return r[p.Plugin.DiscoveryData].fail("discovery failed")
 
                 @staticmethod
                 def discover_plugins(
-                    paths: t.StrSequence,
-                ) -> p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]:
+                    paths: Sequence[str],
+                ) -> p.Result[Sequence[p.Plugin.DiscoveryData]]:
                     """Report a real discovery failure for the given paths.
 
                     Returns:
                         The resulting
-                            ``p.Result[t.SequenceOf[m.Plugin.DiscoveryData]]``.
+                            ``p.Result[Sequence[p.Plugin.DiscoveryData]]``.
 
                     """
                     _ = paths
-                    return r[t.SequenceOf[m.Plugin.DiscoveryData]].fail(
+                    return r[Sequence[p.Plugin.DiscoveryData]].fail(
                         "discovery failed",
                     )
 
                 @staticmethod
                 def validate_plugin(
-                    plugin_data: m.Plugin.DiscoveryData,
+                    plugin_data: p.Plugin.DiscoveryData,
                 ) -> p.Result[bool]:
                     """Report a real validation failure.
 

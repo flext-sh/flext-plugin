@@ -65,6 +65,15 @@ flext-observability > =0.9.9 # Monitoring and observability
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_plugin import FlextPluginPlatform, create_flext_plugin
 
 # Create plugin platform
@@ -91,6 +100,15 @@ if load_result.success:
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_plugin import FlextPluginPlatform
 

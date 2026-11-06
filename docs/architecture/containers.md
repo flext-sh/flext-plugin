@@ -215,6 +215,15 @@ Rel(flext_service, kubernetes, "Deploys to", "Orchestration platform")
 # CLI imports and uses Core APIs
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_plugin import FlextPluginApi
 
 api = FlextPluginApi()
@@ -226,6 +235,15 @@ result = api.discover_plugins(["./plugins"])
 ```text
 # REST API delegates to Core
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_plugin import FlextPluginPlatform
 
@@ -489,6 +507,15 @@ CMD ["uvicorn", "flext_plugin.api:app", "--host", "0.0.0.0", "--port", "8000"]
 ```text
 # Primary interface for all plugin operations
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_plugin import FlextPluginApi
 

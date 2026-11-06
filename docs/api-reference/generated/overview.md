@@ -20,14 +20,14 @@
 - Keywords: `architecture`, `enterprise`, `extensions`, `flext`, `plugins`, `typed`
 - Main facades: `FlextPluginApi`, `FlextPluginCli`, `FlextPluginConfig`,
   `FlextPluginConstants`, `FlextPluginDiscovery`, `FlextPluginModels`,
-  `FlextPluginPlatform`, `FlextPluginProtocols` (+5 more)
+  `FlextPluginModelsConfig`, `FlextPluginPlatform` (+6 more)
 - Alias exports: `c`, `d`, `e`, `h`, `m`, `p`, `r`, `s`, `t`, `u`, `x`
 - Public symbol exports: `FlextPluginApi`, `FlextPluginCli`, `FlextPluginConfig`,
   `FlextPluginConstants`, `FlextPluginDiscovery`, `FlextPluginModels`,
-  `FlextPluginPlatform`, `FlextPluginProtocols`, `FlextPluginServiceBase`,
-  `FlextPluginSettings` (+7 more)
+  `FlextPluginModelsConfig`, `FlextPluginPlatform`, `FlextPluginProtocols`,
+  `FlextPluginServiceBase` (+8 more)
 - Exported module shortcuts: _none_
-- Generated module pages: `8`
+- Generated module pages: `9`
 
 ## Next Pages
 

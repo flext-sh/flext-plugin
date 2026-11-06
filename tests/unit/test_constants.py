@@ -6,8 +6,6 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import pytest
-
 from tests import c, tm
 
 
@@ -26,10 +24,10 @@ class TestsFlextPluginConstantsUnit:
         )
         for category in categories:
             tm.that(category, is_=frozenset)
-            assert len(category) > 0
+            tm.that(len(category) > 0, truth=True)
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         ("category", "expected_values"),
         [
             (c.Plugin.SINGER_PLUGIN_TYPES, {"tap", "target", "transform"}),
@@ -79,7 +77,7 @@ class TestsFlextPluginConstantsUnit:
         )
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         ("left", "right"),
         [
             (c.Plugin.SINGER_PLUGIN_TYPES, c.Plugin.ARCHITECTURE_PLUGIN_TYPES),
@@ -95,11 +93,11 @@ class TestsFlextPluginConstantsUnit:
         right: frozenset[c.Plugin.Type],
     ) -> None:
         """No plugin type belongs to more than one category."""
-        assert left.isdisjoint(right)
-        assert left.issubset(c.Plugin.ALL_PLUGIN_TYPES)
-        assert right.issubset(c.Plugin.ALL_PLUGIN_TYPES)
+        tm.that(left.isdisjoint(right), truth=True)
+        tm.that(left.issubset(c.Plugin.ALL_PLUGIN_TYPES), truth=True)
+        tm.that(right.issubset(c.Plugin.ALL_PLUGIN_TYPES), truth=True)
 
     @staticmethod
     def test_file_constants_removed_from_contract() -> None:
         """The legacy file-extension constant namespace is no longer exposed."""
-        tm.that(hasattr(c.Plugin, "Files"), eq=False)
+        tm.fail(hasattr(c.Plugin, "Files"))

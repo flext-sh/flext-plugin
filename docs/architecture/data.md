@@ -416,7 +416,16 @@ Retired --> Archived: Retirement archival
 # Pydantic data models with validation
 from __future__ import annotations
 
-from flext_core import m, t, u
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
+from flext_core import m, p, t, u
 
 
 class FlextPluginSettings(m.BaseModel):
@@ -434,6 +443,15 @@ class FlextPluginSettings(m.BaseModel):
 # Schema evolution and data migration
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 
 def migrate_plugin_data(old_data: dict, target_version: str) -> t.JsonMapping:
     """Migrate plugin data to new schema version."""
@@ -445,6 +463,15 @@ def migrate_plugin_data(old_data: dict, target_version: str) -> t.JsonMapping:
 ```text
 # Runtime data validation
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 
 def validate_plugin_config(config_data: dict) -> p.Result[FlextPluginSettings]:

@@ -15,8 +15,6 @@ from __future__ import annotations
 
 import sys
 
-import pytest
-
 import flext_plugin
 from flext_plugin import (
     FlextPluginApi,
@@ -26,8 +24,9 @@ from flext_plugin import (
     FlextPluginSettings,
     FlextPluginTypes,
     FlextPluginUtilities,
+    plugin,
 )
-from tests import tm
+from tests import c, tm
 
 
 class TestsFlextPluginImports:
@@ -37,17 +36,17 @@ class TestsFlextPluginImports:
     def test_all_is_a_nonempty_tuple() -> None:
         """The package publishes an immutable, non-empty ``__all__`` contract."""
         tm.that(flext_plugin.__all__, is_=tuple)
-        tm.that(len(flext_plugin.__all__) > 0, eq=True)
+        tm.ok(len(flext_plugin.__all__) > 0)
 
     @staticmethod
-    @pytest.mark.parametrize("public_name", list(flext_plugin.__all__))
+    @c.Tests.MARK.parametrize("public_name", list(flext_plugin.__all__))
     def test_every_public_name_resolves(public_name: str) -> None:
         """Every name advertised in ``__all__`` is importable and non-None."""
-        tm.that(hasattr(flext_plugin, public_name), eq=True)
-        tm.that(getattr(flext_plugin, public_name) is not None, eq=True)
+        tm.ok(hasattr(flext_plugin, public_name))
+        tm.ok(getattr(flext_plugin, public_name) is not None)
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         ("facade_name", "expected"),
         [
             ("FlextPluginApi", FlextPluginApi),
@@ -65,26 +64,25 @@ class TestsFlextPluginImports:
     ) -> None:
         """Each ``FlextPlugin*`` facade is a class and a stable singleton."""
         resolved = getattr(flext_plugin, facade_name)
-        tm.that(isinstance(resolved, type), eq=True)
-        tm.that(resolved is expected, eq=True)
+        tm.ok(isinstance(resolved, type))
+        tm.ok(resolved is expected)
 
     @staticmethod
     def test_plugin_alias_is_the_api_facade() -> None:
-        """The ``plugin`` alias is exactly the ``FlextPluginApi`` facade."""
-        tm.that(flext_plugin.FlextPluginApi is FlextPluginApi, eq=True)
+        """The ``plugin`` alias is an instance of the ``FlextPluginApi`` facade."""
+        tm.ok(isinstance(plugin, FlextPluginApi))
 
     @staticmethod
-    @pytest.mark.parametrize(
-        "alias",
-        ["c", "d", "e", "h", "m", "p", "r", "s", "t", "u", "x"],
+    @c.Tests.MARK.parametrize(
+        "alias", ["c", "d", "e", "h", "m", "p", "r", "s", "t", "u", ...]
     )
     def test_short_facade_aliases_are_exposed(alias: str) -> None:
         """Each short facade alias is published and resolves to an object."""
-        tm.that(alias in flext_plugin.__all__, eq=True)
-        tm.that(getattr(flext_plugin, alias) is not None, eq=True)
+        tm.ok(alias in flext_plugin.__all__)
+        tm.ok(getattr(flext_plugin, alias) is not None)
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         "version_attr",
         [
             "__version__",
@@ -98,8 +96,8 @@ class TestsFlextPluginImports:
     def test_version_metadata_is_non_empty_string(version_attr: str) -> None:
         """Version metadata is exposed as non-empty strings."""
         value = getattr(flext_plugin, version_attr)
-        tm.that(isinstance(value, str), eq=True)
-        tm.that(len(value) > 0, eq=True)
+        tm.ok(isinstance(value, str))
+        tm.ok(len(value) > 0)
 
     @staticmethod
     def test_version_info_is_a_tuple() -> None:
@@ -109,5 +107,4 @@ class TestsFlextPluginImports:
     @staticmethod
     def test_package_reimport_is_idempotent() -> None:
         """The package resolves to one stable module object in the import system."""
-        tm.that(sys.modules["flext_plugin"] is flext_plugin, eq=True)
-        tm.that(flext_plugin.FlextPluginApi is FlextPluginApi, eq=True)
+        tm.ok(sys.modules["flext_plugin"] is flext_plugin)

@@ -50,6 +50,21 @@ python -c "import flext_plugin; u.Cli.print('Setup successful')"
 
 ### FLEXT-Core Compliance
 
+The service foundation imports the public upstream `FlextService` class and
+publishes `s` only for `FlextPluginServiceBase`. These names must remain distinct
+so consumers inherit the plugin bootstrap contract through the service MRO.
+`runtime_bootstrap_options()` selects `FlextPluginSettings`; callers can inject
+their settings instance through `FlextPluginApi(runtime_settings=...)`.
+
+Configuration construction retains the required inherited `Cli` and
+`ProcessIsolation` namespaces alongside `Plugin`. Consumers constructing a new
+configuration supply those validated namespaces from the public configuration
+owner; they must not add local defaults to silence missing-argument diagnostics.
+Runtime acceptance exercises bootstrap settings selection and a real plugin
+register/fetch/unregister cycle through `FlextPluginApi`, including payload
+identity and independent-registry isolation. Import or CLI-help success alone
+does not establish those capabilities.
+
 - **r<T>**: All operations must return r
 - **Single Class Per Module**: Each module has one main class with nested helpers
 - **Clean Architecture**: Proper layer separation
@@ -86,20 +101,20 @@ All modules follow the FLEXT single-class-per-module pattern:
 # ✅ COMPLIANT - Current implementation
 from __future__ import annotations
 
+from flext_core import m, p
 
-class FlextPluginModels:
-    """Unified plugin entities following FLEXT standards"""
 
-    class Plugin(FlextModels.Entity):
-        """Main plugin entity with business rules"""
+class FlextPluginModels(m):
+    """Unified plugin entities following FLEXT standards."""
 
-    class Config(FlextModels.Entity):
-        """Plugin configuration with validation"""
+    class Plugin(m.Entity):
+        """Main plugin entity with business rules."""
 
-    class _ValidationHelper:
-        """Nested helper class for domain logic"""
-        ```
-______________________________________________________________________
+    class Config(m.Entity):
+        """Plugin configuration with validation."""
+````
+
+---
 
 ## Testing
 
@@ -136,40 +151,13 @@ pytest -m "not slow"   # Skip slow tests
 
 ### Creating Plugins
 
-`````python
-from __future__ import annotations
+Plugins are discovered, fetched and executed through the public
+`FlextPluginApi` facade (`discover_plugins`, `fetch_plugin`, `execute_plugin`);
+see the generated API reference for their signatures. Plugin entities and
+configuration are declared on the models facade (`m.Plugin`), never as
+ad-hoc dictionaries.
 
-from flext_plugin import FlextPlugin, PluginType
-
-
-class MyPlugin(FlextPlugin):
-    def __init__(self, **kwargs):
-        super().__init__(
-            name="my-plugin",
-            version="0.9.9",
-            settings={"plugin_type": PluginType.UTILITY},
-            **kwargs,
-        )
-
-    def execute(self, data: dict) -> p.Result[dict]:
-        """Plugin business logic"""
-        try:
-            # Process data
-            return r[dict].ok(processed_data)
-        except Exception as e:
-            return r[dict].fail(str(e))
-            ```
-### Hot Reload Development
-
-```bash
-# Enable hot reload for development
-make plugin-watch
-
-# Environment variables
-export FLEXT_PLUGIN_HOT_RELOAD=true
-export FLEXT_PLUGIN_WATCH_INTERVAL=2
-```
-______________________________________________________________________
+---
 
 ## Contributing Process
 
@@ -196,7 +184,7 @@ make test             # 85% coverage required
 - Reference related issues
 - Pass all CI checks
 
-______________________________________________________________________
+---
 
 ## Debugging
 
@@ -214,17 +202,10 @@ make status --tree
 
 #### Plugin Loading Issues
 
-````python
-# Enable debug logging
-from __future__ import annotations
+`FlextPluginApi.discover_plugins`, `fetch_plugin` and `execute_plugin` return a
+result; a failure carries its cause in `result.error`. Inspect that value
+instead of catching exceptions around the call.
 
-logging.basicConfig(level=logging.DEBUG)
-
-# Use platform validation
-result = platform.validate_plugin(plugin)
-if result.failure:
-    print(f"Validation error: {result.error}")
-    ```
 #### Hot Reload Problems
 
 ```bash
@@ -234,7 +215,8 @@ make check
 # Verify file permissions
 ls -la plugins/
 ```
-______________________________________________________________________
+
+---
 
 ## Release Process
 
@@ -251,7 +233,7 @@ ______________________________________________________________________
 - Architecture compliance verified
 - Documentation updated
 
-______________________________________________________________________
+---
 
 ## Getting Help
 
@@ -259,7 +241,9 @@ ______________________________________________________________________
 - **Issues**: [GitHub Issues](https://github.com/flext-sh/flext/issues)
 - **Code Review**: Submit PRs for review and feedback
 
-______________________________________________________________________
+---
 
 For specific plugin development patterns and examples, see examples/ directory.
+`````
+
 `````

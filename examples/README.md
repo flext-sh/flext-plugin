@@ -142,7 +142,7 @@ def test_plugin_activation(platform):
     platform.register_plugin(plugin)
 
     result = platform.activate_plugin("test-plugin")
-    assert result.success
+    tm.ok(result.success)
 ```
 
 ## Example Projects Structure
@@ -231,7 +231,6 @@ from __future__ import annotations
 
 from flext_plugin import FlextPlugin, PluginStatus, PluginType
 
-
 class ExamplePlugin(FlextPlugin):
     """Template for creating custom plugins."""
 
@@ -252,7 +251,7 @@ class ExamplePlugin(FlextPlugin):
         try:
             # Setup plugin resources
             self._setup_resources()
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)=True)
         except Exception as e:
             return r[bool].fail(f"Initialization failed: {e}")
 
@@ -274,7 +273,7 @@ class ExamplePlugin(FlextPlugin):
         """Cleanup plugin resources."""
         try:
             self._cleanup_resources()
-            return r[bool].ok(True)
+            return r[bool].ok(value=True)=True)
         except Exception as e:
             return r[bool].fail(f"Cleanup failed: {e}")
 
@@ -318,14 +317,14 @@ class TestExamplePlugin:
 
     def test_plugin_creation(self, plugin):
         """Test plugin creation."""
-        assert plugin.name == "example-plugin"
-        assert plugin.plugin_version == "0.12.0-dev"
+        tm.that(plugin.name, eq="example-plugin")
+        tm.that(plugin.plugin_version, eq="0.12.0-dev")
         assert plugin.is_valid()
 
     def test_plugin_initialization(self, plugin):
         """Test plugin initialization."""
         result = plugin.initialize()
-        assert result.success
+        tm.ok(result.success)
 
     def test_plugin_execution(self, plugin):
         """Test plugin execution."""
@@ -337,7 +336,7 @@ class TestExamplePlugin:
         test_data = {"input": "test_value"}
         result = plugin.execute(test_data)
 
-        assert result.success
+        tm.ok(result.success)
         assert "processed" in result.value
 
     def test_plugin_lifecycle(self, platform, plugin):
@@ -419,7 +418,6 @@ Proper resource cleanup in plugin lifecycle:
 ```python
 from __future__ import annotations
 
-
 def cleanup(self) -> p.Result[bool]:
     """Cleanup with error handling."""
     try:
@@ -430,7 +428,7 @@ def cleanup(self) -> p.Result[bool]:
             for file_path in self._temp_files:
                 os.unlink(file_path)
 
-        return r[bool].ok(True)
+        return r[bool].ok(value=True)=True)
     except Exception as e:
         return r[bool].fail(f"Cleanup failed: {e}")
 ```

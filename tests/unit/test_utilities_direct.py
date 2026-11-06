@@ -11,9 +11,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
-from tests import tm, u
+from tests import c, tm, u
 
 
 class TestsFlextPluginUtilities:
@@ -24,7 +22,7 @@ class TestsFlextPluginUtilities:
         """discover_plugins() fails when the directory does not exist."""
         result = u.Plugin.discover_plugin_metadata("/definitely/not/a/real/path")
 
-        tm.that(result.failure, eq=True)
+        tm.ok(result.failure)
         tm.that((result.error or "").lower(), has="does not exist")
 
     @staticmethod
@@ -37,7 +35,7 @@ class TestsFlextPluginUtilities:
 
         result = u.Plugin.discover_plugin_metadata(tmp_path)
 
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
         metadata_list = list(result.unwrap())
         tm.that(len(metadata_list), eq=1)
         tm.that(metadata_list[0].name, eq="alpha_plugin")
@@ -51,7 +49,7 @@ class TestsFlextPluginUtilities:
 
         result = u.Plugin.discover_plugin_metadata(tmp_path)
 
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
         names = {metadata.name for metadata in result.unwrap()}
         tm.that(names, has="public")
         tm.that(names, lacks="_private")
@@ -63,7 +61,7 @@ class TestsFlextPluginUtilities:
 
         result = u.Plugin.discover_plugin_metadata(tmp_path)
 
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
         tm.that(list(result.unwrap()), eq=[])
 
     @staticmethod
@@ -77,7 +75,7 @@ class TestsFlextPluginUtilities:
 
         result = u.Plugin.extract_plugin_metadata(plugin_path)
 
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
         metadata = result.unwrap()
         tm.that(metadata.name, eq="demo")
         tm.that(metadata.version, eq="1.2.3")
@@ -91,7 +89,7 @@ class TestsFlextPluginUtilities:
 
         result = u.Plugin.extract_plugin_metadata(plugin_path)
 
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
         metadata = result.unwrap()
         tm.that(metadata.name, eq="config")
         tm.that(metadata.plugin_type, eq="extension")
@@ -101,7 +99,7 @@ class TestsFlextPluginUtilities:
         """extract_plugin_metadata() fails when the file does not exist."""
         result = u.Plugin.extract_plugin_metadata(Path("/missing/file.py"))
 
-        tm.that(result.failure, eq=True)
+        tm.ok(result.failure)
 
     @staticmethod
     def test_validate_plugin_file_accepts_safe_python(tmp_path: Path) -> None:
@@ -111,7 +109,7 @@ class TestsFlextPluginUtilities:
 
         result = u.Plugin.validate_plugin_file(plugin_path)
 
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
 
     @staticmethod
     def test_validate_plugin_file_rejects_dangerous_python(
@@ -123,7 +121,7 @@ class TestsFlextPluginUtilities:
 
         result = u.Plugin.validate_plugin_file(plugin_path)
 
-        tm.that(result.failure, eq=True)
+        tm.ok(result.failure)
         tm.that((result.error or "").lower(), has="dangerous")
 
     @staticmethod
@@ -134,29 +132,29 @@ class TestsFlextPluginUtilities:
 
         result = u.Plugin.validate_plugin_file(plugin_path)
 
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
 
     @staticmethod
     def test_validate_plugin_file_fails_for_missing_file() -> None:
         """validate_plugin_file() fails when the file does not exist."""
         result = u.Plugin.validate_plugin_file(Path("/missing/file.py"))
 
-        tm.that(result.failure, eq=True)
+        tm.ok(result.failure)
 
     @staticmethod
     def test_validate_plugin_name_accepts_valid_name() -> None:
         """validate_plugin_name() succeeds for valid plugin names."""
         result = u.Plugin.validate_plugin_name("valid-plugin")
 
-        tm.that(result.success, eq=True)
+        tm.ok(result.success)
 
     @staticmethod
-    @pytest.mark.parametrize("bad_name", ["123-invalid", "", "no spaces", "invalid!"])
+    @c.Tests.MARK.parametrize("bad_name", ["123-invalid", "", "no spaces", "invalid!"])
     def test_validate_plugin_name_rejects_invalid_names(bad_name: str) -> None:
         """validate_plugin_name() fails for names violating the pattern."""
         result = u.Plugin.validate_plugin_name(bad_name)
 
-        tm.that(result.failure, eq=True)
+        tm.ok(result.failure)
 
     @staticmethod
     def test_validate_plugin_file_fails_for_oversized_file(
@@ -168,5 +166,5 @@ class TestsFlextPluginUtilities:
 
         result = u.Plugin.validate_plugin_file(plugin_path)
 
-        tm.that(result.failure, eq=True)
+        tm.ok(result.failure)
         tm.that((result.error or "").lower(), has="too large")

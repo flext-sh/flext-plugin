@@ -12,10 +12,11 @@ from __future__ import annotations
 
 from typing import ClassVar, Self
 
-from flext_cli import FlextCliConfig, u
-from flext_core import FlextSettings, t
+from flext_cli import FlextCliConfig
+from flext_core import FlextSettings
+from pydantic import BaseModel, Field, JsonValue
 
-from flext_plugin._models.config import FlextPluginConfigModels
+from flext_plugin.config_models import FlextPluginModelsConfig
 
 
 class FlextPluginConfig(FlextSettings, FlextCliConfig):
@@ -27,13 +28,13 @@ class FlextPluginConfig(FlextSettings, FlextCliConfig):
 
     CONFIG_FILENAMES: ClassVar[tuple[str, ...]] = ("plugin.yaml",)
 
-    Plugin: FlextPluginConfigModels.Plugin = u.Field(
+    Plugin: FlextPluginModelsConfig.Plugin = Field(
         description="Validated plugin business-rule config namespace.",
     )
 
     # Preserve the canonical generated allocation contract while inherited
     # Pydantic construction validates the declared namespace.
-    def __new__(cls, **kwargs: t.JsonPayload) -> Self:
+    def __new__(cls, **kwargs: JsonValue | BaseModel) -> Self:
         """Allocate a fresh frozen-config instance without singleton sharing.
 
         Returns:

@@ -12,10 +12,8 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import pytest
-
 from flext_plugin import FlextPluginPlatform
-from tests import c, m, tm
+from tests import c, m, p, tm, u
 
 
 class TestsFlextPluginDomainEntities:
@@ -33,7 +31,7 @@ class TestsFlextPluginDomainEntities:
         plugin_version: str = "1.0.0",
         description: str = "Test plugin",
         author: str = "Test Author",
-    ) -> m.Plugin.Entity:
+    ) -> p.Plugin.Entity:
         """Construct a Plugin entity through the public factory.
 
         Returns:
@@ -65,7 +63,7 @@ class TestsFlextPluginDomainEntities:
         """A freshly created plugin is enabled and carries no metrics yet."""
         plugin = self._make_plugin()
 
-        tm.that(plugin.is_enabled, eq=True)
+        tm.ok(plugin.is_enabled)
         tm.that(dict(plugin.metadata), eq={})
 
     @staticmethod
@@ -79,17 +77,19 @@ class TestsFlextPluginDomainEntities:
         tm.that(plugin.plugin_type, eq=c.Plugin.Type.UTILITY)
 
     @staticmethod
-    @pytest.mark.parametrize("bad_name", ["ab", "-bad", "1bad", ""])
+    @c.Tests.MARK.parametrize("bad_name", ["ab", "-bad", "1bad", ""])
     def test_create_rejects_names_violating_contract(bad_name: str) -> None:
         """Names shorter than the minimum or breaking the pattern are refused."""
-        with pytest.raises(ValueError, match=r".+"):
+        with u.Tests.raises(ValueError, match=r".+"):
             m.Plugin.Entity(name=bad_name)
 
     @staticmethod
-    @pytest.mark.parametrize("bad_version", ["1", "1.2.3.4", "x.y.z", "abc"])
+    @c.Tests.MARK.parametrize(
+        "bad_version", [c.ParserBooleanToken.ONE, "1.2.3.4", "x.y.z", "abc"]
+    )
     def test_create_rejects_non_semantic_versions(bad_version: str) -> None:
         """Versions outside the X.Y.Z shape are rejected at construction."""
-        with pytest.raises(ValueError, match=r"semantic|version|pattern|string"):
+        with u.Tests.raises(ValueError, match=r"semantic|version|pattern|string"):
             m.Plugin.Entity(
                 name="valid-plugin",
                 plugin_version=bad_version,
@@ -106,7 +106,7 @@ class TestsFlextPluginDomainEntities:
         result = FlextPluginPlatform.Rules.validate_business_rules(plugin)
 
         tm.ok(result)
-        tm.that(result.unwrap(), eq=True)
+        tm.ok(result.unwrap())
 
     # ------------------------------------------------------------------ #
     # PluginMetadata value object

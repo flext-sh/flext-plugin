@@ -277,6 +277,15 @@ Rel(flext_plugin, github, "Hosts repositories on", "CI/CD pipelines")
 ```text
 from __future__ import annotations
 
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
+
 from flext_plugin import FlextPluginPlatform
 
 
@@ -291,6 +300,15 @@ async def run() -> None:
 
 ```text
 from __future__ import annotations
+
+from collections.abc import (
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+)
 
 from flext_plugin import FlextPluginApi
 

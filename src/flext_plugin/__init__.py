@@ -7,17 +7,13 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from types import MappingProxyType
 from typing import TYPE_CHECKING
 
 from flext_core.lazy import install_lazy_exports
 
-from flext_plugin.__version__ import __version__
-
 if TYPE_CHECKING:
     from flext_cli import d, e, h, r, x
 
-    from flext_plugin import _constants, _models, _protocols, _typings, _utilities
     from flext_plugin.__version__ import (
         FlextPluginVersion,
         __author__,
@@ -26,6 +22,7 @@ if TYPE_CHECKING:
         __license__,
         __title__,
         __url__,
+        __version__,
         __version_info__,
     )
     from flext_plugin._config import FlextPluginConfig, config
@@ -33,6 +30,7 @@ if TYPE_CHECKING:
     from flext_plugin.api import FlextPluginApi, plugin
     from flext_plugin.base import FlextPluginServiceBase, s
     from flext_plugin.cli import FlextPluginCli, main
+    from flext_plugin.config_models import FlextPluginModelsConfig
     from flext_plugin.constants import FlextPluginConstants, c
     from flext_plugin.models import FlextPluginModels, m
     from flext_plugin.protocols import FlextPluginProtocols, p
@@ -52,6 +50,7 @@ __all__: tuple[str, ...] = (
     "FlextPluginConstants",
     "FlextPluginDiscovery",
     "FlextPluginModels",
+    "FlextPluginModelsConfig",
     "FlextPluginPlatform",
     "FlextPluginProtocols",
     "FlextPluginServiceBase",
@@ -67,11 +66,6 @@ __all__: tuple[str, ...] = (
     "__url__",
     "__version__",
     "__version_info__",
-    "_constants",
-    "_models",
-    "_protocols",
-    "_typings",
-    "_utilities",
     "c",
     "config",
     "d",
@@ -92,13 +86,14 @@ __all__: tuple[str, ...] = (
 install_lazy_exports(
     __name__,
     globals(),
-    MappingProxyType({
+    {
         "FlextPluginApi": ".api",
         "FlextPluginCli": ".cli",
         "FlextPluginConfig": "._config",
         "FlextPluginConstants": ".constants",
         "FlextPluginDiscovery": ".utilities",
         "FlextPluginModels": ".models",
+        "FlextPluginModelsConfig": ".config_models",
         "FlextPluginPlatform": ".utilities",
         "FlextPluginProtocols": ".protocols",
         "FlextPluginServiceBase": ".base",
@@ -113,11 +108,6 @@ install_lazy_exports(
         "__title__": ".__version__",
         "__url__": ".__version__",
         "__version_info__": ".__version__",
-        "_constants": "._constants",
-        "_models": "._models",
-        "_protocols": "._protocols",
-        "_typings": "._typings",
-        "_utilities": "._utilities",
         "c": ".constants",
         "config": "._config",
         "d": "flext_cli",
@@ -133,6 +123,9 @@ install_lazy_exports(
         "t": ".typings",
         "u": ".utilities",
         "x": "flext_cli",
-    }),
+    },
     public_exports=__all__,
 )
+
+if not TYPE_CHECKING:
+    from flext_plugin.__version__ import __version__

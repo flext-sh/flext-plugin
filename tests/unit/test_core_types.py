@@ -11,19 +11,17 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-import pytest
-
-from tests import c, e, tm
+from tests import c, e, tm, u
 
 _Type = c.Plugin.Type
 _Status = c.Plugin.PluginStatus
 
 
-class TestsFlextPluginCoreTypes:
+class TestsFlextPluginTypesCore:
     """Behavioral contract of c.Plugin.Type / PluginStatus enums and errors."""
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         ("member", "value"),
         [
             (_Type.TAP, "tap"),
@@ -43,7 +41,7 @@ class TestsFlextPluginCoreTypes:
         tm.that(member, eq=value)  # StrEnum equality with the raw string
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         "value",
         ["tap", "target", "transform", "utility", "service", "core"],
     )
@@ -54,7 +52,7 @@ class TestsFlextPluginCoreTypes:
     @staticmethod
     def test_plugin_type_invalid_string_raises_value_error() -> None:
         """An unknown string is rejected with ValueError naming the input."""
-        with pytest.raises(ValueError, match=r"invalid_type"):
+        with u.Tests.raises(ValueError, match=r"invalid_type"):
             c.Plugin.Type("invalid_type")
 
     @staticmethod
@@ -73,14 +71,14 @@ class TestsFlextPluginCoreTypes:
         tm.that(total, eq=len(union))  # disjoint: no type in two categories
 
     @staticmethod
-    @pytest.mark.parametrize("member", [_Type.TAP, _Type.TARGET, _Type.TRANSFORM])
+    @c.Tests.MARK.parametrize("member", [_Type.TAP, _Type.TARGET, _Type.TRANSFORM])
     def test_singer_types_belong_to_singer_group(member: c.Plugin.Type) -> None:
         """Singer plugin types are classified in the Singer frozenset."""
         tm.that(c.Plugin.SINGER_PLUGIN_TYPES, has=member)
         tm.that(c.Plugin.ALL_PLUGIN_TYPES, has=member)
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         ("member", "value"),
         [
             (_Status.UNKNOWN, "unknown"),
@@ -99,10 +97,10 @@ class TestsFlextPluginCoreTypes:
     ) -> None:
         """Each status member exposes its canonical lowercase string."""
         tm.that(member.value, eq=value)
-        assert c.Plugin.PluginStatus(value) is member
+        tm.that(c.Plugin.PluginStatus(value) is member, truth=True)
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         "member",
         [_Status.ERROR, _Status.UNHEALTHY, _Status.DISABLED],
     )
@@ -110,12 +108,12 @@ class TestsFlextPluginCoreTypes:
         member: c.Plugin.PluginStatus,
     ) -> None:
         """Error-class statuses classify as error and never operational."""
-        tm.that(member.is_error_state(), eq=True)
-        tm.that(member.is_operational(), eq=False)
+        tm.ok(member.is_error_state())
+        tm.fail(member.is_operational())
         tm.that(c.Plugin.PluginStatus.get_error_statuses(), has=member)
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         "member",
         [_Status.ACTIVE, _Status.HEALTHY, _Status.LOADED],
     )
@@ -123,8 +121,8 @@ class TestsFlextPluginCoreTypes:
         member: c.Plugin.PluginStatus,
     ) -> None:
         """Operational statuses classify as operational and never error."""
-        tm.that(member.is_operational(), eq=True)
-        tm.that(member.is_error_state(), eq=False)
+        tm.ok(member.is_operational())
+        tm.fail(member.is_error_state())
         tm.that(c.Plugin.PluginStatus.get_operational_statuses(), has=member)
 
     @staticmethod
@@ -132,16 +130,16 @@ class TestsFlextPluginCoreTypes:
         """No status is simultaneously an error state and operational."""
         errors = c.Plugin.PluginStatus.get_error_statuses()
         operational = c.Plugin.PluginStatus.get_operational_statuses()
-        assert errors.isdisjoint(operational)
+        tm.that(errors.isdisjoint(operational), truth=True)
 
     @staticmethod
     def test_plugin_status_invalid_string_raises_value_error() -> None:
         """An unknown status string is rejected with ValueError."""
-        with pytest.raises(ValueError, match=r"not_a_status"):
+        with u.Tests.raises(ValueError, match=r"not_a_status"):
             c.Plugin.PluginStatus("not_a_status")
 
     @staticmethod
-    @pytest.mark.parametrize(
+    @c.Tests.MARK.parametrize(
         ("member", "value"),
         [
             (c.Plugin.DiscoveryTypeLiteral.FILE, "file"),
@@ -165,7 +163,7 @@ class TestsFlextPluginCoreTypes:
 
         """
         message = "plugin failed to load"
-        with pytest.raises(e.BaseError, match=r"plugin failed to load") as excinfo:
+        with u.Tests.raises(e.BaseError, match=r"plugin failed to load") as excinfo:
             raise e.BaseError(message)
         tm.that(str(excinfo.value), has=message)
         tm.that(excinfo.value, is_=Exception)

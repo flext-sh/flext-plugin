@@ -24,6 +24,7 @@ class FlextPluginConstantsPlugin:
     """
 
     DEFAULT_PLUGIN_VERSION: Final[str] = "1.0.0"
+    REGISTRY_CATEGORY: Final[str] = "plugins"
 
     @unique
     class Type(StrEnum):
