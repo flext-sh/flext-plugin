@@ -106,7 +106,7 @@ system documentation.
 
 ### C4 Model Structure
 
-```
+```text
 Level 1: System Context
 ├── Who uses the system?
 ├── What systems does it integrate with?
@@ -130,7 +130,7 @@ Level 4: Code
 
 ### Arc42 Chapters
 
-```
+```text
 1. Introduction and Goals
 2. Architecture Constraints
 3. System Scope and Context
@@ -147,7 +147,7 @@ Level 4: Code
 
 ### ADR Structure
 
-```
+```text
 Title: [Decision Title]
 Date: [YYYY-MM-DD]
 Status: [Proposed|Accepted|Deprecated|Superseded]

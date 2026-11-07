@@ -1579,138 +1579,141 @@ class DataProcessorPlugin(FlextPlugin):
         }
 `````
 
+```text
+Example:
+    >>> settings = FlextPluginModels.Config({
+    ...     "batch_size": 500,
+    ...     "formats": ["json"],
+    ... })
+    >>> plugin = DataProcessorPlugin(settings=settings)
+    >>> plugin.initialize()
+    >>> result = plugin.execute({"data": [...]})
+    >>> if result.success:
+    ...     print(f"Processed {len(result.value)} records")
+
+Singer Integration:
+    When used as a Singer transform, the plugin automatically adapts
+    to Singer message format and provides schema evolution capabilities:
+
+    >>> # As Singer transform in Meltano
+    >>> meltano run tap-source transform-data-processor target-destination
+
+Performance:
+    - Processes up to 10,000 records/second in batch mode
+    - Memory usage scales linearly with batch size
+    - Supports horizontal scaling through plugin instances
+
+See Also:
+    - FlextPlugin: Base plugin class documentation
+    - FlextPluginModels.Config: Configuration pattern documentation
+    - Singer Integration Guide: docs/guides/singer-integration.md
+"""
+
+def __init__(
+    self,
+    settings: (FlextPluginModels.Config | None) = None,
+    metadata: (FlextPluginModels.Metadata | None) = None,
+    **kwargs,
+) -> None:
+    """
+    Initialize data processor plugin with configuration.
+
+    Args:
+        settings: Plugin-specific configuration with processing parameters.
+               Must include batch_size and timeout_seconds. Optional
+               formats list defaults to ["json", "csv"].
+        metadata: Plugin metadata with description, author, and tags.
+                 Used for plugin discovery and catalog management.
+        **kwargs: Additional arguments passed to FlextPlugin base class.
+                 Supports all base plugin initialization parameters.
+
+    Raises:
+        PluginConfigurationError: When required configuration is missing
+                                or invalid. Common issues include negative
+                                batch_size or unsupported data formats.
+
     Example:
         >>> settings = FlextPluginModels.Config({
-        ...     "batch_size": 500,
-        ...     "formats": ["json"],
+        ...     "batch_size": 1000,
+        ...     "timeout_seconds": 60,
+        ...     "formats": ["json", "parquet"],
         ... })
         >>> plugin = DataProcessorPlugin(settings=settings)
-        >>> plugin.initialize()
-        >>> result = plugin.execute({"data": [...]})
-        >>> if result.success:
-        ...     print(f"Processed {len(result.value)} records")
+    """
+    super().__init__(
+        name="data-processor",
+        version="2.1.0",
+        settings=settings,
+        metadata=metadata,
+        **kwargs,
+    )
 
-    Singer Integration:
-        When used as a Singer transform, the plugin automatically adapts
-        to Singer message format and provides schema evolution capabilities:
+def execute(self, data: dict) -> p.Result[dict]:
+    """
+    Execute data processing pipeline on input data.
 
-        >>> # As Singer transform in Meltano
-        >>> meltano run tap-source transform-data-processor target-destination
+    Processes input data through configurable transformation pipeline,
+    applying format-specific parsers, validation rules, and business
+    logic transformations. Supports both real-time and batch processing
+    modes based on configuration.
+
+    Processing Pipeline:
+        1. Input validation and format detection
+        2. Data parsing and normalization
+        3. Business rule application
+        4. Quality validation and error handling
+        5. Output formatting and metadata generation
+
+    Args:
+        data: Input data dictionary with the following structure:
+             - "payload": Main data content (required)
+             - "format": Data format hint ("json", "csv", etc.)
+             - "batch_mode": Boolean for batch vs real-time processing
+             - "metadata": Additional processing metadata (optional)
+
+    Returns:
+        r[dict]: Processing results containing:
+            - "processed_data": Transformed data in requested format
+            - "statistics": Processing metrics (records, errors, timing)
+            - "metadata": Output metadata with schema information
+            - "quality_report": Data quality assessment results
+
+        On failure, contains detailed error information including:
+            - Error type and description
+            - Failed processing step
+            - Input data characteristics
+            - Suggested remediation actions
+
+    Raises:
+        PluginExecutionError: Never raised directly. All errors are
+                             wrapped in r for railway-oriented
+                             programming compatibility.
 
     Performance:
-        - Processes up to 10,000 records/second in batch mode
-        - Memory usage scales linearly with batch size
-        - Supports horizontal scaling through plugin instances
+        - Batch mode: 10,000+ records/second
+        - Real-time mode: <100ms latency per request
+        - Memory usage: O(batch_size) linear scaling
+        - CPU usage: Optimized for multi-core processing
 
-    See Also:
-        - FlextPlugin: Base plugin class documentation
-        - FlextPluginModels.Config: Configuration pattern documentation
-        - Singer Integration Guide: docs/guides/singer-integration.md
+    Example:
+        >>> input_data = {
+        ...     "payload": [
+        ...         {"name": "John Doe", "email": "john@example.com"},
+        ...         {"name": "Jane Smith", "email": "jane@example.com"},
+        ...     ],
+        ...     "format": "json",
+        ...     "batch_mode": True,
+        ... }
+        >>> result = plugin.execute(input_data)
+        >>> if result.success:
+        ...     stats = result.value["statistics"]
+        ...     print(f"Processed {stats['records_processed']} records")
+        ...     print(f"Processing time: {stats['processing_time']}s")
     """
+    # Implementation follows...
+```
 
-    def __init__(
-        self,
-        settings: (FlextPluginModels.Config | None) = None,
-        metadata: (FlextPluginModels.Metadata | None) = None,
-        **kwargs,
-    ) -> None:
-        """
-        Initialize data processor plugin with configuration.
-
-        Args:
-            settings: Plugin-specific configuration with processing parameters.
-                   Must include batch_size and timeout_seconds. Optional
-                   formats list defaults to ["json", "csv"].
-            metadata: Plugin metadata with description, author, and tags.
-                     Used for plugin discovery and catalog management.
-            **kwargs: Additional arguments passed to FlextPlugin base class.
-                     Supports all base plugin initialization parameters.
-
-        Raises:
-            PluginConfigurationError: When required configuration is missing
-                                    or invalid. Common issues include negative
-                                    batch_size or unsupported data formats.
-
-        Example:
-            >>> settings = FlextPluginModels.Config({
-            ...     "batch_size": 1000,
-            ...     "timeout_seconds": 60,
-            ...     "formats": ["json", "parquet"],
-            ... })
-            >>> plugin = DataProcessorPlugin(settings=settings)
-        """
-        super().__init__(
-            name="data-processor",
-            version="2.1.0",
-            settings=settings,
-            metadata=metadata,
-            **kwargs,
-        )
-
-    def execute(self, data: dict) -> p.Result[dict]:
-        """
-        Execute data processing pipeline on input data.
-
-        Processes input data through configurable transformation pipeline,
-        applying format-specific parsers, validation rules, and business
-        logic transformations. Supports both real-time and batch processing
-        modes based on configuration.
-
-        Processing Pipeline:
-            1. Input validation and format detection
-            2. Data parsing and normalization
-            3. Business rule application
-            4. Quality validation and error handling
-            5. Output formatting and metadata generation
-
-        Args:
-            data: Input data dictionary with the following structure:
-                 - "payload": Main data content (required)
-                 - "format": Data format hint ("json", "csv", etc.)
-                 - "batch_mode": Boolean for batch vs real-time processing
-                 - "metadata": Additional processing metadata (optional)
-
-        Returns:
-            r[dict]: Processing results containing:
-                - "processed_data": Transformed data in requested format
-                - "statistics": Processing metrics (records, errors, timing)
-                - "metadata": Output metadata with schema information
-                - "quality_report": Data quality assessment results
-
-            On failure, contains detailed error information including:
-                - Error type and description
-                - Failed processing step
-                - Input data characteristics
-                - Suggested remediation actions
-
-        Raises:
-            PluginExecutionError: Never raised directly. All errors are
-                                 wrapped in r for railway-oriented
-                                 programming compatibility.
-
-        Performance:
-            - Batch mode: 10,000+ records/second
-            - Real-time mode: <100ms latency per request
-            - Memory usage: O(batch_size) linear scaling
-            - CPU usage: Optimized for multi-core processing
-
-        Example:
-            >>> input_data = {
-            ...     "payload": [
-            ...         {"name": "John Doe", "email": "john@example.com"},
-            ...         {"name": "Jane Smith", "email": "jane@example.com"},
-            ...     ],
-            ...     "format": "json",
-            ...     "batch_mode": True,
-            ... }
-            >>> result = plugin.execute(input_data)
-            >>> if result.success:
-            ...     stats = result.value["statistics"]
-            ...     print(f"Processed {stats['records_processed']} records")
-            ...     print(f"Processing time: {stats['processing_time']}s")
-        """
-        # Implementation follows...
-`````
+`````text
 
 ---
 

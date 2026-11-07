@@ -94,7 +94,7 @@ functionally rather than by architectural layers.
 Adopt Clean Architecture pattern for FLEXT Plugin system with the following layer
 structure:
 
-```
+```text
 Interface Layer (Controllers/CLI/API)
     ↓ depends on
 Application Layer (Use Cases/Services)

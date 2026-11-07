@@ -33,7 +33,7 @@
 
 flext-plugin follows Clean Architecture principles with clear separation of concerns:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                    INTERFACE LAYER                              │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │

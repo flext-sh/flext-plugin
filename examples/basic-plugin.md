@@ -802,7 +802,7 @@ pytest test_basic_plugin.py --cov=basic_plugin --cov-report=html
 
 ### Expected Output
 
-```
+```text
 INFO:__main__:Registering plugin...
 INFO:__main__:Plugin registered successfully
 INFO:__main__:Activating plugin...

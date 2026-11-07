@@ -42,7 +42,7 @@ of outer layers.
 
 ### Architecture Layers
 
-```
+```text
 Interface Layer (API, CLI)     → External interfaces and adapters
     ↓ depends on
 Application Layer (Services)   → Use cases and business workflows
@@ -404,7 +404,7 @@ Rel(error_hierarchy, domain_types, "Uses", "Exception types")
 
 ### Dependency Flow (Clean Architecture)
 
-```
+```text
 Interface Layer
     ↓ (depends on)
 Application Layer

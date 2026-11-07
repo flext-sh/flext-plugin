@@ -148,7 +148,7 @@ All ADRs follow a standardized template for consistency and completeness.
 
 ### ADR Lifecycle
 
-```
+```text
 Proposed → Accepted → Implemented
     ↓         ↓
 Rejected   Deprecated → Superseded
