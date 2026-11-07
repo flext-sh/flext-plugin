@@ -40,31 +40,31 @@ the FLEXT Plugin system.
 
 - **Basic Plugin** - Simple plugin implementation
 - **Plugin Configuration** - Configuration management patterns
-  (_Documentation coming soon_)
-- **Plugin Lifecycle** - Lifecycle management examples (_Documentation coming soon_)
+  (*Documentation coming soon*)
+- **Plugin Lifecycle** - Lifecycle management examples (*Documentation coming soon*)
 
 ### 🔌 Plugin Types
 
 - **Singer Tap Plugin** - Data extraction plugin for Singer/Meltano
-  (_Documentation coming soon_)
-- **Singer Target Plugin** - Data loading plugin (_Documentation coming soon_)
-- **Service Plugin** - Microservice integration (_Documentation coming soon_)
-- **Utility Plugin** - General-purpose utility plugin (_Documentation coming soon_)
+  (*Documentation coming soon*)
+- **Singer Target Plugin** - Data loading plugin (*Documentation coming soon*)
+- **Service Plugin** - Microservice integration (*Documentation coming soon*)
+- **Utility Plugin** - General-purpose utility plugin (*Documentation coming soon*)
 
 ### 🛠️ Development Workflow
 
-- **Hot Reload Demo** - Development with live reloading (_Documentation coming soon_)
-- **Testing Plugins** - Comprehensive testing strategies (_Documentation coming soon_)
-- **Plugin Debugging** - Debugging and troubleshooting (_Documentation coming soon_)
+- **Hot Reload Demo** - Development with live reloading (*Documentation coming soon*)
+- **Testing Plugins** - Comprehensive testing strategies (*Documentation coming soon*)
+- **Plugin Debugging** - Debugging and troubleshooting (*Documentation coming soon*)
 
 ### 🏗️ Advanced Integration
 
 - **FLEXT Service Integration** - Python service integration
-  (_Documentation coming soon_)
+  (*Documentation coming soon*)
 - **Multi-Plugin Orchestration** - Coordinating multiple plugins
-  (_Documentation coming soon_)
+  (*Documentation coming soon*)
 - **Custom Plugin Types** - Creating custom plugin categories
-  (_Documentation coming soon_)
+  (*Documentation coming soon*)
 
 ## Quick Reference
 
@@ -147,7 +147,7 @@ def test_plugin_activation(platform):
 
 ## Example Projects Structure
 
-```
+```text
 examples/
 ├── basic-plugin/
 │   ├── plugin.py             # Plugin class definition

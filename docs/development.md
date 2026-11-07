@@ -119,7 +119,8 @@ class FlextPluginModels(m):
 ## Testing
 
 ### Test Structure
-```
+
+```text
 tests/
 ├── unit/                    # Unit tests for individual components (12 files)
 ├── integration/            # Integration tests (4 files)
@@ -130,6 +131,7 @@ tests/
 
 Total: 24 test files targeting 90% coverage
 ```
+
 ### Testing Commands
 
 ```bash
@@ -178,6 +180,7 @@ ad-hoc dictionaries.
 make check          # All quality gates must pass
 make test             # 85% coverage required
 ```
+
 ### 4. Pull Request
 
 - Clear description of changes
@@ -244,6 +247,7 @@ ls -la plugins/
 ---
 
 For specific plugin development patterns and examples, see examples/ directory.
-`````
+
+`````text
 
 `````
