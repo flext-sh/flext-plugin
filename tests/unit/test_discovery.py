@@ -25,6 +25,7 @@ class TestsFlextPluginDiscovery:
     """Behavioral tests for the plugin discovery public contract."""
 
     @u.Tests.fixture
+    @staticmethod
     def discovery() -> FlextPluginDiscovery:
         """Provide a fresh discovery instance.
 
@@ -35,6 +36,7 @@ class TestsFlextPluginDiscovery:
         return FlextPluginDiscovery()
 
     @u.Tests.fixture
+    @staticmethod
     def plugin_tree() -> Generator[Path]:
         """Create a directory tree with two plugin files and ignored entries.
 
