@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping, MutableMapping, Sequence
 from datetime import datetime
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
@@ -692,30 +692,11 @@ class FlextPluginProtocolsPlugin:
     class PortOptions(FlextCliProtocols.BaseModel, Protocol):
         """Structural data contract projected from the owning model."""
 
-        @property
-        def registry(self) -> p.Registry:
-            """Canonical instance-scoped plugin registry."""
-            ...
-
-        @property
-        def discovery(self) -> FlextPluginProtocolsPlugin.Discovery | None:
-            """Optional plugin discovery adapter."""
-            ...
-
-        @property
-        def loader(self) -> FlextPluginProtocolsPlugin.Loader | None:
-            """Optional plugin loading adapter."""
-            ...
-
-        @property
-        def executor(self) -> FlextPluginProtocolsPlugin.Executor | None:
-            """Optional plugin execution adapter."""
-            ...
-
-        @property
-        def executions(self) -> Mapping[str, FlextPluginProtocolsPlugin.Run]:
-            """Execution records owned by this platform instance."""
-            ...
+        registry: p.Registry
+        discovery: FlextPluginProtocolsPlugin.Discovery | None
+        loader: FlextPluginProtocolsPlugin.Loader | None
+        executor: FlextPluginProtocolsPlugin.Executor | None
+        executions: MutableMapping[str, FlextPluginProtocolsPlugin.Run]
 
     @runtime_checkable
     class Entity(FlextCliProtocols.BaseModel, Protocol):
