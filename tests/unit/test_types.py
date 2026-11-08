@@ -24,9 +24,9 @@ class TestsFlextPluginTypesUnit:
         tm.ok(FlextPluginTypes.JsonMapping is t.JsonMapping)
 
     @staticmethod
-    def test_module_alias_is_the_facade() -> None:
-        """The module-level ``t`` alias exposes the facade itself."""
-        tm.ok(t is FlextPluginTypes)
+    def test_tests_alias_extends_the_package_facade() -> None:
+        """The tests ``t`` facade composes the package ``FlextPluginTypes`` by MRO."""
+        tm.ok(issubclass(t, FlextPluginTypes))
 
     @staticmethod
     def test_tests_facade_exposes_plugin_namespace() -> None:
