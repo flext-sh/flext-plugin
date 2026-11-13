@@ -8,12 +8,12 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import m as flext_cli_m
+from flext_cli import FlextCliModels
 
 from flext_plugin._models import FlextPluginModelsBase, FlextPluginModelsPlugin
 
 
-class FlextPluginModels(flext_cli_m):
+class FlextPluginModels(FlextCliModels):
     """Plugin domain models extending flext-cli patterns via MRO.
 
     Provides standardized models for all plugin operations including plugin

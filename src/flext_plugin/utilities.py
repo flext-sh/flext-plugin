@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_cli import u as flext_cli_u
+from flext_cli import FlextCliUtilities
 
 from flext_plugin._utilities import (
     FlextPluginDiscovery,
@@ -17,7 +17,7 @@ from flext_plugin._utilities import (
 )
 
 
-class FlextPluginUtilities(flext_cli_u):
+class FlextPluginUtilities(FlextCliUtilities):
     """composition-based utilities using Python 3.13+ patterns."""
 
     class Plugin(
