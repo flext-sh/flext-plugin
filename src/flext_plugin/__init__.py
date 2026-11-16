@@ -35,8 +35,8 @@ if TYPE_CHECKING:
     from flext_plugin.models import FlextPluginModels, m
     from flext_plugin.protocols import FlextPluginProtocols, p
     from flext_plugin.typings import FlextPluginTypes, t
+    from flext_plugin.services import FlextPluginDiscovery
     from flext_plugin.utilities import (
-        FlextPluginDiscovery,
         FlextPluginPlatform,
         FlextPluginUtilities,
         u,
@@ -91,7 +91,7 @@ install_lazy_exports(
         "FlextPluginCli": ".cli",
         "FlextPluginConfig": "._config",
         "FlextPluginConstants": ".constants",
-        "FlextPluginDiscovery": ".utilities",
+        "FlextPluginDiscovery": ".services",
         "FlextPluginModels": ".models",
         "FlextPluginModelsConfig": ".config_models",
         "FlextPluginPlatform": ".utilities",

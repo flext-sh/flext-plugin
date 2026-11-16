@@ -10,7 +10,6 @@ from __future__ import annotations
 from flext_cli import FlextCliUtilities
 
 from flext_plugin._utilities import (
-    FlextPluginDiscovery,
     FlextPluginImplementations,
     FlextPluginPlatform,
     FlextPluginUtilitiesMetadata,
@@ -21,7 +20,6 @@ class FlextPluginUtilities(FlextCliUtilities):
     """composition-based utilities using Python 3.13+ patterns."""
 
     class Plugin(
-        FlextPluginDiscovery,
         FlextPluginImplementations,
         FlextPluginUtilitiesMetadata,
         FlextPluginPlatform,
@@ -32,7 +30,6 @@ class FlextPluginUtilities(FlextCliUtilities):
 u = FlextPluginUtilities
 
 __all__: list[str] = [
-    "FlextPluginDiscovery",
     "FlextPluginPlatform",
     "FlextPluginUtilities",
     "u",
