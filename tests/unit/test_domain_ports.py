@@ -14,7 +14,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
-from flext_plugin import FlextPluginDiscovery
+from flext_plugin.services import FlextPluginDiscovery
 from tests import c, p, tm, u
 
 if TYPE_CHECKING:
@@ -53,6 +53,21 @@ class TestsFlextPluginDomainPorts:
         dunder = root / "__pycache_like__"
         dunder.mkdir()
         (dunder / "gamma.py").write_text("value = 3", encoding="utf-8")
+
+    @staticmethod
+    def _stem(path: Path) -> str:
+        """Return the plugin candidate stem."""
+        return path.stem
+
+    @staticmethod
+    def _name(path: Path) -> str:
+        """Return the plugin candidate file name."""
+        return path.name
+
+    @staticmethod
+    def _alpha_stem(path: Path) -> str | None:
+        """Return the stem only for the alpha candidate."""
+        return path.stem if path.stem == "alpha" else None
 
     # ------------------------------------------------------------------ #
     # discover_plugin — single-path fallible contract
@@ -144,7 +159,7 @@ class TestsFlextPluginDomainPorts:
 
         discovered = FlextPluginDiscovery.discover_python_plugins_in_directory(
             tmp_path,
-            lambda item: item.stem,
+            TestsFlextPluginDomainPorts._stem,
             logger,
         )
 
@@ -172,7 +187,7 @@ class TestsFlextPluginDomainPorts:
 
         discovered = FlextPluginDiscovery.discover_python_plugins_in_directory(
             tmp_path,
-            lambda item: item.name,
+            TestsFlextPluginDomainPorts._name,
             logger,
         )
 
@@ -190,7 +205,7 @@ class TestsFlextPluginDomainPorts:
 
         discovered = FlextPluginDiscovery.discover_python_plugins_in_directory(
             tmp_path,
-            lambda item: item.stem,
+            TestsFlextPluginDomainPorts._stem,
             logger,
         )
 
@@ -204,7 +219,7 @@ class TestsFlextPluginDomainPorts:
         """An unreadable/missing directory yields an empty result, not a raise."""
         discovered = FlextPluginDiscovery.discover_python_plugins_in_directory(
             tmp_path / "does-not-exist",
-            lambda item: item.stem,
+            TestsFlextPluginDomainPorts._stem,
             logger,
         )
 
@@ -221,7 +236,7 @@ class TestsFlextPluginDomainPorts:
 
         discovered = FlextPluginDiscovery.discover_python_plugins_in_directory(
             tmp_path,
-            lambda item: item.stem if item.stem == "alpha" else None,
+            TestsFlextPluginDomainPorts._alpha_stem,
             logger,
         )
 

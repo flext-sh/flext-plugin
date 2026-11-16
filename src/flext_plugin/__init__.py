@@ -34,7 +34,6 @@ if TYPE_CHECKING:
     from flext_plugin.constants import FlextPluginConstants, c
     from flext_plugin.models import FlextPluginModels, m
     from flext_plugin.protocols import FlextPluginProtocols, p
-    from flext_plugin.services import FlextPluginDiscovery
     from flext_plugin.typings import FlextPluginTypes, t
     from flext_plugin.utilities import FlextPluginPlatform, FlextPluginUtilities, u
 
@@ -44,7 +43,6 @@ __all__: tuple[str, ...] = (
     "FlextPluginCli",
     "FlextPluginConfig",
     "FlextPluginConstants",
-    "FlextPluginDiscovery",
     "FlextPluginModels",
     "FlextPluginModelsConfig",
     "FlextPluginPlatform",
@@ -87,7 +85,6 @@ install_lazy_exports(
         "FlextPluginCli": ".cli",
         "FlextPluginConfig": "._config",
         "FlextPluginConstants": ".constants",
-        "FlextPluginDiscovery": ".services",
         "FlextPluginModels": ".models",
         "FlextPluginModelsConfig": ".config_models",
         "FlextPluginPlatform": ".utilities",
@@ -121,6 +118,18 @@ install_lazy_exports(
         "x": "flext_cli",
     },
     public_exports=__all__,
+    deferred_members={
+        "FlextPluginModelsConfig": (
+            "Version",
+            "NameValidation",
+            "DescriptionValidation",
+            "AuthorValidation",
+            "DocstringValidation",
+            "Validation",
+            "Files",
+            "Plugin",
+        ),
+    },
 )
 
 if not TYPE_CHECKING:
