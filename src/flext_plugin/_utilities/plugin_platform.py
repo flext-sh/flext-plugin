@@ -11,7 +11,7 @@ from typing import override
 
 from flext_cli import r, s, u
 
-from flext_plugin import c, m, p, t
+from flext_plugin import FlextPluginSettings, c, m, p, t
 
 
 class FlextPluginPlatform:
@@ -39,6 +39,23 @@ class FlextPluginPlatform:
 
     class PluginPlatformService(s[p.Plugin.Snapshot], m.Plugin.PortOptions):
         """Use cases sharing one required registry, with no mirrored plugin store."""
+
+        settings_type: t.Port[p.SettingsType] | None = m.Field(
+            default=FlextPluginSettings,
+            exclude=True,
+            description="Canonical settings owner for plugin service runtimes.",
+        )
+
+        @classmethod
+        @override
+        def runtime_bootstrap_options(cls) -> p.RuntimeBootstrapOptions:
+            """Bind the plugin settings contract for the runtime.
+
+            Returns:
+                Options binding the plugin settings class.
+
+            """
+            return m.RuntimeBootstrapOptions(settings_type=FlextPluginSettings)
 
         def register_plugin(self, plugin: p.Plugin.Instance) -> p.Result[bool]:
             """Register the original payload; conflicts remain registry failures.
