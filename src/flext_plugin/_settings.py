@@ -7,10 +7,13 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
-from flext_core import FlextSettings, m
+from typing import ClassVar
+
+from flext_cli import FlextCliSettings
+from flext_core import FlextSettings, m, t
 
 
-class FlextPluginSettings(FlextSettings):
+class FlextPluginSettings(FlextCliSettings, FlextSettings):
     """Plugin system runtime settings.
 
     Extends the fleet settings kernel with the registered ``plugin``
@@ -21,7 +24,10 @@ class FlextPluginSettings(FlextSettings):
     # Why: pydantic_settings is owned by flext-core; route SettingsConfigDict
     # through the m facade instead of importing the third-party package
     # directly (ENFORCE-070).
-    model_config = m.SettingsConfigDict(env_prefix="FLEXT_PLUGIN_", extra="ignore")
+    model_config: ClassVar[t.SettingsConfigDict] = m.SettingsConfigDict(
+        env_prefix="FLEXT_PLUGIN_",
+        extra="ignore",
+    )
 
 
 settings: FlextPluginSettings = FlextPluginSettings.fetch_global()
