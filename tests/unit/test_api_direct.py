@@ -10,11 +10,11 @@ from typing import TYPE_CHECKING
 
 from flext_plugin import (
     FlextPluginApi,
-    FlextPluginDiscovery,
     FlextPluginPlatform,
     FlextPluginSettings,
     plugin,
 )
+from flext_plugin.services import FlextPluginDiscovery
 from tests import c, m, p, tm, u
 
 if TYPE_CHECKING:

@@ -14,7 +14,7 @@ import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from flext_plugin import FlextPluginDiscovery
+from flext_plugin.services import FlextPluginDiscovery
 from tests import c, tm, u
 
 if TYPE_CHECKING:
