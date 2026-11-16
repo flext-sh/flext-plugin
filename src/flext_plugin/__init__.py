@@ -34,13 +34,9 @@ if TYPE_CHECKING:
     from flext_plugin.constants import FlextPluginConstants, c
     from flext_plugin.models import FlextPluginModels, m
     from flext_plugin.protocols import FlextPluginProtocols, p
-    from flext_plugin.typings import FlextPluginTypes, t
     from flext_plugin.services import FlextPluginDiscovery
-    from flext_plugin.utilities import (
-        FlextPluginPlatform,
-        FlextPluginUtilities,
-        u,
-    )
+    from flext_plugin.typings import FlextPluginTypes, t
+    from flext_plugin.utilities import FlextPluginPlatform, FlextPluginUtilities, u
 
 
 __all__: tuple[str, ...] = (
