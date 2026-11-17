@@ -20,8 +20,6 @@ __all__: tuple[str, ...] = ("FlextPluginDiscovery",)
 install_lazy_exports(
     __name__,
     globals(),
-    {
-        "FlextPluginDiscovery": ".discovery",
-    },
+    {"FlextPluginDiscovery": ".discovery"},
     public_exports=__all__,
 )
