@@ -35,20 +35,5 @@ install_lazy_exports(
         "FlextPluginConstantsPlugin": ".plugin",
     },
     public_exports=__all__,
-    deferred_members={
-        "FlextPluginConstantsPlugin": (
-            "DEFAULT_PLUGIN_VERSION",
-            "REGISTRY_CATEGORY",
-            "Type",
-            "SINGER_PLUGIN_TYPES",
-            "ARCHITECTURE_PLUGIN_TYPES",
-            "INTEGRATION_PLUGIN_TYPES",
-            "UTILITY_PLUGIN_TYPES",
-            "ALL_PLUGIN_TYPES",
-            "PluginValidation",
-            "PluginStatus",
-            "DiscoveryTypeLiteral",
-            "DiscoveryMethodLiteral",
-        ),
-    },
+    deferred_members=("FlextPluginConstantsPlugin",),
 )

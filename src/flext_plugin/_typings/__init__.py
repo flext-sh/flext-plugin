@@ -23,7 +23,5 @@ install_lazy_exports(
     globals(),
     {"FlextPluginTypingsBase": ".base", "FlextPluginTypingsEvents": ".events"},
     public_exports=__all__,
-    deferred_members={
-        "FlextPluginTypingsEvents": ("EventHandler",),
-    },
+    deferred_members=("FlextPluginTypingsEvents",),
 )
