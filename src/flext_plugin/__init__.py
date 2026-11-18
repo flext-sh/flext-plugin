@@ -118,18 +118,7 @@ install_lazy_exports(
         "x": "flext_cli",
     },
     public_exports=__all__,
-    deferred_members={
-        "FlextPluginModelsConfig": (
-            "Version",
-            "NameValidation",
-            "DescriptionValidation",
-            "AuthorValidation",
-            "DocstringValidation",
-            "Validation",
-            "Files",
-            "Plugin",
-        ),
-    },
+    deferred_members=("FlextPluginModelsConfig",),
 )
 
 if not TYPE_CHECKING:

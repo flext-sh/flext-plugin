@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flext_core.lazy import defer_lazy_bases, install_lazy_exports
+from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
     from flext_plugin._models.base import FlextPluginModelsBase
@@ -23,22 +23,8 @@ install_lazy_exports(
     globals(),
     {"FlextPluginModelsBase": ".base", "FlextPluginModelsPlugin": ".plugin"},
     public_exports=__all__,
-    deferred_members={
-        "FlextPluginModelsBase": (),
-        "FlextPluginModelsPlugin": (
-            "PortOptions",
-            "Entity",
-            "Execution",
-            "DiscoveryData",
-            "Metadata",
-            "Registry",
-        ),
-    },
-)
-
-defer_lazy_bases(
-    __name__,
-    {
-        "FlextPluginModelsBase": (("flext_plugin", "FlextPluginModelsConfig"),),
-    },
+    deferred_members=(
+        "FlextPluginModelsBase",
+        "FlextPluginModelsPlugin",
+    ),
 )
