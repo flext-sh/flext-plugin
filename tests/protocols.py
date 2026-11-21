@@ -11,17 +11,14 @@ from __future__ import annotations
 
 from flext_tests import FlextTestsProtocols
 
-from flext_plugin import FlextPluginProtocols
+from tests import FlextPluginProtocols
 
 
 class TestsFlextPluginProtocols(FlextTestsProtocols, FlextPluginProtocols):
     """Test protocols combining TestsFlextProtocols and FlextPluginProtocols."""
 
-    class Plugin(FlextPluginProtocols.Plugin):
-        """Plugin test protocols namespace."""
-
-        class Tests:
-            """Plugin-specific test protocols."""
+    class Tests(FlextTestsProtocols.Tests):
+        """Plugin-specific test protocols."""
 
 
 p = TestsFlextPluginProtocols

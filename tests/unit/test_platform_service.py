@@ -8,8 +8,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flext_plugin import FlextPluginApi
-from tests import c, m, tm, u
+from tests import FlextPluginApi, c, m, tm, u
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -36,7 +35,7 @@ class TestsFlextPluginPlatformService:
     @staticmethod
     def test_execution_honors_explicit_id_and_records_completed_state() -> None:
         """A real executor run owns timestamps, result, identity, and cleanup."""
-        api = FlextPluginApi(executor=u.Plugin.Tests.EchoExecutor())
+        api = FlextPluginApi(executor=u.Tests.EchoExecutor())
         payload = m.Plugin.Entity(name="executed-plugin")
         tm.ok(api.register_plugin(payload))
         tm.that(api.list_executions(), eq=[])
@@ -65,7 +64,7 @@ class TestsFlextPluginPlatformService:
     @staticmethod
     def test_execution_without_explicit_id_uses_owned_generator() -> None:
         """The execution operation uses the canonical model's identifier factory."""
-        api = FlextPluginApi(executor=u.Plugin.Tests.EchoExecutor())
+        api = FlextPluginApi(executor=u.Tests.EchoExecutor())
         payload = m.Plugin.Entity(name="generated-run-plugin")
         tm.ok(api.register_plugin(payload))
         first = tm.ok(api.execute_plugin(payload.name, {}))
@@ -78,7 +77,7 @@ class TestsFlextPluginPlatformService:
     @staticmethod
     def test_failed_executor_run_is_recorded_without_false_success() -> None:
         """Failure and the tracked execution expose the same error."""
-        api = FlextPluginApi(executor=u.Plugin.Tests.FailingExecutor())
+        api = FlextPluginApi(executor=u.Tests.FailingExecutor())
         payload = m.Plugin.Entity(name="failed-run-plugin")
         tm.ok(api.register_plugin(payload))
         result = api.execute_plugin(payload.name, {}, execution_id="failed-run")
@@ -107,7 +106,7 @@ class TestsFlextPluginPlatformService:
     @staticmethod
     def test_status_and_transport_snapshot_observe_real_state() -> None:
         """Snapshot serialization preserves metadata without replacing payloads."""
-        api = FlextPluginApi(executor=u.Plugin.Tests.EchoExecutor())
+        api = FlextPluginApi(executor=u.Tests.EchoExecutor())
         active = m.Plugin.Entity(name="active-plugin", is_enabled=True, author="Caller")
         inactive = m.Plugin.Entity(
             name="inactive-plugin", is_enabled=False, metadata={"source": "caller"}
