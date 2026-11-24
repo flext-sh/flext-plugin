@@ -12,7 +12,7 @@ from flext_cli import FlextCliTypes
 from flext_plugin._typings import FlextPluginTypingsBase, FlextPluginTypingsEvents
 
 
-class FlextPluginTypes(FlextCliTypes, FlextPluginTypingsBase):
+class FlextPluginTypes(FlextCliTypes):
     """Plugin type system extending flext_cli via MRO with internal typings."""
 
     class Plugin(FlextPluginTypingsBase, FlextPluginTypingsEvents):
