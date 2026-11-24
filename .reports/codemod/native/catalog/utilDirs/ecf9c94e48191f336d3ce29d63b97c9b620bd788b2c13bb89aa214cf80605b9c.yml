@@ -1,0 +1,1 @@
+{"id":"exports--flext_plugin._models","language":"Python","rule":{"regex":"^(?:FlextPluginModelsBase|FlextPluginModelsPlugin)$"}}

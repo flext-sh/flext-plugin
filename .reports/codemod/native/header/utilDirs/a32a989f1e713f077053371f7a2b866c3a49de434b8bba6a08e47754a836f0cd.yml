@@ -1,0 +1,1 @@
+{"id":"exports--flext_plugin._protocols","language":"Python","rule":{"regex":"^(?:FlextPluginProtocolsBase|FlextPluginProtocolsPlatform|FlextPluginProtocolsPlugin)$"}}

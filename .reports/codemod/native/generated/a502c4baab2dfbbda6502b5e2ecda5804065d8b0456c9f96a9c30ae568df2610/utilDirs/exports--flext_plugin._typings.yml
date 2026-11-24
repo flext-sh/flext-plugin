@@ -1,0 +1,1 @@
+{"id":"exports--flext_plugin._typings","language":"Python","rule":{"regex":"^(?:FlextPluginTypingsBase|FlextPluginTypingsEvents)$"}}

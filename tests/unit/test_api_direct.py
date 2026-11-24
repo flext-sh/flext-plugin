@@ -8,14 +8,18 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flext_plugin import (
+from flext_plugin.services import FlextPluginDiscovery
+from tests import (
     FlextPluginApi,
     FlextPluginPlatform,
     FlextPluginSettings,
+    c,
+    m,
+    p,
     plugin,
+    tm,
+    u,
 )
-from flext_plugin.services import FlextPluginDiscovery
-from tests import c, m, p, tm, u
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -131,8 +135,8 @@ class TestsFlextPluginApi:
         """Collaborators remain excluded from serialization and schema."""
         api = FlextPluginApi(
             discovery=FlextPluginDiscovery(),
-            loader=u.Plugin.Tests.FilePluginLoader(),
-            executor=u.Plugin.Tests.EchoExecutor(),
+            loader=u.Tests.FilePluginLoader(),
+            executor=u.Tests.EchoExecutor(),
         )
         dumped = api.model_dump()
         schema = u.json_mapping_adapter().validate_python(api.model_json_schema())
@@ -160,7 +164,7 @@ class TestsFlextPluginApi:
     @staticmethod
     def test_discovery_failure_does_not_create_entries(tmp_path: Path) -> None:
         """Propagate adapter failure rather than returning an empty success."""
-        api = FlextPluginApi(discovery=u.Plugin.Tests.FailingDiscovery())
+        api = FlextPluginApi(discovery=u.Tests.FailingDiscovery())
         tm.fail(api.discover_plugins([str(tmp_path / "missing")]))
         tm.that(api.list_plugins().value, eq=[])
 
@@ -169,7 +173,7 @@ class TestsFlextPluginApi:
         """Loaded metadata and the original registered payload remain available."""
         plugin_file = tmp_path / "loaded.py"
         plugin_file.write_text('"""Real loadable plugin."""\n', encoding="utf-8")
-        loader = u.Plugin.Tests.FilePluginLoader()
+        loader = u.Tests.FilePluginLoader()
         api = FlextPluginApi(loader=loader)
         payload = tm.ok(api.load_plugin(str(plugin_file)))
         tm.that(payload.name, eq=plugin_file.stem)
@@ -181,7 +185,7 @@ class TestsFlextPluginApi:
     @staticmethod
     def test_loader_failure_does_not_create_entries(tmp_path: Path) -> None:
         """A missing real file fails without leaving an entry in the registry."""
-        api = FlextPluginApi(loader=u.Plugin.Tests.FilePluginLoader())
+        api = FlextPluginApi(loader=u.Tests.FilePluginLoader())
         tm.fail(api.load_plugin(str(tmp_path / "missing.py")))
         tm.that(api.list_plugins().value, eq=[])
 
@@ -190,7 +194,7 @@ class TestsFlextPluginApi:
         """Loading another object under an owned name cannot replace its metadata."""
         plugin_file = tmp_path / "existing.py"
         plugin_file.write_text('"""Conflicting plugin file."""\n', encoding="utf-8")
-        api = FlextPluginApi(loader=u.Plugin.Tests.FilePluginLoader())
+        api = FlextPluginApi(loader=u.Tests.FilePluginLoader())
         original = m.Plugin.Entity(name=plugin_file.stem, metadata={"origin": "caller"})
         tm.ok(api.register_plugin(original))
         tm.fail(api.load_plugin(str(plugin_file)))

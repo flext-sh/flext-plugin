@@ -11,17 +11,14 @@ from __future__ import annotations
 
 from flext_tests import FlextTestsTypes
 
-from flext_plugin import FlextPluginTypes
+from tests import FlextPluginTypes
 
 
 class TestsFlextPluginTypes(FlextTestsTypes, FlextPluginTypes):
     """Test types combining TestsFlextTypes with flext-plugin types."""
 
-    class Plugin(FlextPluginTypes.Plugin):
-        """Plugin test namespace."""
-
-        class Tests:
-            """Internal tests declarations."""
+    class Tests(FlextTestsTypes.Tests):
+        """Internal tests declarations."""
 
 
 t = TestsFlextPluginTypes

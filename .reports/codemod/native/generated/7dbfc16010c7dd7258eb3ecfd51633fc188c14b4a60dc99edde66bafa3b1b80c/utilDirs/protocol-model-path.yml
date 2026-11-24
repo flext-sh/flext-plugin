@@ -1,0 +1,1 @@
+{"id":"protocol-model-path","language":"Python","rule":{"regex":"^(?:p|m)\\.(?:ArbitraryTypesModel|BaseModel|DomainEvent|Entity|ManagedModel|Plugin\\.Entity|Plugin\\.Plugin|Plugin\\.Registry|RuntimeBootstrapOptions|SettingsConfigDict|Value)$"}}

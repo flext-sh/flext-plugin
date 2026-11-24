@@ -1,0 +1,1 @@
+{"id":"exports--flext_plugin._utilities","language":"Python","rule":{"regex":"^(?:FlextPluginImplementations|FlextPluginPlatform|FlextPluginUtilitiesBase|FlextPluginUtilitiesMetadata)$"}}

@@ -11,17 +11,14 @@ from __future__ import annotations
 
 from flext_tests import FlextTestsConstants
 
-from flext_plugin import FlextPluginConstants
+from tests import FlextPluginConstants
 
 
 class TestsFlextPluginConstants(FlextTestsConstants, FlextPluginConstants):
     """Test constants for flext-plugin."""
 
-    class Plugin(FlextPluginConstants.Plugin):
-        """Plugin test namespace."""
-
-        class Tests:
-            """Internal tests declarations."""
+    class Tests(FlextTestsConstants.Tests):
+        """Internal tests declarations."""
 
 
 c = TestsFlextPluginConstants

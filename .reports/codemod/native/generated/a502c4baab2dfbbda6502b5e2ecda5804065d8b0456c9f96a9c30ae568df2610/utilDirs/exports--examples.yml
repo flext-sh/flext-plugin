@@ -1,0 +1,1 @@
+{"id":"exports--examples","language":"Python","rule":{"regex":"^(?:ExamplesFlextPluginConstants|ExamplesFlextPluginModels|ExamplesFlextPluginProtocols|ExamplesFlextPluginTypes|ExamplesFlextPluginUtilities|c|config|d|e|h|m|main|p|plugin|r|s|settings|t|u|x)$"}}
