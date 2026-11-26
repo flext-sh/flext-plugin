@@ -13,6 +13,7 @@ SPDX-License-Identifier: MIT
 
 from __future__ import annotations
 
+from flext_cli import FlextCliSettings
 from flext_core import FlextSettings
 
 from flext_plugin import FlextPluginConfig, FlextPluginSettings, config
@@ -24,7 +25,8 @@ from tests import c, tm, u
 # longer declares, so the test was vacuous. The live contract is checked against
 # the runtime SSOT instead: FlextSettings.model_fields is the single source of
 # truth for the universal operational fields (debug/trace/log_level/timezone/
-# async_logging), and FlextPluginSettings must neither add nor drop fields.
+# async_logging). FlextPluginSettings composes FlextCliSettings and FlextSettings
+# and must neither add nor drop fields beyond those bases.
 _UNIVERSAL_FIELDS: tuple[str, ...] = (
     "debug",
     "trace",
@@ -89,10 +91,10 @@ class TestsFlextPluginConfig:
 
     @staticmethod
     def test_plugin_settings_match_root_field_contract() -> None:
-        """Plugin settings declare exactly the FlextSettings SSOT root fields."""
+        """Plugin settings declare exactly the fields of the bases they compose."""
         tm.that(
             set(FlextPluginSettings.model_fields),
-            eq=frozenset(FlextSettings.model_fields),
+            eq=set(FlextCliSettings.model_fields) | set(FlextSettings.model_fields),
         )
 
     @staticmethod

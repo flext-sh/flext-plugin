@@ -12,13 +12,6 @@ from typing import TYPE_CHECKING
 from flext_core.lazy import install_lazy_exports
 
 if TYPE_CHECKING:
-    from examples import (
-        ExamplesFlextPluginConstants,
-        ExamplesFlextPluginModels,
-        ExamplesFlextPluginProtocols,
-        ExamplesFlextPluginTypes,
-        ExamplesFlextPluginUtilities,
-    )
     from flext_tests import api, d, e, h, r, td, tf, tk, tm, x
 
     from flext_plugin import (
@@ -40,6 +33,7 @@ if TYPE_CHECKING:
         plugin,
         settings,
     )
+    from flext_plugin.services import FlextPluginDiscovery
     from tests.base import TestsFlextPluginServiceBase, s
     from tests.constants import TestsFlextPluginConstants, c
     from tests.models import TestsFlextPluginModels, m
@@ -50,15 +44,11 @@ if TYPE_CHECKING:
 
 
 __all__: tuple[str, ...] = (
-    "ExamplesFlextPluginConstants",
-    "ExamplesFlextPluginModels",
-    "ExamplesFlextPluginProtocols",
-    "ExamplesFlextPluginTypes",
-    "ExamplesFlextPluginUtilities",
     "FlextPluginApi",
     "FlextPluginCli",
     "FlextPluginConfig",
     "FlextPluginConstants",
+    "FlextPluginDiscovery",
     "FlextPluginModels",
     "FlextPluginModelsConfig",
     "FlextPluginPlatform",
@@ -101,15 +91,11 @@ install_lazy_exports(
     __name__,
     globals(),
     {
-        "ExamplesFlextPluginConstants": "examples",
-        "ExamplesFlextPluginModels": "examples",
-        "ExamplesFlextPluginProtocols": "examples",
-        "ExamplesFlextPluginTypes": "examples",
-        "ExamplesFlextPluginUtilities": "examples",
         "FlextPluginApi": "flext_plugin",
         "FlextPluginCli": "flext_plugin",
         "FlextPluginConfig": "flext_plugin",
         "FlextPluginConstants": "flext_plugin",
+        "FlextPluginDiscovery": "flext_plugin.services",
         "FlextPluginModels": "flext_plugin",
         "FlextPluginModelsConfig": "flext_plugin",
         "FlextPluginPlatform": "flext_plugin",
